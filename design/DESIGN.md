@@ -1,5 +1,10 @@
 # Slouching — Design Reference
 
+> **Historical eight-screen guide.** For the current eleven-screen source bank,
+> use the [frontend specification](../docs/fichas/frontend/screens.md) and
+> [visual style ficha](../docs/fichas/brand/visual-style.md). Transport and
+> security labels in this older guide are visual examples, not runtime claims.
+
 > Visual and UX reference for implementing the **slouching** P2P voice/video application.
 >
 > Source: `slouching-screens.pdf` (8 screen references).
