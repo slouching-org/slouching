@@ -1,0 +1,3 @@
+[submodule "repositories/frontend"]
+	path = repositories/frontend
+	url = https://github.com/slouching-org/slouching-frontend.git
