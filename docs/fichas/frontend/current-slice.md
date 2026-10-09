@@ -30,6 +30,9 @@ ratchet-tree data, loads a bounded local transcript, sends application
 messages, and retries queued outbox events for the selected group. Both devices
 must join the same group, select its ID, and establish a direct LAN session.
 Group invitations still require a separately trusted channel.
+Groups saved on the device are listed with their current epoch and quarantine
+state. Opening one restores its ID, transcript, pending Commits, and security
+alert from SQLCipher after an app restart.
 
 The direct-LAN text screen manually pins the peer's Ed25519 device key. One
 side listens and shares its announced LAN address; the other connects. Both can

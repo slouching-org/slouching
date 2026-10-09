@@ -27,7 +27,10 @@ Group creation and admission are exposed in the local setup UI. Outbound MLS
 application messages are saved as queued ciphertext with the ratchet update in
 one SQLCipher transaction. Inbound processing authenticates sender and event
 metadata, persists ciphertext before releasing plaintext, and deduplicates
-exact redelivery alongside the ratchet update. Opening the database composes OpenMLS RustCrypto with its
+exact redelivery alongside the ratchet update. The UI lists locally stored
+groups with their current epoch and quarantine state; opening one reloads its
+transcript, pending Commits, and security alert from SQLCipher. Opening the
+database composes OpenMLS RustCrypto with its
 SQLite storage provider and initializes the versioned schema on the same
 SQLCipher connection. See
 [ADR 0006](adr-0006-local-storage-optional-helper.md).

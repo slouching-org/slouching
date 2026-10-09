@@ -18,6 +18,9 @@
 > [!IMPORTANT]
 > This is an early build, **not a secure messenger**. Direct pinned-device LAN text and MLS application messaging work over Iroh/QUIC. The MLS screen supports manual KeyPackage/Welcome setup; the receiver validates and persists ciphertext, ratchet state, and transcript in SQLCipher before ACK, and queued messages can be retried. Membership Commits are stored atomically with the committer's new group epoch. When a pinned group member connects, its eligible pending Commits start sending automatically, one at a time with a durable ACK before advancing; the manual control remains available. Exact redelivery is harmless. Clients detect authenticated committer equivocation against saved historical OpenMLS state, preserve both conflicting Commits, and quarantine the affected group without changing its accepted epoch. Simultaneous multi-member fan-out, group discovery, contact verification, relay, offline delivery, calls, and screen sharing remain unimplemented. The Elixir backend uses SQLite locally; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is an experiment, not the service backend.
 
+The MLS screen lists local groups with their current epoch and quarantine state;
+opening a saved group restores its transcript and security state from SQLCipher.
+
 ![Native Rust/Iced home with the supplied night scenery and icon-based feature strip, without the frog mage or gnome cutouts](docs/design/readme/native-vhs-home.png)
 
 ![Actual Native Rust/Iced familiar screen showing local profile and keyring status after adding the device-to-MLS binding core](docs/design/readme/native-vhs-profile.png)
