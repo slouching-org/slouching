@@ -23,6 +23,11 @@ criptográfica, com ID, autor, grupo, época, checkpoint, digest BLAKE3 e prazo.
 Ela deduplica IDs idênticos e rejeita conteúdo ou metadados divergentes. Ainda
 não cria ciphertext, conversa, ACK ou rota de entrega.
 
+A outbox já pode listar páginas limitadas com cursor estável e persistir estados locais de fila,
+retenção por peer, recebimento, expiração e falha. Esses estados ainda não são
+atualizados por um transporte; só código de protocolo confiável poderá marcar
+um recibo real quando a entrega for implementada.
+
 Uma cópia em helper não prova entrega ao destinatário. Nenhum membro ganha
 histórico anterior automaticamente ao ingressar no grupo. A conversa
 persistente e o chat temporário da chamada têm retenções diferentes.

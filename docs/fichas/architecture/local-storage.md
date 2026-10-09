@@ -35,11 +35,14 @@ cryptographic identity.
   attachment chunks. A holder's absence or data loss may make them unavailable.
 
 The schema stores event ID, author device, group ID, epoch, optional
-checkpoint, ciphertext digest, opaque ciphertext, and expiry. The storage
-operations reject reused IDs with changed ciphertext or envelope metadata.
-MLS validation, delivery-state transitions, history presentation, recovery,
-and key lifecycle beyond local profile/key creation remain implementation
-work. Neither
+checkpoint, ciphertext digest, opaque ciphertext, expiry, and an outbound
+state. The storage operations reject reused IDs with changed ciphertext or
+envelope metadata, list bounded batches, and guard local queued/held/received/
+expired/failed transitions. Only trusted protocol code may record a real
+receipt; no such transport integration exists yet. Outbox reads use bounded
+pages with a stable local sequence cursor. MLS validation, history
+presentation, recovery, and key lifecycle beyond local profile/key creation
+remain implementation work. Neither
 the web prototype's `localStorage` nor the profile table satisfies these
 conversation-storage rules.
 
