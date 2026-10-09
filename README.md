@@ -16,11 +16,13 @@
 **Conceived by Rodrigo and Vitchola**, Slouching is a planned private place for a small crew to chat, call, and share a screen. The Rust/Iced client owns local keys, cryptography, history, and direct peer paths. Each device is planned to retain its own encrypted SQLite history, inbox, outbox, and MLS state. Elixir remains the backend language. A member may optionally host a helper on a PC or VPS for ciphertext delivery, discovery, relay, or group media. A one-shot pinned-device text transport now works directly between reachable LAN peers without a hosted helper or PostgreSQL.
 
 > [!IMPORTANT]
-> This is an early build, **not a secure messenger**. The Rust/Iced frontend has eleven navigable preview views, local encrypted profile/event storage, OpenMLS provider tables inside SQLCipher, explicit Ed25519 device-key creation, and a core API that creates/loads a distinct MLS signing key and signs its binding to the device key. A separate CLI experiment can exchange one text frame with a manually pinned device over direct LAN Iroh/QUIC. No MLS credential, KeyPackage, contact roster, MLS group, chat UI delivery, media calls, or screen sharing is implemented. The Elixir backend has local SQLite development storage plus status and a development WebSocket handshake with Ping/Pong; PostgreSQL is optional for deployment. The older Rust `slouching-peer` crate is preserved as an experiment, not the service backend.
+> This is an early build, **not a secure messenger**. The Rust/Iced frontend has eleven screens based on the design board, local encrypted profile/event storage, OpenMLS provider tables inside SQLCipher, explicit Ed25519 device-key creation, and a core API that creates/loads a distinct MLS signing key and signs its binding to the device key. The chat screen can exchange one text message at a time with a manually pinned device over direct LAN Iroh/QUIC; its transcript is session-only. No MLS credential, KeyPackage, contact roster, MLS group, durable chat history, media calls, or screen sharing is implemented. The Elixir backend has local SQLite development storage plus status and a development WebSocket handshake with Ping/Pong; PostgreSQL is optional for deployment. The older Rust `slouching-peer` crate is preserved as an experiment, not the service backend.
 
 ![Native Rust/Iced home with the supplied night scenery and icon-based feature strip, without the frog mage or gnome cutouts](docs/design/readme/native-vhs-home.png)
 
 ![Actual Native Rust/Iced familiar screen showing local profile and keyring status after adding the device-to-MLS binding core](docs/design/readme/native-vhs-profile.png)
+
+![Actual direct-LAN text screen with manual peer-key pinning and session-only transcript](repositories/frontend/docs/design/runtime/native-vhs/06-chat.png)
 
 ![Native Rust/Iced group-call preview with illustrative characters and chat; no media is connected](docs/design/readme/native-vhs-call.png)
 
@@ -36,12 +38,12 @@ This repository holds the project overview, design sources, and a reconciled doc
 
 | Repository | Owns | Current state |
 | --- | --- | --- |
-| [slouching-frontend](https://github.com/slouching-org/slouching-frontend) | Native Rust/Iced desktop UI and web visual prototype | Eleven native previews; encrypted local profile/event journal and OpenMLS storage; Ed25519 identity plus persisted device-bound MLS signer; local diagnostic transport |
+| [slouching-frontend](https://github.com/slouching-org/slouching-frontend) | Native Rust/Iced desktop UI and web visual prototype | Eleven native screens; direct-LAN one-shot text messaging in Iced; encrypted local profile/event journal and OpenMLS storage; Ed25519 identity plus persisted device-bound MLS signer |
 | [slouching-backend](https://github.com/slouching-org/slouching-backend) | Elixir service backend | Local SQLite Repo, no-PostgreSQL smoke check, and transport diagnostics; PostgreSQL deployment option; no enrollment or product traffic |
 
 Start with the [fichas index](docs/fichas/README.md). The [product specification](docs/fichas/architecture/backend.md), [Elixir backend boundary](docs/fichas/architecture/elixir-backend.md), [frontend screen specification](docs/fichas/frontend/screens.md), [technology plan](docs/fichas/architecture/tech-stack.md), and [ADRs](docs/fichas/README.md#accepted-decisions) describe the target and distinguish it from working code. The [owner's 11-page architecture PDF](docs/fichas/architecture/sources/architecture-p2p-v0.1.pdf) and [page-by-page transcript](docs/fichas/architecture/sources/README.md) are preserved. [ADR 0005](docs/fichas/architecture/adr-0005-elixir-server-core.md) defines the Rust-client/Elixir-backend division. [ADR 0006](docs/fichas/architecture/adr-0006-local-storage-optional-helper.md) reaffirms the backup specification: local SQLite, optional helpers, and PostgreSQL only as a deployment option.
 
-The [client/server integration contract](docs/fichas/architecture/integration.md) describes both the local Elixir diagnostics and the separate experimental direct-LAN text path. The diagnostics establish reachability and wire compatibility only; the LAN path authenticates pinned device keys but is not MLS product messaging.
+The [client/server integration contract](docs/fichas/architecture/integration.md) describes both the local Elixir diagnostics and the separate direct-LAN text path. The diagnostics establish reachability and wire compatibility only; the LAN path authenticates pinned device keys but is not MLS product messaging.
 
 The Elixir helper uses SQLite for local development and can select PostgreSQL for a deployment with `SLOUCHING_DATABASE_URL`. Its device-key table has no enrollment or lookup route and does not establish a required directory service. The desktop product stores its own encrypted local data in SQLCipher SQLite.
 
@@ -68,7 +70,9 @@ mix run --no-halt
 ```
 
 From the project directory, run the client in another terminal. Its Rust build
-requires `protoc` for protobuf code generation:
+requires `protoc` for protobuf code generation. The Elixir process is only
+needed for local status/WebSocket diagnostics; direct LAN messages do not use
+it.
 
 ```sh
 cd ../slouching-frontend
@@ -80,28 +84,16 @@ The development status uses `127.0.0.1:3707/api/status`; the binary handshake
 uses `ws://127.0.0.1:3707/ws`. Neither is authenticated product traffic. Run
 `scripts/check-integration.sh` for the local
 cross-repository checks. The submodules pin the published backend and
-frontend commits; the frontend snapshot includes all eleven native visual
-previews and their runtime screenshots.
+frontend commits, including native runtime screenshots.
 
-To try the direct-LAN text experiment with a friend, create a device identity
-on both clients from the Familiar screen and exchange each displayed public
-key over a trusted channel. On the receiving computer, run:
-
-```sh
-PEER_KEY='REPLACE_WITH_FRIEND_64_CHAR_PUBLIC_KEY_HEX'
-cargo run -- --lan-listen 45873 --expect-peer "$PEER_KEY"
-```
-
-On the sending computer, replace the address with the receiver's LAN IPv4
-address and use the receiver's public key:
-
-```sh
-PEER_KEY='REPLACE_WITH_RECEIVER_64_CHAR_PUBLIC_KEY_HEX'
-cargo run -- --lan-send 192.168.1.20:45873 --expect-peer "$PEER_KEY" --text 'hello from the crew'
-```
-
-Both devices must be on a reachable LAN, with inbound UDP allowed on port
-45873. The receiving terminal prints the message and the sender prints an
-acknowledgement. This is a one-shot transport test; chat in the app remains a
-visual preview, and this path does not support different networks or NAT
-traversal.
+To use direct-LAN messaging, open the **chat** screen in both clients. Create
+an identity in **Familiar** if needed, then use **Copiar minha chave pública**
+and exchange the two keys over a trusted channel. Each person pastes the
+other's key into **Chave pública do peer**. The receiving device selects a UDP
+port and clicks **Aguardar uma mensagem**; share its displayed LAN address and
+port with the sender. The sender enters that address, writes a message, and
+clicks **Enviar**. Both devices need to be on a reachable LAN, with the chosen
+UDP port allowed by the local firewall. On Linux, Secret Service must be
+available for device identity storage. The listener accepts one message per
+start; the transcript lasts only while the app remains open. Cross-network
+connections, NAT traversal, MLS, and durable history are not implemented.

@@ -31,32 +31,33 @@ retries unavailable transport with bounded 1/2/4/8-second backoff.
 These checks prove local transport liveness and wire compatibility only. The
 HTTP status route is a separate diagnostic.
 
-## Direct LAN peer experiment
+## Direct LAN messaging in the Iced client
 
-The frontend's Iroh/QUIC CLI can send one bounded UTF-8 text frame directly to
-a manually pinned device on a reachable LAN. Both endpoints use the durable
+The Iced chat screen can send and receive one bounded UTF-8 text frame directly
+to a manually pinned device on a reachable LAN. Both endpoints use the durable
 Ed25519 device identity as their Iroh EndpointId; QUIC authenticates and
-encrypts the connection. The sender and receiver manually exchange public keys
-and the sender supplies the receiver's LAN IP and UDP port. Relay and address
-lookup are disabled. See the frontend's
+encrypts the connection. Users manually exchange public keys; the sender
+supplies the receiver's LAN IP and UDP port. Relay and address lookup are
+disabled. See the frontend's
 [LAN text transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-text-v1.md)
-for exact commands.
+for the screen flow and protocol.
 
-This slice has no MLS credential or group, verified contact roster, chat UI,
-durable history, offline delivery, discovery, NAT traversal, or relay fallback.
-The automated integration check launches two separate client processes on one
-machine, checks text and acknowledgement delivery, and verifies rejection of
-an unpinned identity. That is a repeatable transport test; an actual test with
-a friend still requires two devices on the same reachable LAN and firewall
-access to the chosen UDP port.
+This slice has no MLS credential or group, verified contact roster, durable
+history, offline delivery, discovery, NAT traversal, or relay fallback. Its
+transcript lasts only for the current app session. Automated integration tests
+launch two separate client processes, check text and acknowledgement delivery,
+and verify rejection of an unpinned identity. A manual test uses two app
+instances on a reachable LAN and requires firewall access to the chosen UDP
+port. Linux requires an available Secret Service for local device identity.
 
-The transport authenticates no device, carries no encrypted event, and has no
-application command or subscription channel. [ADR 0005](adr-0005-elixir-server-core.md)
+The Elixir diagnostic transport authenticates no device, carries no encrypted
+event, and has no application command or subscription channel. [ADR 0005](adr-0005-elixir-server-core.md)
 defines the language division: Rust client plus Elixir backend.
 [ADR 0006](adr-0006-local-storage-optional-helper.md) retains local SQLite
-and optional helpers. This loopback development slice does not implement
-the required LAN peer mode or make PostgreSQL a startup dependency. Product traffic
-still needs identity, authorization, ordering, retry, and error contracts.
+and optional helpers. The loopback Elixir diagnostics do not implement the
+LAN path or make PostgreSQL a startup dependency. Product messaging still
+needs MLS groups, durable history, authorization policy, offline delivery, and
+retries.
 
 ## Local checkout and validation
 

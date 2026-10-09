@@ -1,15 +1,20 @@
 # Current frontend slice
 
-**Status:** eleven native Rust/Iced visual-preview screens implemented;
-exact visual parity and product features remain open.
+**Status:** eleven native Rust/Iced screens; the chat screen supports
+one-shot direct-LAN text messages with manually pinned device keys and a
+session-only transcript. MLS and durable messaging remain open.
 
 The frontend's `src/main.rs` owns application state and local transport;
 `src/ui.rs` composes the eleven source-board views with native widgets,
 original scenery, familiar portraits and cutouts, source-derived SVG icons,
 embedded fonts, translucent panels, scanlines, and vignette. The **Telas**
 gallery reaches every view. Home actions open the lobby preview; invitation
-and chat fields edit in-memory values. Familiar selection, settings and
-share-source tabs, and the interface texture toggle work locally. The
+fields edit in-memory values. Familiar selection, settings and
+share-source tabs, and the interface texture toggle work locally. In Chat,
+each user manually pins the other's Ed25519 device key. One side starts a
+one-message UDP listener; the other enters its LAN address and sends text.
+The UI displays connection/errors and records only confirmed sends and
+received messages in memory for the current session. The
 familiar screen saves only the display name and familiar in SQLCipher
 encrypted SQLite; its random database key is kept in the operating system
 credential store. This profile is distinct from device identity and does not
@@ -25,11 +30,12 @@ calls reuse the key and refuse silent rotation if the indexed key material is
 missing. No KeyPackage is created or published. Fingerprint/QR derivation
 remains unimplemented.
 
-Every view is labeled as a visual preview. Character scenes and messages
-are examples. Camera/microphone actions explain their unavailable state;
-send, capture, and verification controls cannot perform product operations.
-The app does not enumerate devices, send messages, join calls, or persist
-conversation history. The settings **Rede & P2P** tab exposes
+Character scenes and call views remain visual previews. The chat screen now
+sends and receives actual pairwise text over direct Iroh/QUIC; it does not use
+MLS or persist history. Camera/microphone actions explain their unavailable
+state; verification controls cannot verify MLS membership. The app does not
+enumerate contacts, join calls, or persist conversation history. The settings
+**Rede & P2P** tab exposes
 real backend diagnostics separately from the illustrative call routes.
 
 The earlier HTML/CSS/JavaScript preview is retained under
@@ -44,9 +50,16 @@ window. The first visual pass covers all eleven views; exact parity,
 accessibility, and permissions still need further implementation and review. See the [Iced design plan](iced-design.md) for
 preserving the supplied scenery, characters, avatars, and outline icons.
 Encrypted local SQLite now initializes the OpenMLS provider schema alongside
-the profile and event journal, but live MLS state, usable inbox/outbox UI,
-conversation history, and the LAN peer mode remain unimplemented;
+the profile and event journal, but live MLS state, usable inbox/outbox UI, and
+durable conversation history remain unimplemented;
 the development HTTP/WebSocket diagnostics do not satisfy those requirements.
+
+The chat transport is separate from the Elixir diagnostics. It pins each
+device's durable Ed25519 key as its Iroh endpoint identity, disables relays,
+and sends one bounded UTF-8 frame with delivery acknowledgement. This is not an
+MLS message or a verified contact pairing. Linux requires Secret Service to
+store/load the device key. The one-message listener must be started again for
+each received message. See [LAN text transport v1](../transport/lan-text-v1.md).
 
 The native UI now requests a v1 development status snapshot from the local
 Elixir backend over loopback HTTP using an asynchronous Iced task in the network settings. It shows
