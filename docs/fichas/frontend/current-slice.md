@@ -8,7 +8,11 @@ messages are encrypted with OpenMLS and sent over the active direct session.
 The receiver validates the sender binding and event metadata, advances the
 ratchet, stores ciphertext and the local transcript in SQLCipher, then ACKs.
 The sender marks the outbox event held by the peer after receiving that ACK.
-Queued events can be retried from the MLS screen after reconnecting.
+Queued events can be retried from the MLS screen after reconnecting. When a
+pinned peer connects, the client automatically checks and sends the eligible
+Commit chain for that device, waiting for each durable ACK before advancing;
+the manual send control remains available. Every member still uses a separate
+peer session.
 
 Before applying each next-epoch Commit, the client saves the prior OpenMLS
 state in SQLCipher. A different, valid Commit for an already accepted

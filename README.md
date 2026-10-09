@@ -16,7 +16,7 @@
 **Conceived by Rodrigo and Vitchola**, Slouching is an early native desktop app for a small crew to chat, call, and share a screen. The Rust/Iced client owns local keys, cryptography, direct peer paths, and per-peer chat history in encrypted SQLite. Elixir remains the backend language. A member may optionally host a helper on a PC or VPS for ciphertext delivery, discovery, relay, or group media. Pinned-device text works between reachable LAN peers without a hosted helper or PostgreSQL.
 
 > [!IMPORTANT]
-> This is an early build, **not a secure messenger**. Direct pinned-device LAN text and MLS application messaging work over Iroh/QUIC. The MLS screen supports manual KeyPackage/Welcome setup; the receiver validates and persists ciphertext, ratchet state, and transcript in SQLCipher before ACK, and queued messages can be retried. Membership Commits are stored atomically with the committer's new group epoch. A pending Commit can be sent over the active session to one authenticated group member at a time; the receiver applies it durably before ACK, and exact redelivery is harmless. Clients detect authenticated committer equivocation against saved historical OpenMLS state, preserve both conflicting Commits, and quarantine the affected group without changing its accepted epoch. Multi-member fan-out, group discovery, contact verification, relay, offline delivery, calls, and screen sharing remain unimplemented. The Elixir backend uses SQLite locally; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is an experiment, not the service backend.
+> This is an early build, **not a secure messenger**. Direct pinned-device LAN text and MLS application messaging work over Iroh/QUIC. The MLS screen supports manual KeyPackage/Welcome setup; the receiver validates and persists ciphertext, ratchet state, and transcript in SQLCipher before ACK, and queued messages can be retried. Membership Commits are stored atomically with the committer's new group epoch. When a pinned group member connects, its eligible pending Commits start sending automatically, one at a time with a durable ACK before advancing; the manual control remains available. Exact redelivery is harmless. Clients detect authenticated committer equivocation against saved historical OpenMLS state, preserve both conflicting Commits, and quarantine the affected group without changing its accepted epoch. Simultaneous multi-member fan-out, group discovery, contact verification, relay, offline delivery, calls, and screen sharing remain unimplemented. The Elixir backend uses SQLite locally; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is an experiment, not the service backend.
 
 ![Native Rust/Iced home with the supplied night scenery and icon-based feature strip, without the frog mage or gnome cutouts](docs/design/readme/native-vhs-home.png)
 
@@ -112,8 +112,10 @@ the active session; the sender uses the predecessor-epoch member snapshot,
 while the receiver persists the new epoch before
 ACK and the sender records it per recipient; the MLS screen shows each member's
 adoption status. A new invitee is excluded from that older Commit; a removed
-device can still receive its removal Commit. One click drains the ordered
-Commits for the connected member, then connect to each other member and repeat.
+device can still receive its removal Commit. When each member connects, the
+client drains that device's eligible ordered Commits automatically; the manual
+**Enviar Commits pendentes** control remains available. Connect to each other
+member separately.
 If a peer lacks an epoch, it requests that predecessor over the pinned session;
 the committer can replay it only to a device in that Commit's saved recipient
 snapshot, even after recording an earlier ACK.
