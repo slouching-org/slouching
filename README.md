@@ -16,11 +16,11 @@
 **Conceived by Rodrigo and Vitchola**, Slouching is a planned private place for a small crew to chat, call, and share a screen. The Rust/Iced client owns local keys, cryptography, history, and direct peer paths. Each device is planned to retain its own encrypted SQLite history, inbox, outbox, and MLS state. Elixir remains the backend language. A member may optionally host a helper on a PC or VPS for ciphertext delivery, discovery, relay, or group media. Reachable LAN peers must work without a hosted helper or PostgreSQL; that mode is not implemented yet.
 
 > [!IMPORTANT]
-> This is an early build, **not a secure messenger**. The Rust/Iced frontend has eleven navigable preview views, local encrypted profile/event storage, OpenMLS provider tables inside SQLCipher, and can explicitly create a local Ed25519 signing key in the system credential store. It does not create MLS credentials or groups, and that signing key is not used to authenticate peers; fingerprint verification, pairing, MLS messaging, peer transport, encrypted chat, media calls, and screen sharing are not implemented. The Elixir backend has local status and a development WebSocket handshake with Ping/Pong. The older Rust `slouching-peer` crate is preserved as an experiment, not the service backend.
+> This is an early build, **not a secure messenger**. The Rust/Iced frontend has eleven navigable preview views, local encrypted profile/event storage, OpenMLS provider tables inside SQLCipher, explicit Ed25519 device-key creation, and a core primitive that signs a binding between the device key and a separate MLS signing key. The binding is not connected to MLS credentials, peer verification, or pairing; fingerprint comparison, MLS groups, peer transport, encrypted chat, media calls, and screen sharing are not implemented. The Elixir backend has local SQLite development storage plus status and a development WebSocket handshake with Ping/Pong; PostgreSQL is optional for deployment. The older Rust `slouching-peer` crate is preserved as an experiment, not the service backend.
 
 ![Native Rust/Iced home with the supplied night scenery and icon-based feature strip, without the frog mage or gnome cutouts](docs/design/readme/native-vhs-home.png)
 
-![Native Rust/Iced familiar screen showing local encrypted profile status](docs/design/readme/native-vhs-profile.png)
+![Actual Native Rust/Iced familiar screen showing local profile and keyring status after adding the device-to-MLS binding core](docs/design/readme/native-vhs-profile.png)
 
 ![Native Rust/Iced group-call preview with illustrative characters and chat; no media is connected](docs/design/readme/native-vhs-call.png)
 
@@ -36,14 +36,14 @@ This repository holds the project overview, design sources, and a reconciled doc
 
 | Repository | Owns | Current state |
 | --- | --- | --- |
-| [slouching-frontend](https://github.com/slouching-org/slouching-frontend) | Native Rust/Iced desktop UI and web visual prototype | Eleven native previews; encrypted local profile, event journal and OpenMLS provider schema; explicit Ed25519 key creation; local diagnostic transport |
-| [slouching-backend](https://github.com/slouching-org/slouching-backend) | Elixir service backend | Local transport plus optional PostgreSQL device-key schema; no enrollment or product traffic |
+| [slouching-frontend](https://github.com/slouching-org/slouching-frontend) | Native Rust/Iced desktop UI and web visual prototype | Eleven native previews; encrypted local profile, event journal and OpenMLS provider schema; Ed25519 identity and MLS-key binding primitive; local diagnostic transport |
+| [slouching-backend](https://github.com/slouching-org/slouching-backend) | Elixir service backend | Local SQLite Repo and transport diagnostics; PostgreSQL deployment option; no enrollment or product traffic |
 
 Start with the [fichas index](docs/fichas/README.md). The [product specification](docs/fichas/architecture/backend.md), [Elixir backend boundary](docs/fichas/architecture/elixir-backend.md), [frontend screen specification](docs/fichas/frontend/screens.md), [technology plan](docs/fichas/architecture/tech-stack.md), and [ADRs](docs/fichas/README.md#accepted-decisions) describe the target and distinguish it from working code. The [owner's 11-page architecture PDF](docs/fichas/architecture/sources/architecture-p2p-v0.1.pdf) and [page-by-page transcript](docs/fichas/architecture/sources/README.md) are preserved. [ADR 0005](docs/fichas/architecture/adr-0005-elixir-server-core.md) defines the Rust-client/Elixir-backend division. [ADR 0006](docs/fichas/architecture/adr-0006-local-storage-optional-helper.md) reaffirms the backup specification: local SQLite, optional helpers, and PostgreSQL only as a deployment option.
 
 The [client/server integration contract](docs/fichas/architecture/integration.md) describes the local status exchange and persistent binary WebSocket transport after a protobuf v1 handshake. They establish reachability and wire compatibility only; there is no authenticated messaging or call API.
 
-The backend contains an experimental optional PostgreSQL device-key schema. It has no enrollment or lookup route and does not establish a required directory service. The product storage plan is encrypted SQLite on each device; a helper may also use SQLite or choose PostgreSQL for a larger deployment.
+The Elixir helper uses SQLite for local development and can select PostgreSQL for a deployment with `SLOUCHING_DATABASE_URL`. Its device-key table has no enrollment or lookup route and does not establish a required directory service. The desktop product stores its own encrypted local data in SQLCipher SQLite.
 
 ADR 0004 changed the original single-workspace plan to [separate repositories](docs/fichas/architecture/adr-0004-separate-repositories.md). Its old Rust-backend wording is corrected by ADR 0005. The [old workspace ADR](docs/fichas/architecture/archive/adr-0004-workspace-superseded.md) is retained only as history.
 

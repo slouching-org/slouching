@@ -15,8 +15,11 @@ encrypted SQLite; its random database key is kept in the operating system
 credential store. This profile is distinct from device identity and does not
 create message history. A separate explicit action creates an Ed25519 device
 signing seed in the system credential store and displays its public key as
-unverified. The key does not authenticate peers or sign protocol messages;
-fingerprint/QR derivation and pairing remain unimplemented.
+unverified. The Rust core can sign a versioned binding from that durable
+device key to a separate MLS signing public key. Tampering and a different
+device key are rejected. This primitive is not yet connected to an MLS
+credential, peer verification, or pairing; fingerprint/QR derivation remains
+unimplemented.
 
 Every view is labeled as a visual preview. Character scenes and messages
 are examples. Camera/microphone actions explain their unavailable state;

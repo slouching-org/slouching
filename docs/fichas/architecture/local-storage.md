@@ -6,7 +6,11 @@ credential store. The Ed25519 signing seed is stored separately in that
 credential store. The encrypted database now has an initial opaque event
 journal schema and storage operations with ID/digest deduplication. The UI,
 MLS client state, transport, delivery receipts, and product
-inbox/outbox/history are not connected to it. Opening the database now
+inbox/outbox/history are not connected to it. The device identity can now
+sign a versioned binding from its long-term Ed25519 public key to a separate
+MLS signing public key. Verification of this binding proves only that the
+device key authorized that MLS key; it is not peer verification or a product
+credential. Opening the database now
 composes OpenMLS RustCrypto with its SQLite storage provider and initializes
 the versioned schema on the same SQLCipher connection; no MLS credentials,
 key packages, or groups are created yet. See

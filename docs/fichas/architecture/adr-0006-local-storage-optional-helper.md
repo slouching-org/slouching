@@ -20,6 +20,9 @@ The owner reaffirmed the backup decisions.
   kept in the operating system credential store. A separate explicit action
   can create an Ed25519 signing seed in that store. Authentication, pairing,
   product inbox, outbox, history, and MLS state remain unimplemented.
+  The Rust core can sign a local binding from that device key to a separate
+  MLS signing key, but the binding is not connected to peer verification or
+  product credentials.
 - Reachable peers must be able to communicate on a LAN without PostgreSQL,
   a hosted service, or an internet route. Direct internet communication
   depends on a permitted reachable route.
@@ -41,10 +44,11 @@ these decisions. ADR 0005 continues to define the language boundary, with
 its deployment interpretation corrected here.
 
 The current loopback Elixir/Rust handshake is a development slice, not the
-implemented LAN peer mode. The optional PostgreSQL Repo and device-key
-migration already present in the backend are an implementation experiment;
-they do not establish a required directory or enrollment service. The local
-profile database is not the product inbox, history, or peer delivery layer.
+implemented LAN peer mode. The Elixir helper now uses SQLite by default for
+local development, with PostgreSQL available through explicit deployment
+configuration. Its device-key migration does not establish a required
+directory or enrollment service. The local profile database is not the
+product inbox, history, or peer delivery layer.
 
 Messages wait when no authorized holder can reach the recipient. A helper
 receipt proves that a copy was stored, not that the recipient received it.

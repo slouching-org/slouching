@@ -15,10 +15,10 @@ a PC or private VPS; an ordinary user does not need a PostgreSQL instance.
 | Domain | Target responsibility | Current implementation |
 | --- | --- | --- |
 | Gateway | Versioned binary WebSocket contracts for backend interactions | Loopback protobuf handshake and Ping/Pong only |
-| Directory | Optional public-key and KeyPackage availability; no identity substitution authority | Optional PostgreSQL device-key schema experiment; no enrollment, lookup, or KeyPackages |
+| Directory | Optional public-key and KeyPackage availability; no identity substitution authority | SQLite/Ecto device-key schema for local helper development; PostgreSQL remains an optional deployment backend; no enrollment, lookup, or KeyPackages |
 | Delivery | Optional delegated ciphertext mailbox with quota, expiry, and honest receipts | Not implemented |
 | Group state | Carry proposals, Commits, and checkpoints without cryptographic authority | Not implemented; the designated member device remains the MLS committer |
-| Storage | SQLite per device; SQLite may also serve a helper; Postgres optional for larger helper deployments | Local SQLite absent; experimental Ecto/PostgreSQL Repo and migration exist |
+| Storage | SQLite per device; SQLite may also serve a helper; Postgres optional for larger helper deployments | Client SQLCipher remains separate; optional Elixir helper uses SQLite by default and can select PostgreSQL with `SLOUCHING_DATABASE_URL` |
 | Calls | Optional member-operated SFU and relay support | Not implemented |
 | Runtime | Supervision and backend process lifecycle | Supervised local Elixir application only |
 
