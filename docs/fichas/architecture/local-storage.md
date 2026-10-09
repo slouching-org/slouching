@@ -6,7 +6,8 @@ credential store. The Ed25519 signing seed is stored separately in that
 credential store. The encrypted database now has an initial opaque event
 journal schema and storage operations with ID/digest deduplication. MLS
 application encryption and inbound event processing now update OpenMLS state
-and the journal transactionally. The UI and network delivery are not connected.
+and the journal transactionally. The MLS setup UI exposes local group admission;
+network delivery and message presentation are not connected.
 The device identity can now
 sign a versioned binding from its long-term Ed25519 public key to a separate
 MLS signing public key. Verification of this binding proves only that the
@@ -17,13 +18,13 @@ binding. A missing indexed key fails closed instead of silently rotating the
 device's MLS signing identity. The client core now creates a one-use OpenMLS
 KeyPackage whose BasicCredential contains the device-signed binding. OpenMLS
 stores the corresponding private bundle in SQLCipher while the caller receives
-only the public bytes. No UI flow publishes or consumes this package. The core
+only the public bytes. The setup screen exposes public KeyPackage exchange. The core
 also creates and persists a local single-member MLS group and indexes the
 creator as designated committer. Member admission validates the device-bound
 KeyPackage, enforces the designated committer, merges the Commit locally, and
 returns Commit, Welcome, and ratchet-tree bytes. The invitee processes Welcome
 against its encrypted private package and indexes the sender as committer.
-Group creation and admission are not exposed in the UI. Outbound MLS
+Group creation and admission are exposed in the local setup UI. Outbound MLS
 application messages are saved as queued ciphertext with the ratchet update in
 one SQLCipher transaction. Inbound processing authenticates sender and event
 metadata, persists ciphertext before releasing plaintext, and deduplicates
@@ -39,7 +40,7 @@ and Welcome processing across two isolated encrypted databases, including
 rejection of a non-designated committer. Two-database application tests cover
 queued outbound persistence, authenticated inbound decrypt, deduplication, and
 rollback of forged envelopes. These tests do not provide network delivery or
-a product UI.
+a product MLS chat UI.
 
 Each device owns its identity, MLS state, conversation history, inbox, and
 outbox. SQLCipher is now used for the local display profile; the app generates
@@ -102,8 +103,8 @@ The optional Elixir helper has its own SQLite database by default and may use
 PostgreSQL through explicit deployment configuration. That helper database is
 not the local client persistence implementation.
 
-The next slice should expose group and MLS messaging flows in the client, then
-connect the event envelope to peer transport and authenticated receipts.
+The next slice should connect the event envelope to peer transport and
+authenticated receipts, then expose MLS messaging in the conversation UI.
 Verify two isolated LAN peers without Postgres or a hosted helper, then verify
 optional ciphertext delegation and helper loss separately.
 These are acceptance requirements, not claims that the current scaffold

@@ -45,8 +45,10 @@ send is reported as delivery unknown and is not replayed. See the frontend's
 [LAN text transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-text-v2.md)
 for the screen flow and protocol.
 
-This slice has no MLS credential or group messaging, verified contact roster,
-offline delivery, discovery, NAT traversal, or relay fallback. Its direct
+The client now has local MLS credentials, group setup, and authenticated
+application-event storage, but no MLS network group messaging or chat UI.
+There is no verified contact roster, offline delivery, discovery, NAT traversal,
+or relay fallback. Its direct
 history is local per device and is not synchronized or connected to the MLS
 event journal. Automated integration tests
 launch two separate client processes, exchange multiple messages in both

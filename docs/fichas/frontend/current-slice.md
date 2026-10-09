@@ -1,18 +1,21 @@
 # Current frontend slice
 
-**Status:** eleven native Rust/Iced screens; the chat screen supports
-persistent bidirectional direct-LAN text sessions with manually pinned device
-keys and per-peer transcript in SQLCipher. Core MLS membership, outbound
+**Status:** eleven design-board views plus a local MLS setup screen. Direct-LAN
+text supports persistent bidirectional sessions with manually pinned device
+keys and per-peer transcript in SQLCipher. Core MLS membership, application
 encryption, and authenticated inbound event processing with durable
-deduplication work; product UI and network delivery remain open.
+deduplication work; MLS network delivery and chat presentation remain open.
 
 The frontend's `src/main.rs` owns application state and local transport;
-`src/ui.rs` composes the eleven source-board views with native widgets,
+`src/ui.rs` composes the eleven source-board views and MLS setup flow with native widgets,
 original scenery, familiar portraits and cutouts, source-derived SVG icons,
 embedded fonts, translucent panels, scanlines, and vignette. The **Telas**
 gallery reaches every view. Home actions open the lobby preview; invitation
 fields edit in-memory values. Familiar selection, settings and
-share-source tabs, and the interface texture toggle work locally. In Chat,
+share-source tabs, and the interface texture toggle work locally. The MLS
+screen creates groups, prepares KeyPackages, admits a manually supplied
+KeyPackage, and processes a Welcome plus ratchet tree. Its public artifacts
+must be exchanged over a separately trusted channel. In Chat,
 each user manually pins the other's Ed25519 device key; the UI rejects a peer
 pin equal to the local key. One side starts a listener and can copy its
 announced LAN address; the other enters that address and connects. Both sides
@@ -35,15 +38,15 @@ in the encrypted database and return its device-signed binding. Repeated
 calls reuse the key and refuse silent rotation if the indexed key material is
 missing. The core can create a one-use OpenMLS KeyPackage with a BasicCredential
 containing the device-signed binding; its private bundle is stored in SQLCipher.
-No UI flow publishes or consumes the package. The core creates and persists a
-local single-member MLS group and indexes its creator as designated committer.
+The additional MLS setup screen prepares and exchanges public KeyPackages. The
+core creates and persists a local single-member MLS group and indexes its creator as designated committer.
 Core APIs validate a member's device-bound KeyPackage, let only that committer
 merge a membership Commit, return Commit/Welcome/ratchet-tree bytes, and process
 the Welcome using the invitee's encrypted private package. Outbound messages
 enter the encrypted event journal atomically with the MLS ratchet update.
 Inbound processing authenticates event metadata, persists ciphertext before
 returning plaintext, and deduplicates redelivery transactionally. The UI
-exposes no group flow and does not distribute those messages. Fingerprint/QR
+exposes local group setup but does not send application messages. Fingerprint/QR
 derivation remains unimplemented.
 
 Character scenes and call views remain visual previews. The chat screen now
@@ -67,7 +70,7 @@ accessibility, and permissions still need further implementation and review. See
 preserving the supplied scenery, characters, avatars, and outline icons.
 Encrypted local SQLite initializes the OpenMLS provider schema, persists MLS
 group state, journals MLS application ciphertext, and stores direct-LAN
-transcripts per peer. Usable MLS group UI, event-journal inbox/outbox UI,
+transcripts per peer. MLS application-message UI, event-journal inbox/outbox UI,
 transport delivery, and MLS conversation history remain unimplemented;
 the development HTTP/WebSocket diagnostics do not satisfy those requirements.
 
