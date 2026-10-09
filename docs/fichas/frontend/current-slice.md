@@ -2,7 +2,8 @@
 
 **Status:** eleven native Rust/Iced screens; the chat screen supports
 persistent bidirectional direct-LAN text sessions with manually pinned device
-keys and a session-only transcript. MLS and durable messaging remain open.
+keys and a session-only transcript. Core MLS admission and Welcome processing
+are implemented, but the UI, network delivery, and MLS messaging remain open.
 
 The frontend's `src/main.rs` owns application state and local transport;
 `src/ui.rs` composes the eleven source-board views with native widgets,
@@ -11,9 +12,10 @@ embedded fonts, translucent panels, scanlines, and vignette. The **Telas**
 gallery reaches every view. Home actions open the lobby preview; invitation
 fields edit in-memory values. Familiar selection, settings and
 share-source tabs, and the interface texture toggle work locally. In Chat,
-each user manually pins the other's Ed25519 device key. One side starts a
-listener; the other enters its LAN address and connects. Both sides can send
-multiple messages over that connection. Received text enters the in-memory
+each user manually pins the other's Ed25519 device key; the UI rejects a peer
+pin equal to the local key. One side starts a listener and can copy its
+announced LAN address; the other enters that address and connects. Both sides
+can send multiple messages over that connection. Received text enters the in-memory
 transcript before ACK; sent text appears only after ACK. Disconnect with a
 pending send is shown as delivery unknown. The
 familiar screen saves only the display name and familiar in SQLCipher
@@ -23,17 +25,21 @@ create message history. A separate explicit action creates an Ed25519 device
 signing seed in the system credential store and displays its public key as
 unverified. The Rust core can sign a versioned binding from that durable
 device key to a separate MLS signing public key. Tampering and a different
-device key are rejected. This primitive is not yet connected to an MLS
-credential, peer verification, or pairing. An explicit client-core API can
+device key are rejected. KeyPackages and admitted MLS credentials carry this
+binding, but it does not verify contacts or provide pairing. An explicit
+client-core API can
 create or reload a distinct MLS signing key for a caller-selected ciphersuite
 in the encrypted database and return its device-signed binding. Repeated
 calls reuse the key and refuse silent rotation if the indexed key material is
 missing. The core can create a one-use OpenMLS KeyPackage with a BasicCredential
 containing the device-signed binding; its private bundle is stored in SQLCipher.
 No UI flow publishes or consumes the package. The core creates and persists a
-local single-member MLS group and indexes its creator as designated committer;
-the UI exposes no group flow. Member addition, Welcome processing, MLS
-messaging, and fingerprint/QR derivation remain unimplemented.
+local single-member MLS group and indexes its creator as designated committer.
+Core APIs validate a member's device-bound KeyPackage, let only that committer
+merge a membership Commit, return Commit/Welcome/ratchet-tree bytes, and process
+the Welcome using the invitee's encrypted private package. The UI exposes no
+group flow and does not distribute those messages. MLS application messaging
+and fingerprint/QR derivation remain unimplemented.
 
 Character scenes and call views remain visual previews. The chat screen now
 sends and receives actual pairwise text over direct Iroh/QUIC; it does not use
@@ -54,9 +60,9 @@ target. Native captures were compared at 1280 × 800 and a compact 960 × 640
 window. The first visual pass covers all eleven views; exact parity,
 accessibility, and permissions still need further implementation and review. See the [Iced design plan](iced-design.md) for
 preserving the supplied scenery, characters, avatars, and outline icons.
-Encrypted local SQLite now initializes the OpenMLS provider schema alongside
-the profile and event journal, but live MLS state, usable inbox/outbox UI, and
-durable conversation history remain unimplemented;
+Encrypted local SQLite initializes the OpenMLS provider schema and persists
+MLS group state, but usable group UI, inbox/outbox UI, and durable conversation
+history remain unimplemented;
 the development HTTP/WebSocket diagnostics do not satisfy those requirements.
 
 The chat transport is separate from the Elixir diagnostics. It pins each

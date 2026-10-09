@@ -18,17 +18,21 @@ KeyPackage whose BasicCredential contains the device-signed binding. OpenMLS
 stores the corresponding private bundle in SQLCipher while the caller receives
 only the public bytes. No UI flow publishes or consumes this package. The core
 also creates and persists a local single-member MLS group and indexes the
-creator as designated committer; this metadata is not yet enforced by a commit
-policy. Group creation is not exposed in the UI. Opening the database composes OpenMLS RustCrypto with its
+creator as designated committer. Member admission validates the device-bound
+KeyPackage, enforces the designated committer, merges the Commit locally, and
+returns Commit, Welcome, and ratchet-tree bytes. The invitee processes Welcome
+against its encrypted private package and indexes the sender as committer.
+Group creation and admission are not exposed in the UI. Opening the database composes OpenMLS RustCrypto with its
 SQLite storage provider and initializes the versioned schema on the same
 SQLCipher connection. See
 [ADR 0006](adr-0006-local-storage-optional-helper.md).
 Automated tests reopen a temporary SQLCipher database, check that the OpenMLS
 schema remains available, reload an MLS signing key, and validate an exported
 KeyPackage plus its device binding while confirming the private bundle was
-stored. A group test reloads the one-member state and verifies the creator
-credential and index. These tests do not create a product group or messaging
-flow.
+stored. Group tests reload the one-member state and exercise member admission
+and Welcome processing across two isolated encrypted databases, including
+rejection of a non-designated committer. These tests do not provide network
+delivery or product messaging.
 
 Each device owns its identity, MLS state, conversation history, inbox, and
 outbox. SQLCipher is now used for the local display profile; the app generates
@@ -65,8 +69,8 @@ expired/failed transitions. Only trusted protocol code may record a real
 receipt; no such transport integration exists yet. Inbox and outbox reads use
 bounded pages with a stable local sequence cursor. MLS validation, history
 presentation, recovery, and key lifecycle beyond local profile/key creation
-remain implementation work. OpenMLS schema initialization does not yet
-persist live MLS state. Neither
+remain implementation work. OpenMLS group state is persisted locally, but it
+is not connected to the event journal or product messaging. Neither
 the web prototype's `localStorage` nor the profile table satisfies these
 conversation-storage rules.
 

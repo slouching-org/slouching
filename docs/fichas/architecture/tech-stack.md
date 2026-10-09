@@ -6,13 +6,13 @@ storage and optional deployment reaffirmed by [ADR 0006](adr-0006-local-storage-
 | Layer | Direction | Current state |
 | --- | --- | --- |
 | Desktop UI and local client core | Rust/Iced and Tokio | Eleven native preview views; local backend diagnostics only |
-| Local persistence | Encrypted SQLite using SQLCipher; OS credential store holds the DB key | Frontend persists profile, opaque event journal, OpenMLS signer and private KeyPackage bundle, and local single-member group state; history and inbox/outbox integration remain unimplemented |
-| Client cryptography and P2P | Rust; OpenMLS for MLS, iroh and SFrame candidates | Device identity binding, one-use KeyPackage, and local group creation/validation exist in the core; no UI exchange, member addition, Welcome processing, protected messages, or MLS-based peer transport |
+| Local persistence | Encrypted SQLite using SQLCipher; OS credential store holds the DB key | Frontend persists profile, opaque event journal, OpenMLS signer/private KeyPackage bundle, and local MLS group state; history and inbox/outbox integration remain unimplemented |
+| Client cryptography and P2P | Rust; OpenMLS for MLS, iroh and SFrame candidates | Device binding, KeyPackage, group creation, designated-committer member admission, Commit/Welcome/ratchet-tree generation, and Welcome processing exist in core; no UI flow, message distribution, protected messages, or MLS-based peer transport |
 | Backend service components | Elixir/OTP | Supervised Bandit loopback scaffold |
 | Gateway | Versioned binary WebSocket/protobuf | Handshake v1 and Ping/Pong only; no authenticated product traffic |
 | Optional helper storage | SQLite supported by the plan; Postgres optional for larger deployments | Elixir helper defaults to a local SQLite Repo; PostgreSQL is selectable by URL; device table has no enrollment or lookup |
 | Delivery | Direct peer delivery and optional delegated ciphertext copies | No inbox, outbox, ACK, replication, or expiry implementation |
-| MLS ordering | Designated member device per group; other members validate | The creator is indexed as designated committer for a local group; commit enforcement, membership changes, ordering, and protected messages remain unimplemented |
+| MLS ordering | Designated member device per group; other members validate | Member admission enforces the indexed designated committer and advances local state; network commit delivery, concurrent ordering, and protected messages remain unimplemented |
 | Group media | Direct WebRTC/mesh and optional Elixir `ex_webrtc` SFU | Not implemented |
 | Relay | Optional member-operated TURN/iroh relay | Not implemented |
 

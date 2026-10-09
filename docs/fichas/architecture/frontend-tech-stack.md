@@ -13,7 +13,7 @@ Its Elixir server/backend core and Rust/Iced client direction are retained.
 | Server/backend | Elixir, separately versioned backend repo | Development status and protobuf handshake implemented |
 | State boundary | Versioned protocol | Asynchronous loopback HTTP status and binary protobuf WebSocket handshake v1 integrated; production boundary pending |
 | Browser UI | HTML/CSS/JavaScript | Historical visual prototype in `prototypes/web/`; not product runtime |
-| Identity, MLS, storage, transport, calls | Client and server responsibilities per source PDF | Device signing-key creation, signed device-to-MLS binding, one-use KeyPackages, and local single-member group persistence exist in core; fingerprint comparison, pairing UI, member addition, Welcome processing, messaging, network delivery, and calls remain unimplemented |
+| Identity, MLS, storage, transport, calls | Client and server responsibilities per source PDF | Device binding, KeyPackages, local group persistence, designated-committer member admission, and Welcome processing exist in core; fingerprint comparison, pairing UI, message distribution/application messaging, and calls remain unimplemented |
 
 Under [ADR 0006](adr-0006-local-storage-optional-helper.md), the installed
 client has no PostgreSQL startup requirement. An optional helper may use

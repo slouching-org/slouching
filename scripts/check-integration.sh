@@ -2,11 +2,11 @@
 set -euo pipefail
 
 project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-backend_root="${project_root}/../slouching-backend"
-frontend_root="${project_root}/../slouching-frontend"
+backend_root="${project_root}/repositories/backend"
+frontend_root="${project_root}/repositories/frontend"
 
 if [[ ! -f "${backend_root}/server/mix.exs" || ! -f "${frontend_root}/Cargo.toml" ]]; then
-  printf 'Expected sibling slouching-backend and slouching-frontend checkouts.\n' >&2
+  printf 'Expected backend and frontend repositories under repositories/.\n' >&2
   exit 1
 fi
 
