@@ -8,12 +8,12 @@ Its Elixir server/backend core and Rust/Iced client direction are retained.
 | --- | --- | --- |
 | Desktop UI | Rust 2024 + pinned Iced 0.14.0 | Native state in `src/main.rs` and eleven views in `src/ui.rs` |
 | Rendering | Iced/wgpu | Eleven visual-preview views with images, SVG icons, and canvas texture; live video unbuilt |
-| Local client core | Rust identity, cryptography, encrypted SQLite storage, transport, media | Creates/loads a caller-selected OpenMLS signing key in SQLCipher and returns a device-signed binding; the key and binding are not connected to credentials, peer authentication, or messaging |
-| Local persistence | SQLCipher encrypted SQLite plus OS credential store for keys | Persists profile and initial inbound/outbound ciphertext envelopes with local outbox states and cursor-paginated inbox/outbox reads; initializes OpenMLS provider schema in the same encrypted database, but no live MLS state, product UI, history, or authenticated receipts exist yet |
+| Local client core | Rust identity, cryptography, encrypted SQLite storage, transport, media | Device-bound OpenMLS credentials and group admission; application events are encrypted/decrypted with authenticated envelope metadata and ratchet changes committed with journal writes |
+| Local persistence | SQLCipher encrypted SQLite plus OS credential store for keys | Persists profile, direct chat history, MLS state, and opaque application ciphertext in bounded inbox/outbox pages; no product UI or network delivery yet |
 | Server/backend | Elixir, separately versioned backend repo | Development status and protobuf handshake implemented |
 | State boundary | Versioned protocol | Asynchronous loopback HTTP status and binary protobuf WebSocket handshake v1 integrated; production boundary pending |
 | Browser UI | HTML/CSS/JavaScript | Historical visual prototype in `prototypes/web/`; not product runtime |
-| Identity, MLS, storage, transport, calls | Client and server responsibilities per source PDF | Device binding, KeyPackages, local group persistence, designated-committer member admission, and Welcome processing exist in core; fingerprint comparison, pairing UI, message distribution/application messaging, and calls remain unimplemented |
+| Identity, MLS, storage, transport, calls | Client and server responsibilities per source PDF | Device binding, KeyPackages, local groups, designated-committer admission, Welcome processing, and authenticated application-message core exist; fingerprint comparison, pairing/group UI, network message distribution, and calls remain unimplemented |
 
 Under [ADR 0006](adr-0006-local-storage-optional-helper.md), the installed
 client has no PostgreSQL startup requirement. An optional helper may use

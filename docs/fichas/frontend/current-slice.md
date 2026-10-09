@@ -2,8 +2,9 @@
 
 **Status:** eleven native Rust/Iced screens; the chat screen supports
 persistent bidirectional direct-LAN text sessions with manually pinned device
-keys and per-peer transcript in SQLCipher. Core MLS admission and Welcome processing
-are implemented, but the UI, network delivery, and MLS messaging remain open.
+keys and per-peer transcript in SQLCipher. Core MLS membership, outbound
+encryption, and authenticated inbound event processing with durable
+deduplication work; product UI and network delivery remain open.
 
 The frontend's `src/main.rs` owns application state and local transport;
 `src/ui.rs` composes the eleven source-board views with native widgets,
@@ -38,9 +39,12 @@ No UI flow publishes or consumes the package. The core creates and persists a
 local single-member MLS group and indexes its creator as designated committer.
 Core APIs validate a member's device-bound KeyPackage, let only that committer
 merge a membership Commit, return Commit/Welcome/ratchet-tree bytes, and process
-the Welcome using the invitee's encrypted private package. The UI exposes no
-group flow and does not distribute those messages. MLS application messaging
-and fingerprint/QR derivation remain unimplemented.
+the Welcome using the invitee's encrypted private package. Outbound messages
+enter the encrypted event journal atomically with the MLS ratchet update.
+Inbound processing authenticates event metadata, persists ciphertext before
+returning plaintext, and deduplicates redelivery transactionally. The UI
+exposes no group flow and does not distribute those messages. Fingerprint/QR
+derivation remains unimplemented.
 
 Character scenes and call views remain visual previews. The chat screen now
 sends and receives actual pairwise text over direct Iroh/QUIC; it does not use
@@ -62,8 +66,9 @@ window. The first visual pass covers all eleven views; exact parity,
 accessibility, and permissions still need further implementation and review. See the [Iced design plan](iced-design.md) for
 preserving the supplied scenery, characters, avatars, and outline icons.
 Encrypted local SQLite initializes the OpenMLS provider schema, persists MLS
-group state, and stores direct-LAN transcripts per peer. Usable MLS group UI,
-event-journal inbox/outbox UI, and MLS conversation history remain unimplemented;
+group state, journals MLS application ciphertext, and stores direct-LAN
+transcripts per peer. Usable MLS group UI, event-journal inbox/outbox UI,
+transport delivery, and MLS conversation history remain unimplemented;
 the development HTTP/WebSocket diagnostics do not satisfy those requirements.
 
 The chat transport is separate from the Elixir diagnostics. It pins each

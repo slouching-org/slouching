@@ -4,9 +4,10 @@
 SQLCipher encrypted SQLite, with a random key held in the operating system
 credential store. The Ed25519 signing seed is stored separately in that
 credential store. The encrypted database now has an initial opaque event
-journal schema and storage operations with ID/digest deduplication. The UI,
-MLS client state, transport, delivery receipts, and product
-inbox/outbox/history are not connected to it. The device identity can now
+journal schema and storage operations with ID/digest deduplication. MLS
+application encryption and inbound event processing now update OpenMLS state
+and the journal transactionally. The UI and network delivery are not connected.
+The device identity can now
 sign a versioned binding from its long-term Ed25519 public key to a separate
 MLS signing public key. Verification of this binding proves only that the
 device key authorized that MLS key; it is not peer verification or a product
@@ -22,7 +23,11 @@ creator as designated committer. Member admission validates the device-bound
 KeyPackage, enforces the designated committer, merges the Commit locally, and
 returns Commit, Welcome, and ratchet-tree bytes. The invitee processes Welcome
 against its encrypted private package and indexes the sender as committer.
-Group creation and admission are not exposed in the UI. Opening the database composes OpenMLS RustCrypto with its
+Group creation and admission are not exposed in the UI. Outbound MLS
+application messages are saved as queued ciphertext with the ratchet update in
+one SQLCipher transaction. Inbound processing authenticates sender and event
+metadata, persists ciphertext before releasing plaintext, and deduplicates
+exact redelivery alongside the ratchet update. Opening the database composes OpenMLS RustCrypto with its
 SQLite storage provider and initializes the versioned schema on the same
 SQLCipher connection. See
 [ADR 0006](adr-0006-local-storage-optional-helper.md).
@@ -31,8 +36,10 @@ schema remains available, reload an MLS signing key, and validate an exported
 KeyPackage plus its device binding while confirming the private bundle was
 stored. Group tests reload the one-member state and exercise member admission
 and Welcome processing across two isolated encrypted databases, including
-rejection of a non-designated committer. These tests do not provide network
-delivery or product messaging.
+rejection of a non-designated committer. Two-database application tests cover
+queued outbound persistence, authenticated inbound decrypt, deduplication, and
+rollback of forged envelopes. These tests do not provide network delivery or
+a product UI.
 
 Each device owns its identity, MLS state, conversation history, inbox, and
 outbox. SQLCipher is now used for the local display profile; the app generates
@@ -73,14 +80,14 @@ confirmation; a storage test verifies that another peer's history remains.
 
 The schema stores event ID, author device, group ID, epoch, optional
 checkpoint, ciphertext digest, opaque ciphertext, expiry, and an outbound
-state. The storage operations reject reused IDs with changed ciphertext or
-envelope metadata, list bounded batches, and guard local queued/held/received/
-expired/failed transitions. Only trusted protocol code may record a real
-receipt; no such transport integration exists yet. Inbox and outbox reads use
-bounded pages with a stable local sequence cursor. MLS validation, history
-presentation, recovery, and key lifecycle beyond local profile/key creation
-remain implementation work. OpenMLS group state is persisted locally, but it
-is not connected to the event journal or MLS product messaging. The direct
+state. MLS processing rejects reused IDs with changed ciphertext or envelope
+metadata, verifies metadata through MLS authenticated data, and commits ratchet
+updates with journal writes. Inbox and outbox reads use bounded pages with a
+stable local sequence cursor. Transport delivery and authenticated remote
+receipts are not implemented. MLS conversation history, recovery, and key
+lifecycle beyond local profile/key creation remain implementation work.
+OpenMLS application events are not yet shown in the product UI or sent over a
+network transport. The direct
 transcript table does not satisfy the event journal's encrypted-envelope,
 deduplication, expiry, or offline-delivery contract. Neither
 the web prototype's `localStorage` nor the profile table satisfies these
@@ -95,10 +102,9 @@ The optional Elixir helper has its own SQLite database by default and may use
 PostgreSQL through explicit deployment configuration. That helper database is
 not the local client persistence implementation.
 
-The next persistence slice should connect this event journal to local inbox,
-outbox, history, and a reviewed event envelope before relying on remote
-enrollment or a central inbox. Verify two isolated LAN peers without Postgres
-or a hosted helper, then verify optional ciphertext delegation and helper
-loss separately.
+The next slice should expose group and MLS messaging flows in the client, then
+connect the event envelope to peer transport and authenticated receipts.
+Verify two isolated LAN peers without Postgres or a hosted helper, then verify
+optional ciphertext delegation and helper loss separately.
 These are acceptance requirements, not claims that the current scaffold
 already supports them.
