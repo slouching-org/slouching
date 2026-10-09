@@ -10,6 +10,15 @@ ratchet, stores ciphertext and the local transcript in SQLCipher, then ACKs.
 The sender marks the outbox event held by the peer after receiving that ACK.
 Queued events can be retried from the MLS screen after reconnecting.
 
+Before applying each next-epoch Commit, the client saves the prior OpenMLS
+state in SQLCipher. A different, valid Commit for an already accepted
+predecessor epoch is checked against that snapshot, including its MLS
+signature, group, epoch, designated committer, and device binding. Authenticated
+equivocation stores both Commit values and quarantines that group locally while
+preserving its accepted epoch. The UI restores a security alert when reopening
+the group and blocks MLS sends, retries, and Commit distribution. Invalid
+conflicts do not quarantine. There is no recovery or rekey flow yet.
+
 The native Iced gallery reaches each source-board view. The MLS screen creates
 groups, prepares and admits device-bound KeyPackages, processes Welcome and
 ratchet-tree data, loads a bounded local transcript, sends application
@@ -35,7 +44,8 @@ available in the user session. The settings **Rede & P2P** screen separately
 shows local Elixir HTTP/WebSocket diagnostics; it does not carry chat traffic.
 
 Character scenes and call views remain visual previews. Camera, microphone,
-screen capture, contact discovery, verified pairing, group event distribution,
+screen capture, contact discovery, verified pairing, automatic multi-peer
+group fan-out,
 relay, and offline delivery are not implemented. The older web UI under
 `prototypes/web/` is a design benchmark, not the product runtime.
 

@@ -42,7 +42,13 @@ rollback of forged envelopes. Separate-process tests cover opaque MLS event tran
 The MLS admission test also exercises a three-device chain: it rejects a valid
 noncommitter Commit and altered bytes, applies a designated Commit, deduplicates
 exact redelivery, and forces an inbound journal failure to verify that group
-epoch changes roll back atomically.
+epoch changes roll back atomically. It also generates two different valid
+Commits for the same predecessor from the designated device, applies one,
+authenticates the other against a saved OpenMLS snapshot, records both as
+equivocation evidence, and verifies quarantine survives database reopen without
+changing the accepted epoch. Quarantined groups reject new application events;
+the frontend restores the alert and disables sends, retries, and Commit
+delivery.
 
 Each device owns its identity, MLS state, conversation history, inbox, and
 outbox. SQLCipher is now used for the local display profile; the app generates
@@ -106,6 +112,10 @@ The optional Elixir helper has its own SQLite database by default and may use
 PostgreSQL through explicit deployment configuration. That helper database is
 not the local client persistence implementation.
 
-The next slice should automate trusted group setup and queued membership Commit distribution/fan-out, handle concurrent proposals and authenticated equivocation, then add helper delivery and offline synchronization. Verify MLS messaging between two real app instances on a LAN without Postgres or a hosted helper, then verify optional ciphertext delegation and helper loss separately.
+The next slice should handle concurrent proposal processing and automate group
+setup and multi-member Commit fan-out, then add helper delivery and offline
+synchronization. Verify MLS messaging between two real app instances on a LAN
+without Postgres or a hosted helper, then verify optional ciphertext delegation
+and helper loss separately.
 These are acceptance requirements, not claims that the current scaffold
 already supports them.

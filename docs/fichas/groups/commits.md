@@ -5,7 +5,10 @@
 > [ADR 0005](../architecture/adr-0005-elixir-server-core.md) defines the
 > Elixir backend and Rust client language boundary.
 
-**Estado:** regra de política parcialmente codificada; MLS ainda ausente.
+**Estado:** OpenMLS local com committer designado, distribuição direta por
+dispositivo e detecção autenticada de equivocation estão implementados no
+cliente Rust. Fan-out automático, propostas concorrentes e recuperação após
+quarentena continuam pendentes.
 
 O criador de cada grupo registra um **dispositivo membro designado** como
 único autor de Commits aceitos no v0.1. Outros membros enviam propostas. Cada
@@ -15,10 +18,14 @@ grupo em quarentena. Sem o dispositivo designado, mudanças de membros param.
 Se ele se perde definitivamente, membros verificados criam explicitamente um
 grupo novo. Não há eleição ou troca silenciosa.
 
-`peer/src/lib.rs` implementa somente a checagem de autor, predecessor,
-duplicata e conflito **após** autenticação externa. Não armazena estado em disco,
-não verifica assinatura/MLS, não gera Welcome e não realiza o fluxo de
-propostas. Dados de rede não podem ser passados diretamente a esse módulo.
+`peer/src/lib.rs` é um experimento de política isolado: confere autor,
+predecessor, duplicata e conflito **após** autenticação externa. O produto usa
+OpenMLS em `repositories/frontend`: guarda snapshots históricos em SQLCipher,
+verifica um Commit conflitante com a assinatura MLS, grupo, epoch, committer
+designado e vínculo da identidade do dispositivo. Dois Commits válidos do
+committer para o mesmo predecessor geram evidência persistente e quarentena;
+o epoch previamente aceito não muda. Dados de rede só entram após validação do
+envelope e autenticação criptográfica.
 
 Ver [ADR 0002](adr-0002-designated-committer.md) e
 [spec detalhada](../architecture/backend.md#6-mls-commit-rule-one-designated-member-device-v01-decision).
