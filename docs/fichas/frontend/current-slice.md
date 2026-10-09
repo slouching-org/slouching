@@ -36,7 +36,9 @@ target. Native captures were compared at 1280 × 800 and a compact 960 × 640
 window. The first visual pass covers all eleven views; exact parity,
 accessibility, and permissions still need further implementation and review. See the [Iced design plan](iced-design.md) for
 preserving the supplied scenery, characters, avatars, and outline icons.
-Encrypted local SQLite for inbox, outbox, MLS state, and history and the LAN peer mode remain unimplemented;
+Encrypted local SQLite now initializes the OpenMLS provider schema alongside
+the profile and event journal, but live MLS state, usable inbox/outbox UI,
+conversation history, and the LAN peer mode remain unimplemented;
 the development HTTP/WebSocket diagnostics do not satisfy those requirements.
 
 The native UI now requests a v1 development status snapshot from the local

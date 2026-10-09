@@ -5,13 +5,17 @@ SQLCipher encrypted SQLite, with a random key held in the operating system
 credential store. The Ed25519 signing seed is stored separately in that
 credential store. The encrypted database now has an initial opaque event
 journal schema and storage operations with ID/digest deduplication. The UI,
-MLS, transport, delivery receipts, and product inbox/outbox/history are not
-connected to it. See [ADR 0006](adr-0006-local-storage-optional-helper.md).
+MLS client state, transport, delivery receipts, and product
+inbox/outbox/history are not connected to it. The same SQLCipher connection
+also initializes the versioned OpenMLS SQLite provider schema; no MLS
+provider/client, credentials, key packages, or groups are created yet. See
+[ADR 0006](adr-0006-local-storage-optional-helper.md).
 
 Each device owns its identity, MLS state, conversation history, inbox, and
 outbox. SQLCipher is now used for the local display profile; the app generates
 a random 32-byte database key and stores it in the operating system credential
-store. The app can also explicitly create an Ed25519 device signing seed and
+store. The OpenMLS provider tables share that encrypted database. The app can
+also explicitly create an Ed25519 device signing seed and
 store it in a separate credential. User-facing unlock behavior, cross-device
 backup, recovery, and using the key to authenticate protocol messages still
 require implementation and review. A profile name or avatar is not a
@@ -42,7 +46,8 @@ expired/failed transitions. Only trusted protocol code may record a real
 receipt; no such transport integration exists yet. Inbox and outbox reads use
 bounded pages with a stable local sequence cursor. MLS validation, history
 presentation, recovery, and key lifecycle beyond local profile/key creation
-remain implementation work. Neither
+remain implementation work. OpenMLS schema initialization does not yet
+persist live MLS state. Neither
 the web prototype's `localStorage` nor the profile table satisfies these
 conversation-storage rules.
 
