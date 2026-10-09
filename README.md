@@ -18,7 +18,7 @@
 > [!IMPORTANT]
 > This is an early build, **not a secure messenger**. The Rust/Iced frontend has eleven navigable preview views and can explicitly create a local Ed25519 signing key in the system credential store. That key is not used to authenticate peers; fingerprint verification, pairing, MLS, peer transport, encrypted chat, media calls, and screen sharing are not implemented. The Elixir backend has local status and a development WebSocket handshake with Ping/Pong. The older Rust `slouching-peer` crate is preserved as an experiment, not the service backend.
 
-![Native Rust/Iced home using the supplied scenery, characters, fonts, and icons; first visual pass](docs/design/readme/native-vhs-home.png)
+![Native Rust/Iced home with the supplied night scenery and icon-based feature strip, without the frog mage or gnome cutouts](docs/design/readme/native-vhs-home.png)
 
 ![Native Rust/Iced familiar screen showing local encrypted profile status](docs/design/readme/native-vhs-profile.png)
 
