@@ -42,8 +42,9 @@ still needs identity, authorization, ordering, retry, and error contracts.
 
 Keep the frontend, backend, and project repositories side by side under one
 directory. Run `scripts/check-integration.sh` from this repository to test
-the Elixir server and compile/test the Rust frontend. The backend test suite
-exercises the status route and protobuf handshake contracts.
+the Elixir server, smoke-test its optional SQLite Repo without PostgreSQL,
+and compile/test the Rust frontend. The backend test suite exercises the
+status route and protobuf handshake contracts.
 The old Rust `peer/` crate is preserved in the backend repository as a
 historical scaffold and must not be started on the same port.
 

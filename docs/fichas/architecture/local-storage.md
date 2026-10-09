@@ -10,7 +10,11 @@ inbox/outbox/history are not connected to it. The device identity can now
 sign a versioned binding from its long-term Ed25519 public key to a separate
 MLS signing public key. Verification of this binding proves only that the
 device key authorized that MLS key; it is not peer verification or a product
-credential. Opening the database now
+credential. The client core can create or reload an MLS signature key for a
+caller-selected ciphersuite, persist it in this database, and return the
+binding. A missing indexed key fails closed instead of silently rotating the
+device's MLS signing identity. No MLS credential or KeyPackage is created.
+Opening the database now
 composes OpenMLS RustCrypto with its SQLite storage provider and initializes
 the versioned schema on the same SQLCipher connection; no MLS credentials,
 key packages, or groups are created yet. See
@@ -65,8 +69,9 @@ conversation-storage rules.
 A helper is optional and may also use SQLite. Postgres is an operational
 choice for a larger helper deployment. A directory record does not replace
 a device's local identity, prove key ownership, or authorize group membership.
-The experimental PostgreSQL table already in the backend is not the local
-persistence implementation.
+The optional Elixir helper has its own SQLite database by default and may use
+PostgreSQL through explicit deployment configuration. That helper database is
+not the local client persistence implementation.
 
 The next persistence slice should connect this event journal to local inbox,
 outbox, history, and a reviewed event envelope before relying on remote

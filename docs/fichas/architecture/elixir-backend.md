@@ -47,6 +47,6 @@ because a directory entry exists.
 `GET /api/status` reports unavailable capabilities. A protobuf handshake at
 `/ws` checks version and role, then keeps a loopback transport responsive
 with Ping/Pong. These checks provide no identity authentication, messaging,
-peer route, or media capability. The optional PostgreSQL migration already
-in the backend does not establish a required enrollment service. See the
+peer route, or media capability. The helper's SQLite/PostgreSQL device-key
+migration does not establish a required enrollment service. See the
 [integration contract](integration.md) for the working behavior.

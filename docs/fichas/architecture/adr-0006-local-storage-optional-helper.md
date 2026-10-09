@@ -47,8 +47,9 @@ The current loopback Elixir/Rust handshake is a development slice, not the
 implemented LAN peer mode. The Elixir helper now uses SQLite by default for
 local development, with PostgreSQL available through explicit deployment
 configuration. Its device-key migration does not establish a required
-directory or enrollment service. The local profile database is not the
-product inbox, history, or peer delivery layer.
+directory or enrollment service. The backend repository includes a repeatable
+SQLite startup smoke check in the integration script. The local profile
+database is not the product inbox, history, or peer delivery layer.
 
 Messages wait when no authorized holder can reach the recipient. A helper
 receipt proves that a copy was stored, not that the recipient received it.

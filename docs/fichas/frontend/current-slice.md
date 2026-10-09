@@ -18,8 +18,12 @@ signing seed in the system credential store and displays its public key as
 unverified. The Rust core can sign a versioned binding from that durable
 device key to a separate MLS signing public key. Tampering and a different
 device key are rejected. This primitive is not yet connected to an MLS
-credential, peer verification, or pairing; fingerprint/QR derivation remains
-unimplemented.
+credential, peer verification, or pairing. An explicit client-core API can
+create or reload a distinct MLS signing key for a caller-selected ciphersuite
+in the encrypted database and return its device-signed binding. Repeated
+calls reuse the key and refuse silent rotation if the indexed key material is
+missing. No KeyPackage is created or published. Fingerprint/QR derivation
+remains unimplemented.
 
 Every view is labeled as a visual preview. Character scenes and messages
 are examples. Camera/microphone actions explain their unavailable state;
