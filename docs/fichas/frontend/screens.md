@@ -2,7 +2,7 @@
 
 **Status:** design and interaction specification; the separate Rust/Iced frontend has a three-view scaffold, with no networking or cryptography
 **Revision:** 0.3, 2026-10-08; reconciled with ADRs 0003 and 0004
-**Sources:** the [11-screen design bank](../brand/source-bank.md), [five earlier references](../brand/references.md), [visual style](../brand/visual-style.md), and [peer-first architecture](../architecture/backend.md).
+**Sources:** the [11-screen design bank](../brand/source-bank.md), [five earlier references](../brand/references.md), [visual style](../brand/visual-style.md), and [Rust-client/Elixir-backend decision](../architecture/adr-0005-elixir-server-core.md).
 
 ## 1. Authority and scope
 
@@ -73,7 +73,7 @@ The numbering follows the exported design board, not a forced journey. Common pa
 
 Make every control keyboard-operable, with visible focus, screen-reader names for icons, discoverable shortcuts and non-color status cues. Keep text readable over dark art. Respect reduced motion; animated scanlines or glitches must not intercept input. On smaller windows, keep Join, Leave, security warnings and Stop sharing reachable; collapse side panels before shrinking text or stage tiles beyond usefulness. Respect platform capture permissions, notifications, DPI scaling and font fallback. On a large desktop, the default window should remain deliberate and compact.
 
-The view sends intents and renders authoritative state. Key custody, MLS transitions, delivery receipts, capture and route selection belong to the peer core. Rust/Iced is the accepted product client under [ADR 0003](../architecture/adr-0003-rust-iced-client.md). Implementing screens is distinct from passing the [backend security gates](../architecture/backend.md).
+The view sends intents and renders authoritative state. Key custody, MLS cryptography, capture, and direct peer transport belong to the Rust client core; server-side delivery, directory, and group-call coordination belong to Elixir. Rust/Iced is the accepted product client under [ADR 0003](../architecture/adr-0003-rust-iced-client.md). Implementing screens is distinct from passing the [service security gates](../architecture/elixir-backend.md).
 
 ## 6. Acceptance and pending inputs
 

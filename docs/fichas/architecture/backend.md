@@ -1,5 +1,11 @@
 # Slouching peer-first backend specification
 
+> **Superseded architecture proposal.** The owner's PDF and explicit stack
+> correction assign the service backend to Elixir. See
+> [ADR 0005](adr-0005-elixir-server-core.md) and the [current service
+> boundary](elixir-backend.md). This document remains for traceability and
+> does not define the current backend implementation.
+
 **Status:** architecture proposal; only a local scaffold and commit-chain policy gate are implemented
 **Revision:** 0.3, 2026-10-07
 **Requirement clarified by the project owner:** friends run Slouching on their own connected computers, over local Wi-Fi or the internet, without depending on a third-party Slouching server. A friend may optionally run a helper for their group.

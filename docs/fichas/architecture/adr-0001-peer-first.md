@@ -1,5 +1,10 @@
 # ADR 0001 — Núcleo em cada dispositivo
 
+> **Escopo corrigido pela [ADR 0005](adr-0005-elixir-server-core.md):** chaves,
+> criptografia e caminho direto ficam no cliente; o backend de serviço é
+> Elixir. A interpretação abaixo de que o backend seria apenas um helper Rust
+> opcional não é mais vigente.
+
 **Estado:** aceita pelo dono do produto em 2026-10-07.
 
 ## Contexto
