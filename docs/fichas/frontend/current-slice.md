@@ -1,99 +1,44 @@
 # Current frontend slice
 
-**Status:** eleven design-board views plus a local MLS setup screen. Direct-LAN
-text supports persistent bidirectional sessions with manually pinned device
-keys and per-peer transcript in SQLCipher. Core MLS membership, application
-encryption, and authenticated inbound event processing with durable
-deduplication work; MLS network delivery and chat presentation remain open.
+**Status:** eleven design-board views plus a native MLS group screen. Direct
+LAN chat uses pinned Ed25519 device identities and persistent Iroh/QUIC
+sessions. MLS group setup supports manual KeyPackage, Welcome, and ratchet-tree
+exchange over a trusted channel. For an already joined group, MLS application
+messages are encrypted with OpenMLS and sent over the active direct session.
+The receiver validates the sender binding and event metadata, advances the
+ratchet, stores ciphertext and the local transcript in SQLCipher, then ACKs.
+The sender marks the outbox event held by the peer after receiving that ACK.
+Queued events can be retried from the MLS screen after reconnecting.
 
-The frontend's `src/main.rs` owns application state and local transport;
-`src/ui.rs` composes the eleven source-board views and MLS setup flow with native widgets,
-original scenery, familiar portraits and cutouts, source-derived SVG icons,
-embedded fonts, translucent panels, scanlines, and vignette. The **Telas**
-gallery reaches every view. Home actions open the lobby preview; invitation
-fields edit in-memory values. Familiar selection, settings and
-share-source tabs, and the interface texture toggle work locally. The MLS
-screen creates groups, prepares KeyPackages, admits a manually supplied
-KeyPackage, and processes a Welcome plus ratchet tree. Its public artifacts
-must be exchanged over a separately trusted channel. In Chat,
-each user manually pins the other's Ed25519 device key; the UI rejects a peer
-pin equal to the local key. One side starts a listener and can copy its
-announced LAN address; the other enters that address and connects. Both sides
-can send multiple messages over that connection. Received text is saved locally
-before ACK; sent text is saved after ACK. The latest 200 messages reload for
-the pinned peer; its local history can be deleted with confirmation. Disconnect with a
-pending send is shown as delivery unknown. The
-familiar screen saves only the display name and familiar in SQLCipher
-encrypted SQLite; its random database key is kept in the operating system
-credential store. This profile is distinct from device identity and does not
-create message history. A separate explicit action creates an Ed25519 device
-signing seed in the system credential store and displays its public key as
-unverified. The Rust core can sign a versioned binding from that durable
-device key to a separate MLS signing public key. Tampering and a different
-device key are rejected. KeyPackages and admitted MLS credentials carry this
-binding, but it does not verify contacts or provide pairing. An explicit
-client-core API can
-create or reload a distinct MLS signing key for a caller-selected ciphersuite
-in the encrypted database and return its device-signed binding. Repeated
-calls reuse the key and refuse silent rotation if the indexed key material is
-missing. The core can create a one-use OpenMLS KeyPackage with a BasicCredential
-containing the device-signed binding; its private bundle is stored in SQLCipher.
-The additional MLS setup screen prepares and exchanges public KeyPackages. The
-core creates and persists a local single-member MLS group and indexes its creator as designated committer.
-Core APIs validate a member's device-bound KeyPackage, let only that committer
-merge a membership Commit, return Commit/Welcome/ratchet-tree bytes, and process
-the Welcome using the invitee's encrypted private package. Outbound messages
-enter the encrypted event journal atomically with the MLS ratchet update.
-Inbound processing authenticates event metadata, persists ciphertext before
-returning plaintext, and deduplicates redelivery transactionally. The UI
-exposes local group setup but does not send application messages. Fingerprint/QR
-derivation remains unimplemented.
+The native Iced gallery reaches each source-board view. The MLS screen creates
+groups, prepares and admits device-bound KeyPackages, processes Welcome and
+ratchet-tree data, loads a bounded local transcript, sends application
+messages, and retries queued outbox events for the selected group. Both devices
+must join the same group, select its ID, and establish a direct LAN session.
+Group invitations still require a separately trusted channel.
 
-Character scenes and call views remain visual previews. The chat screen now
-sends and receives actual pairwise text over direct Iroh/QUIC; it does not use
-MLS or the event journal. Camera/microphone actions explain their unavailable
-state; verification controls cannot verify MLS membership. The app does not
-enumerate contacts or join calls. The settings
-**Rede & P2P** tab exposes
-real backend diagnostics separately from the illustrative call routes.
+The direct-LAN text screen manually pins the peer's Ed25519 device key. One
+side listens and shares its announced LAN address; the other connects. Both can
+send multiple messages. The receiver stores inbound text before ACK; the sender
+stores sent text after ACK. It reloads the newest 200 messages for the peer and
+supports confirmed history deletion. This pairwise text path is separate from
+MLS. Neither path provides relay, address discovery, NAT traversal, or offline
+delivery. The MLS ACK confirms durable local acceptance by the other client,
+not that a person read the message.
 
-The earlier HTML/CSS/JavaScript preview is retained under
-`prototypes/web/` as a **design benchmark**, not the product runtime.
-Its familiar name lives in browser local storage only; that is not a
-verified device identity. Its call art is illustrative, never a live
-camera feed.
+The familiar screen stores the display name and familiar in encrypted SQLite;
+the database key and Ed25519 device seed use the operating system credential
+store. The public device key is shown as unverified. A device-signed binding
+connects that identity to the MLS signing key and is carried in KeyPackages.
+This does not establish contact trust or pairing. Linux needs Secret Service
+available in the user session. The settings **Rede & P2P** screen separately
+shows local Elixir HTTP/WebSocket diagnostics; it does not carry chat traffic.
 
-The [eleven source screens](../../design/screens) define the visual
-target. Native captures were compared at 1280 × 800 and a compact 960 × 640
-window. The first visual pass covers all eleven views; exact parity,
-accessibility, and permissions still need further implementation and review. See the [Iced design plan](iced-design.md) for
-preserving the supplied scenery, characters, avatars, and outline icons.
-Encrypted local SQLite initializes the OpenMLS provider schema, persists MLS
-group state, journals MLS application ciphertext, and stores direct-LAN
-transcripts per peer. MLS application-message UI, event-journal inbox/outbox UI,
-transport delivery, and MLS conversation history remain unimplemented;
-the development HTTP/WebSocket diagnostics do not satisfy those requirements.
+Character scenes and call views remain visual previews. Camera, microphone,
+screen capture, contact discovery, verified pairing, group event distribution,
+relay, and offline delivery are not implemented. The older web UI under
+`prototypes/web/` is a design benchmark, not the product runtime.
 
-The chat transport is separate from the Elixir diagnostics. It pins each
-device's durable Ed25519 key as its Iroh endpoint identity, disables relays,
-and exchanges multiple bounded UTF-8 frames with sequence ACKs over one
-bidirectional QUIC stream. The receiver persists the text locally before ACK;
-the sender persists after ACK. ACK does not mean read. This is not an MLS
-message or a verified contact pairing.
-Linux requires Secret Service to store/load the device key. See [LAN text
-transport v2](../transport/lan-text-v2.md).
-
-The native UI now requests a v1 development status snapshot from the local
-Elixir backend over loopback HTTP using an asynchronous Iced task in the network settings. It shows
-connecting, unavailable, incompatible-contract, and responding states; the
-user can refresh manually. This only proves local process availability.
-The response currently reports unimplemented identity, messaging, and calls
-and zero peer connections. It is not an authenticated production boundary
-or a live event stream. Functional client-core and server APIs remain open;
-see the [technology plan](../architecture/frontend-tech-stack.md).
-
-The UI also performs a binary protobuf WebSocket handshake at `/ws` using
-the copied shared v1 schema. It validates the Elixir role and protocol
-version, then keeps a development transport open with Ping/Pong heartbeats.
-It reports disconnects and retries with bounded backoff. This transport has
-no device authentication, application traffic, or messaging.
+See the [v3 direct peer transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v3.md),
+the [screen specification](screens.md), and the
+[technology plan](../architecture/frontend-tech-stack.md).

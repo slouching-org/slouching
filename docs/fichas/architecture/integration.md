@@ -42,29 +42,32 @@ lookup are disabled. The receiver stores inbound text in its local SQLCipher
 history before ACK, and the sender stores it after receiving ACK. ACK does not
 mean the user read it. On disconnect, an unacknowledged
 send is reported as delivery unknown and is not replayed. See the frontend's
-[LAN text transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-text-v2.md)
+[direct peer transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v3.md)
 for the screen flow and protocol.
 
-The client now has local MLS credentials, group setup, and authenticated
-application-event storage, but no MLS network group messaging or chat UI.
-There is no verified contact roster, offline delivery, discovery, NAT traversal,
-or relay fallback. Its direct
-history is local per device and is not synchronized or connected to the MLS
-event journal. Automated integration tests
-launch two separate client processes, exchange multiple messages in both
-directions over one connection, verify wrong-key rejection, and check pending
-send behavior on disconnect. A manual test uses two app
-instances on a reachable LAN and requires firewall access to the chosen UDP
-port. Linux requires an available Secret Service for local device identity.
+The frontend can also send MLS application events through that direct session
+once both devices have joined the same manually provisioned group. The receiver
+validates event metadata and the sender's device-bound MLS credential, then
+persists the ciphertext, ratchet update, and local plaintext transcript in one
+SQLCipher transaction before ACK. Exact event redelivery is deduplicated. The
+sender advances its outbox state only after the peer ACK and exposes a control
+to retry queued events after reconnecting. The ACK confirms durable client
+acceptance, not reading. MLS invitations still require a trusted manual channel.
+
+The v3 protocol has no verified contact roster, group discovery, relay, NAT
+traversal, offline delivery, or cross-device history. Automated integration
+tests launch two separate client processes and exchange multiple text and MLS
+events in both directions, verify wrong-key rejection, and check unknown
+pending delivery on disconnect. A manual test uses two app instances on a
+reachable LAN and requires firewall access to the chosen UDP port. Linux
+requires an available Secret Service for local device identity.
 
 The Elixir diagnostic transport authenticates no device, carries no encrypted
 event, and has no application command or subscription channel. [ADR 0005](adr-0005-elixir-server-core.md)
 defines the language division: Rust client plus Elixir backend.
 [ADR 0006](adr-0006-local-storage-optional-helper.md) retains local SQLite
 and optional helpers. The loopback Elixir diagnostics do not implement the
-LAN path or make PostgreSQL a startup dependency. Product messaging still
-needs MLS groups, durable history, authorization policy, offline delivery, and
-retries.
+LAN path or make PostgreSQL a startup dependency. Product messaging still needs automated trusted group provisioning, authorization policy, helper delivery, and offline synchronization.
 
 ## Local checkout and validation
 

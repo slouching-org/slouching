@@ -16,7 +16,7 @@
 **Conceived by Rodrigo and Vitchola**, Slouching is an early native desktop app for a small crew to chat, call, and share a screen. The Rust/Iced client owns local keys, cryptography, direct peer paths, and per-peer chat history in encrypted SQLite. Elixir remains the backend language. A member may optionally host a helper on a PC or VPS for ciphertext delivery, discovery, relay, or group media. Pinned-device text works between reachable LAN peers without a hosted helper or PostgreSQL.
 
 > [!IMPORTANT]
-> This is an early build, **not a secure messenger**. The Rust/Iced frontend has the eleven design-board screens plus a local MLS group setup screen, encrypted profile and per-peer direct-chat history, and OpenMLS group/application-message core APIs. Outbound MLS ciphertext enters the SQLCipher outbox atomically with the ratchet update; inbound events are authenticated, persisted before plaintext is returned, and deduplicated. The MLS setup screen exchanges KeyPackage, Welcome, and ratchet tree manually over a trusted channel. MLS messages are not sent over a network or shown in chat. Direct-LAN chat uses Iroh/QUIC with manually pinned device keys; each device retains up to 1,000 messages per peer and offers confirmed deletion. Contact pairing, MLS event transport, offline delivery, calls, and screen sharing remain unimplemented. The Elixir backend uses SQLite locally and exposes development diagnostics; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is an experiment, not the service backend.
+> This is an early build, **not a secure messenger**. Direct pinned-device LAN chat works. The native MLS screen supports manual KeyPackage/Welcome group setup, and MLS application messages now travel over the active direct Iroh/QUIC session. The receiver validates and persists ciphertext, ratchet state, and local transcript in SQLCipher before ACK; the sender retains a retryable outbox. Group discovery, contact verification, relay, offline delivery, calls, and screen sharing remain unimplemented. The Elixir backend uses SQLite locally; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is an experiment, not the service backend.
 
 ![Native Rust/Iced home with the supplied night scenery and icon-based feature strip, without the frog mage or gnome cutouts](docs/design/readme/native-vhs-home.png)
 
@@ -24,7 +24,7 @@
 
 ![Actual native direct-LAN chat UI showing its local-history label; this capture has no peer data and Secret Service is unavailable, so identity-gated controls are disabled](repositories/frontend/docs/design/runtime/native-vhs/06-chat.png)
 
-![Actual native MLS group setup screen, captured before creating a group](repositories/frontend/docs/design/runtime/native-vhs/11-mls.png)
+![Actual native MLS group and chat screen, captured before creating a group](repositories/frontend/docs/design/runtime/native-vhs/11-mls.png)
 
 ![Native Rust/Iced group-call preview with illustrative characters and chat; no media is connected](docs/design/readme/native-vhs-call.png)
 
@@ -40,12 +40,12 @@ This repository holds the project overview, design sources, and a reconciled doc
 
 | Repository | Owns | Current state |
 | --- | --- | --- |
-| [slouching-frontend](https://github.com/slouching-org/slouching-frontend) | Native Rust/Iced desktop UI and web visual prototype | Eleven design-board views plus MLS group setup; bidirectional direct-LAN chat with per-peer SQLCipher history; atomic MLS application event journal; no network delivery |
+| [slouching-frontend](https://github.com/slouching-org/slouching-frontend) | Native Rust/Iced desktop UI and web visual prototype | Eleven design-board views plus MLS group chat; direct-LAN pinned Iroh/QUIC transport; SQLCipher transcript and retryable outbox |
 | [slouching-backend](https://github.com/slouching-org/slouching-backend) | Elixir service backend | Local SQLite Repo, no-PostgreSQL smoke check, and transport diagnostics; PostgreSQL deployment option; no enrollment or product traffic |
 
 Start with the [fichas index](docs/fichas/README.md). The [product specification](docs/fichas/architecture/backend.md), [Elixir backend boundary](docs/fichas/architecture/elixir-backend.md), [frontend screen specification](docs/fichas/frontend/screens.md), [technology plan](docs/fichas/architecture/tech-stack.md), and [ADRs](docs/fichas/README.md#accepted-decisions) describe the target and distinguish it from working code. The [owner's 11-page architecture PDF](docs/fichas/architecture/sources/architecture-p2p-v0.1.pdf) and [page-by-page transcript](docs/fichas/architecture/sources/README.md) are preserved. [ADR 0005](docs/fichas/architecture/adr-0005-elixir-server-core.md) defines the Rust-client/Elixir-backend division. [ADR 0006](docs/fichas/architecture/adr-0006-local-storage-optional-helper.md) reaffirms the backup specification: local SQLite, optional helpers, and PostgreSQL only as a deployment option.
 
-The [client/server integration contract](docs/fichas/architecture/integration.md) describes both the local Elixir diagnostics and the separate direct-LAN text path. The diagnostics establish reachability and wire compatibility only; the LAN path authenticates pinned device keys but is not MLS product messaging.
+The [client/server integration contract](docs/fichas/architecture/integration.md) describes both the local Elixir diagnostics and the separate direct-LAN text path. The diagnostics establish reachability and wire compatibility only. Direct peer text and MLS messages use the separate pinned Iroh/QUIC path.
 
 The Elixir helper uses SQLite for local development and can select PostgreSQL for a deployment with `SLOUCHING_DATABASE_URL`. Its device-key table has no enrollment or lookup route and does not establish a required directory service. The desktop product stores its own encrypted local data in SQLCipher SQLite.
 
