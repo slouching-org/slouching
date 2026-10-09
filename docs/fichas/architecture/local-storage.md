@@ -51,7 +51,8 @@ before sending its transport ACK; the sender writes it after receiving that
 ACK. The UI reloads the newest 200 rows for the selected peer and retains at
 most 1,000 per peer. This is local
 pairwise chat history, not MLS ciphertext, group history, or cross-device
-replication. There is no user-facing deletion control yet.
+replication. The UI can delete one peer's transcript after explicit
+confirmation; a storage test verifies that another peer's history remains.
 
 ## Required behavior
 

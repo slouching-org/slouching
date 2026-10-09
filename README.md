@@ -16,7 +16,7 @@
 **Conceived by Rodrigo and Vitchola**, Slouching is an early native desktop app for a small crew to chat, call, and share a screen. The Rust/Iced client owns local keys, cryptography, direct peer paths, and per-peer chat history in encrypted SQLite. Elixir remains the backend language. A member may optionally host a helper on a PC or VPS for ciphertext delivery, discovery, relay, or group media. Pinned-device text works between reachable LAN peers without a hosted helper or PostgreSQL.
 
 > [!IMPORTANT]
-> This is an early build, **not a secure messenger**. The Rust/Iced frontend has eleven screens, local encrypted profile and per-peer chat history, an opaque event journal, OpenMLS state in SQLCipher, explicit Ed25519 device-key creation, and core APIs for device-bound MLS key packages and group admission. The MLS group APIs are not exposed in the UI and do not distribute messages. The LAN chat uses direct Iroh/QUIC sessions with manually pinned device keys; each device retains up to 1,000 messages per peer and shows the newest 200. Inbound messages are saved before ACK; outbound messages are saved after ACK. This history is device-local, not MLS group messaging or offline delivery. Contact management, MLS application messaging, calls, and screen sharing remain unimplemented. The Elixir backend uses local SQLite by default and exposes development status and WebSocket diagnostics; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is preserved as an experiment, not the service backend.
+> This is an early build, **not a secure messenger**. The Rust/Iced frontend has eleven screens, local encrypted profile and per-peer chat history, an opaque event journal, OpenMLS state in SQLCipher, explicit Ed25519 device-key creation, and core APIs for device-bound MLS key packages and group admission. The MLS group APIs are not exposed in the UI and do not distribute messages. The LAN chat uses direct Iroh/QUIC sessions with manually pinned device keys; each device retains up to 1,000 messages per peer, shows the newest 200, and offers a confirmed per-peer delete action. Inbound messages are saved before ACK; outbound messages are saved after ACK. This history is device-local, not MLS group messaging or offline delivery. Contact management, MLS application messaging, calls, and screen sharing remain unimplemented. The Elixir backend uses local SQLite by default and exposes development status and WebSocket diagnostics; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is preserved as an experiment, not the service backend.
 
 ![Native Rust/Iced home with the supplied night scenery and icon-based feature strip, without the frog mage or gnome cutouts](docs/design/readme/native-vhs-home.png)
 
@@ -96,7 +96,9 @@ other's key into **Chave pública do peer**. The receiving device selects a UDP
 port and clicks **Aguardar peer**; share its displayed LAN address and port
 with the sender. The sender enters that address, writes a message, and clicks
 **Conectar e enviar**. Once connected, either side can send multiple messages
-over that session; use **Desconectar sessão** to close it. Both devices need to
+over that session; use **Desconectar sessão** to close it. **Apagar histórico
+local deste peer** removes only this peer's local transcript after confirmation.
+Both devices need to
 be on a reachable LAN, with the chosen UDP port allowed by the local firewall.
 On Linux, Secret Service must be available for device identity storage. Each
 device keeps its own encrypted transcript for that pinned peer after the app

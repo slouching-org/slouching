@@ -17,7 +17,7 @@ pin equal to the local key. One side starts a listener and can copy its
 announced LAN address; the other enters that address and connects. Both sides
 can send multiple messages over that connection. Received text is saved locally
 before ACK; sent text is saved after ACK. The latest 200 messages reload for
-the pinned peer. Disconnect with a
+the pinned peer; its local history can be deleted with confirmation. Disconnect with a
 pending send is shown as delivery unknown. The
 familiar screen saves only the display name and familiar in SQLCipher
 encrypted SQLite; its random database key is kept in the operating system
