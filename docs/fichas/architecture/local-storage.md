@@ -13,16 +13,18 @@ device key authorized that MLS key; it is not peer verification or a product
 credential. The client core can create or reload an MLS signature key for a
 caller-selected ciphersuite, persist it in this database, and return the
 binding. A missing indexed key fails closed instead of silently rotating the
-device's MLS signing identity. No MLS credential or KeyPackage is created.
-Opening the database now
-composes OpenMLS RustCrypto with its SQLite storage provider and initializes
-the versioned schema on the same SQLCipher connection; no MLS credentials,
-key packages, or groups are created yet. See
+device's MLS signing identity. The client core now creates a one-use OpenMLS
+KeyPackage whose BasicCredential contains the device-signed binding. OpenMLS
+stores the corresponding private bundle in SQLCipher while the caller receives
+only the public bytes. No UI flow publishes or consumes this package, and no
+group is created. Opening the database composes OpenMLS RustCrypto with its
+SQLite storage provider and initializes the versioned schema on the same
+SQLCipher connection. See
 [ADR 0006](adr-0006-local-storage-optional-helper.md).
-An automated test opens a temporary SQLCipher database twice, checks that the
-OpenMLS schema remains available, and stores/reloads an MLS signing key using
-the composed RustCrypto and SQLite providers. This test does not create a
-product credential or group.
+Automated tests reopen a temporary SQLCipher database, check that the OpenMLS
+schema remains available, reload an MLS signing key, and validate an exported
+KeyPackage plus its device binding while confirming the private bundle was
+stored. These tests do not create a product group or messaging flow.
 
 Each device owns its identity, MLS state, conversation history, inbox, and
 outbox. SQLCipher is now used for the local display profile; the app generates

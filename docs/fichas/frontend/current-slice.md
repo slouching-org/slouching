@@ -28,8 +28,10 @@ credential, peer verification, or pairing. An explicit client-core API can
 create or reload a distinct MLS signing key for a caller-selected ciphersuite
 in the encrypted database and return its device-signed binding. Repeated
 calls reuse the key and refuse silent rotation if the indexed key material is
-missing. No KeyPackage is created or published. Fingerprint/QR derivation
-remains unimplemented.
+missing. The core can create a one-use OpenMLS KeyPackage with a BasicCredential
+containing the device-signed binding; its private bundle is stored in SQLCipher.
+No UI flow publishes or consumes the package, and no group is created.
+Fingerprint/QR derivation remains unimplemented.
 
 Character scenes and call views remain visual previews. The chat screen now
 sends and receives actual pairwise text over direct Iroh/QUIC; it does not use
