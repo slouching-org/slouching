@@ -20,8 +20,9 @@ predecessor epoch is checked against that snapshot, including its MLS
 signature, group, epoch, designated committer, and device binding. Authenticated
 equivocation stores both Commit values and quarantines that group locally while
 preserving its accepted epoch. The UI restores a security alert when reopening
-the group and blocks MLS sends, retries, and Commit distribution. Invalid
-conflicts do not quarantine. There is no recovery or rekey flow yet.
+the group and blocks MLS sends, retries, member admission, Commit distribution,
+and manual Commit application. Invalid conflicts do not quarantine. There is
+no recovery or rekey flow yet.
 
 The native Iced gallery reaches each source-board view. The MLS screen creates
 groups, prepares and admits device-bound KeyPackages, processes Welcome and

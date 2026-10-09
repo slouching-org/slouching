@@ -47,8 +47,8 @@ Commits for the same predecessor from the designated device, applies one,
 authenticates the other against a saved OpenMLS snapshot, records both as
 equivocation evidence, and verifies quarantine survives database reopen without
 changing the accepted epoch. Quarantined groups reject new application events;
-the frontend restores the alert and disables sends, retries, and Commit
-delivery.
+the frontend restores the alert and disables sends, retries, member admission,
+Commit delivery, and manual application.
 
 Each device owns its identity, MLS state, conversation history, inbox, and
 outbox. SQLCipher is now used for the local display profile; the app generates
