@@ -1,37 +1,32 @@
-# ADR 0005 — Elixir server core and Rust client
+# ADR 0005 — Elixir backend and Rust client
 
-**Status:** accepted architecture correction, 2026-10-08.
+**Status:** accepted language correction, 2026-10-08; deployment and storage
+clarified by [ADR 0006](adr-0006-local-storage-optional-helper.md) on 2026-10-09.
 
 ## Context
 
-The owner's 11-page architecture PDF specifies a Rust/Iced client and an
-Elixir server. Pages 2, 8, and 11 assign offline delivery, MLS delivery
-ordering, group SFU, and gateway duties to Elixir. The earlier peer-first
-interpretation removed that server role and led to a Rust-only backend
-scaffold. The owner explicitly clarified that Elixir remains the backend
-core and Rust is the client.
+The owner explicitly clarified that Elixir remains the backend core and
+Rust/Iced remains the client. The earlier Rust-only backend scaffold did
+not follow that language division. The source PDF supplies the same
+language direction, but its central deployment assumptions are governed
+by the later peer-first decisions.
 
 ## Decision
 
-Build the server core in Elixir/OTP. Keep the Rust/Iced client and its Rust
-network, media, and cryptography components where the PDF assigns them.
-Peers may communicate directly when routes and protocol allow. An Elixir
-service supplies the server roles required by a feature; a member may
-self-host the service. This decision does not imply that a Slouching-operated
-public service exists or that offline delivery works without a reachable
-server or another implemented route.
+Build backend service components in Elixir/OTP. Keep the UI and local
+cryptography, storage, peer networking, and media components in Rust.
+Preserve [ADR 0001](adr-0001-peer-first.md): local state, direct peer paths,
+and an optional member-operated helper. Choosing Elixir does not require
+PostgreSQL or a permanently available hosted service.
 
-The `server/` Mix application is the starting point. Its loopback HTTP
-status endpoint is only a development handshake. Product traffic requires
-a reviewed, versioned binary WebSocket/protobuf protocol, persistence,
-identity/MLS validation boundaries, and security tests. None are present
-today.
+The `server/` Mix application is the current Elixir development scaffold.
+It provides loopback diagnostics and a protobuf WebSocket handshake with
+Ping/Pong. It does not yet implement identity, MLS, peer delivery, or calls.
 
 ## Consequences
 
-The existing Rust `peer/` crate and its policy gate remain in the repository
-for review. They are a historical scaffold and are not evidence of a
-production Rust backend. ADR 0001's removal of the Elixir server role and
-the corresponding parts of `backend.md` are superseded by this decision.
-Detailed delivery, self-hosting, trust, and availability requirements need
-reconciliation with the original PDF before those features are built.
+The existing Rust `peer/` crate remains an experiment and policy-gate
+reference; it is not the adopted Elixir backend. The product specification
+in [backend.md](backend.md) retains its peer-first behavior, with language
+ownership corrected by this ADR. [ADR 0006](adr-0006-local-storage-optional-helper.md)
+defines the storage and deployment rules that implementation must follow.

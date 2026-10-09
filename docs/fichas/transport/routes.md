@@ -1,6 +1,9 @@
 # Rotas entre pares
 
-> **Architecture note:** This ficha predates [ADR 0005](../architecture/adr-0005-elixir-server-core.md). Its Rust-only backend or optional-helper assumptions are historical; reconcile behavior with the source PDF and current Elixir service boundary before implementation.
+> **Current decisions:** local state and optional helpers remain in force under
+> [ADR 0006](../architecture/adr-0006-local-storage-optional-helper.md).
+> [ADR 0005](../architecture/adr-0005-elixir-server-core.md) defines the
+> Elixir backend and Rust client language boundary.
 
 **Estado:** especificadas; não implementadas.
 

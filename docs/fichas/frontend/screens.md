@@ -1,7 +1,7 @@
 # Slouching frontend specification
 
-**Status:** design and interaction specification; the separate Rust/Iced frontend has a three-view scaffold, with no networking or cryptography
-**Revision:** 0.3, 2026-10-08; reconciled with ADRs 0003 and 0004
+**Status:** design and interaction specification; the Rust/Iced client has eleven preview views and local diagnostic transport, with no peer networking or cryptography
+**Revision:** 0.4, 2026-10-09; reconciled with ADRs 0003–0006
 **Sources:** the [11-screen design bank](../brand/source-bank.md), [five earlier references](../brand/references.md), [visual style](../brand/visual-style.md), and [Rust-client/Elixir-backend decision](../architecture/adr-0005-elixir-server-core.md).
 
 ## 1. Authority and scope
@@ -45,6 +45,7 @@ The numbering follows the exported design board, not a forced journey. Common pa
 - Direct LAN use has no required third-party server. Across restrictive networks, a participant-owned public endpoint or relay may be required. If no approved route works, show unreachable and allow retry or manual endpoint exchange.
 - An invitation does not automatically establish trust. Show its group, call and verified identities. Distinguish invalid, expired, revoked, already-used and untrusted invites where protocol evidence permits.
 - The designated MLS committer is a specific member device. Changes may queue while it is away. A removal or suspected compromise pauses protected sending until a valid new epoch is adopted. Permanent committer loss requires an explicit new group; never silently elect a replacement.
+- Onboarding and local conversation use require no PostgreSQL setup or mandatory remote enrollment. Local profile choices remain distinct from device identity.
 - Persistent personal chat and temporary call-room chat have different retention. Leaving a call must not erase a persistent conversation. Room chat may vanish after all in-memory holders leave.
 
 ### Capture and media
@@ -73,7 +74,7 @@ The numbering follows the exported design board, not a forced journey. Common pa
 
 Make every control keyboard-operable, with visible focus, screen-reader names for icons, discoverable shortcuts and non-color status cues. Keep text readable over dark art. Respect reduced motion; animated scanlines or glitches must not intercept input. On smaller windows, keep Join, Leave, security warnings and Stop sharing reachable; collapse side panels before shrinking text or stage tiles beyond usefulness. Respect platform capture permissions, notifications, DPI scaling and font fallback. On a large desktop, the default window should remain deliberate and compact.
 
-The view sends intents and renders authoritative state. Key custody, MLS cryptography, capture, and direct peer transport belong to the Rust client core; server-side delivery, directory, and group-call coordination belong to Elixir. Rust/Iced is the accepted product client under [ADR 0003](../architecture/adr-0003-rust-iced-client.md). Implementing screens is distinct from passing the [service security gates](../architecture/elixir-backend.md).
+The view sends intents and renders authoritative state. Key custody, MLS cryptography, capture, and direct peer transport belong to the Rust client core; Elixir supplies backend services for optional helper delivery, directory, and group-call coordination. Local history, inbox, and outbox use encrypted SQLite; PostgreSQL and hosted helpers are optional under [ADR 0006](../architecture/adr-0006-local-storage-optional-helper.md). Rust/Iced is the accepted product client under [ADR 0003](../architecture/adr-0003-rust-iced-client.md). The [Iced design plan](iced-design.md) maps the supplied characters, icons, scenery, and effects to native components. Implementing screens is distinct from passing the [product verification gates](../architecture/backend.md#9-verification-gates).
 
 ## 6. Acceptance and pending inputs
 
@@ -81,4 +82,4 @@ Compare running captures against **all eleven** screens at 1280 × 800 logical p
 
 For behavior acceptance, run at least two clean peers through identity setup and verification, invitation, direct connection, encrypted chat, call join/leave, permission denial, route failure and screen sharing. Test an authorized helper path separately. A seeded screenshot serves visual review, not proof of functioning P2P, MLS or media.
 
-Pending: licensed font/icon files or approved package sources, production logo exports if available, exact navigation and localization decisions, animation preferences and platform-specific capture behavior. Mock protocol values and security copy require review before release. The current [native scaffold](current-slice.md) covers only three views and does not settle these requirements.
+Pending: licensed font/icon files or approved package sources, production logo exports if available, exact navigation and localization decisions, animation preferences and platform-specific capture behavior. Mock protocol values and security copy require review before release. The current [native scaffold](current-slice.md) covers eleven visual-preview views and does not settle these requirements.

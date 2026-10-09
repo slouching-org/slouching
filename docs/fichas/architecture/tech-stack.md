@@ -1,24 +1,27 @@
 # Technology stack and maturity
 
-**Status:** source-aligned architecture direction with a minimal Elixir
-server scaffold. See [ADR 0005](adr-0005-elixir-server-core.md) and the
-[owner's source PDF](sources/README.md).
+**Status:** Elixir backend and Rust/Iced client direction retained; local
+storage and optional deployment reaffirmed by [ADR 0006](adr-0006-local-storage-optional-helper.md).
 
 | Layer | Direction | Current state |
 | --- | --- | --- |
-| Desktop UI and client core | Rust/Iced and Tokio | Native frontend in separate repository; local HTTP status and protobuf WebSocket handshake only. |
-| Client cryptography and P2P | Rust; OpenMLS, iroh, SFrame candidates | Not implemented. PDF dependency list is provisional. |
-| Server core | Elixir/OTP, supervised processes | `server/` Mix app with Bandit, development status, and persistent development WebSocket transport. |
-| Gateway | Binary WebSocket with shared protobuf schema | Bandit/WebSock handshake v1 only; no authenticated session or application traffic. |
-| Device directory | Ecto/PostgreSQL | Optional Repo and public-key table; no enrollment or lookup. |
-| Delivery and group ordering | Elixir processes, Ecto/PostgreSQL/Oban candidate | Not implemented; no queue, ACK, or ordering. |
-| Group media | Elixir `ex_webrtc` candidate | Not implemented. |
-| Relay | Member-operated TURN/iroh relay candidate | Not implemented. |
-| Historic Rust `peer/` crate | Prior peer-first scaffold | Preserved for review, not the approved Elixir server core. |
+| Desktop UI and local client core | Rust/Iced and Tokio | Eleven native preview views; local backend diagnostics only |
+| Local persistence | Encrypted SQLite; SQLCipher integration planned | Not implemented; each device will own history, inbox, outbox, and MLS state |
+| Client cryptography and P2P | Rust; OpenMLS, iroh, SFrame candidates | Not implemented; dependency selection still requires review |
+| Backend service components | Elixir/OTP | Supervised Bandit loopback scaffold |
+| Gateway | Versioned binary WebSocket/protobuf | Handshake v1 and Ping/Pong only; no authenticated product traffic |
+| Optional helper storage | SQLite supported by the plan; Postgres optional for larger deployments | Experimental Ecto/PostgreSQL Repo and device-key table only; no enrollment or lookup |
+| Delivery | Direct peer delivery and optional delegated ciphertext copies | No inbox, outbox, ACK, replication, or expiry implementation |
+| MLS ordering | Designated member device per group; other members validate | Policy gate in historical Rust crate only; no MLS cryptography |
+| Group media | Direct WebRTC/mesh and optional Elixir `ex_webrtc` SFU | Not implemented |
+| Relay | Optional member-operated TURN/iroh relay | Not implemented |
 
-The source PDF describes a Rust client that connects directly to peers when
-possible and an Elixir server for offline delivery, MLS ordering, group SFU,
-and relay support. Deployment may be self-hosted by a member; availability
-depends on the services actually deployed and reachable. The current code
-has none of those production functions. See the [status and handshake contract](local-status-api.md)
-for the working development integration surface.
+The PDF preserves the original language and feature proposals. The backup
+specification and accepted ADRs determine local storage, optional helpers,
+and availability: no PostgreSQL service is a normal app startup dependency.
+Choosing Elixir does not select a central deployment or a required directory.
+
+See the [product specification](backend.md), [backend boundary](elixir-backend.md),
+and [current transport contract](local-status-api.md). None of the planned
+local SQLite, MLS, P2P, delivery, or media behavior is proved by a successful
+loopback handshake.

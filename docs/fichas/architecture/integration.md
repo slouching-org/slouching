@@ -32,7 +32,10 @@ HTTP status route is a separate diagnostic.
 
 The transport authenticates no device, carries no encrypted event, and has no
 application command or subscription channel. [ADR 0005](adr-0005-elixir-server-core.md)
-restores the source division: Rust client plus Elixir service. Product traffic
+defines the language division: Rust client plus Elixir backend.
+[ADR 0006](adr-0006-local-storage-optional-helper.md) retains local SQLite
+and optional helpers. This loopback development slice does not implement
+the required LAN peer mode or make PostgreSQL a startup dependency. Product traffic
 still needs identity, authorization, ordering, retry, and error contracts.
 
 ## Local checkout and validation

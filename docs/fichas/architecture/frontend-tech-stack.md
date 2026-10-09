@@ -6,13 +6,19 @@ Its Elixir server/backend core and Rust/Iced client direction are retained.
 
 | Layer | Choice | Current state |
 | --- | --- | --- |
-| Desktop UI | Rust 2024 + pinned Iced 0.14.0 | Native scaffold in `slouching-frontend/src/main.rs` |
-| Rendering | Iced/wgpu | Basic image and control views; video shader path unbuilt |
-| Local client core | Rust identity, cryptography, storage, transport, media | Not yet implemented |
+| Desktop UI | Rust 2024 + pinned Iced 0.14.0 | Native state in `src/main.rs` and eleven views in `src/ui.rs` |
+| Rendering | Iced/wgpu | Eleven visual-preview views with images, SVG icons, and canvas texture; live video unbuilt |
+| Local client core | Rust identity, cryptography, encrypted SQLite storage, transport, media | Not yet implemented |
+| Local persistence | SQLite with SQLCipher integration planned | History, inbox, outbox, and MLS state stay on the device; not implemented |
 | Server/backend | Elixir, separately versioned backend repo | Development status and protobuf handshake implemented |
 | State boundary | Versioned protocol | Asynchronous loopback HTTP status and binary protobuf WebSocket handshake v1 integrated; production boundary pending |
 | Browser UI | HTML/CSS/JavaScript | Historical visual prototype in `prototypes/web/`; not product runtime |
 | Identity, MLS, storage, transport, calls | Client and server responsibilities per source PDF | Not implemented in frontend |
+
+Under [ADR 0006](adr-0006-local-storage-optional-helper.md), the installed
+client has no PostgreSQL startup requirement. An optional helper may use
+SQLite or choose Postgres for a larger deployment. LAN operation and local
+process packaging remain to be implemented.
 
 The frontend must render authoritative implemented state. It must not generate
 security claims, route badges, presence, or capture status independently.

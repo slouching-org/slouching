@@ -1,41 +1,52 @@
-# Elixir service backend
+# Elixir backend boundary
 
-**Status:** architecture direction accepted; local status and persistent
-development WebSocket transport after a protobuf handshake are implemented. This is not a messaging or call
-service.
+**Status:** Elixir backend and Rust client direction accepted. Local storage
+and optional helper deployment follow [ADR 0006](adr-0006-local-storage-optional-helper.md).
+Working code is a development transport scaffold.
 
-## Boundary
+## Responsibilities and authority
 
-The [source architecture](sources/README.md), especially
-[page 8](sources/page-08.md) and [page 11](sources/page-11.md), assigns these
-server responsibilities to Elixir/OTP:
+Each device owns its private keys, MLS state, encrypted local history,
+inbox, and outbox. Rust client components handle local cryptography,
+SQLite storage, direct peer transport, and media. Elixir/OTP implements
+backend service components. A member may optionally host helper roles on
+a PC or private VPS; an ordinary user does not need a PostgreSQL instance.
 
 | Domain | Target responsibility | Current implementation |
 | --- | --- | --- |
-| Gateway | Binary client/server WebSocket and signaling | Local protobuf handshake only; signaling not implemented |
-| Directory | Device public keys and MLS KeyPackages | Optional PostgreSQL device public-key schema only; no enrollment, lookup, or KeyPackages |
-| Delivery | Commit ordering, per-device encrypted inbox, ACK and expiry | Not implemented |
-| Storage | PostgreSQL/Ecto, jobs with Oban, encrypted blob references | Optional Ecto/PostgreSQL Repo and first migration; jobs and blobs absent |
-| Calls | Admission and SFU coordination with `ex_webrtc`; TURN/relay integration | Not implemented |
-| Runtime | Supervision, telemetry, and later cluster coordination | Local Elixir application scaffold only |
+| Gateway | Versioned binary WebSocket contracts for backend interactions | Loopback protobuf handshake and Ping/Pong only |
+| Directory | Optional public-key and KeyPackage availability; no identity substitution authority | Optional PostgreSQL device-key schema experiment; no enrollment, lookup, or KeyPackages |
+| Delivery | Optional delegated ciphertext mailbox with quota, expiry, and honest receipts | Not implemented |
+| Group state | Carry proposals, Commits, and checkpoints without cryptographic authority | Not implemented; the designated member device remains the MLS committer |
+| Storage | SQLite per device; SQLite may also serve a helper; Postgres optional for larger helper deployments | Local SQLite absent; experimental Ecto/PostgreSQL Repo and migration exist |
+| Calls | Optional member-operated SFU and relay support | Not implemented |
+| Runtime | Supervision and backend process lifecycle | Supervised local Elixir application only |
 
-The Rust/Iced client keeps private keys, MLS cryptography, local encrypted
-storage, direct peer data transport, and media handling. The Elixir service
-may route ciphertext and media packets but must not claim to read content or
-hold client secrets. Its unavoidable metadata and availability limits need
-explicit treatment before a public release.
+A helper may route ciphertext and media packets but holds no member's
+private keys or MLS/SFrame secrets. It cannot decide membership or create
+MLS Commits. See [ADR 0002](../groups/adr-0002-designated-committer.md).
+The source PDF's centralized directory and authoritative delivery log are
+historical proposals, not required product boundaries.
 
-The initial `GET /api/status` exchange is a local development diagnostic. A
-binary WebSocket/protobuf handshake now checks protocol version and service
-role, then holds a development transport open with Ping/Pong heartbeats. These report readiness and reachability only. They do not
-authenticate users, establish a secure channel, or send messages. Future
-product WebSocket/protobuf contracts must specify identity, authorization,
-versioning, retries, ordering, and error semantics before use.
+## Deployment and availability
 
-## Deployment assumption
+The installed app must start and communicate among reachable LAN peers
+without PostgreSQL, a hosted helper, or an internet route. Local process
+packaging and lifecycle are still to be implemented; the current two-process
+loopback demo does not satisfy that product gate.
 
-The service can be operated by a member or crew on a PC or VPS; no
-vendor-operated Slouching service is required. Direct peer routes remain a
-goal. Behavior when the service is unreachable must be defined feature by
-feature; offline delivery, directory lookup, and group-call SFU cannot be
-promised without available infrastructure.
+When no authorized holder can reach an offline recipient, delivery waits.
+Helper storage confirms a retained copy, not recipient delivery. Direct
+connections continue when an optional helper disappears if their route
+still works. If that helper was the only usable relay or SFU, the affected
+route or call becomes unavailable. Lost copies cannot be recovered merely
+because a directory entry exists.
+
+## Current development slice
+
+`GET /api/status` reports unavailable capabilities. A protobuf handshake at
+`/ws` checks version and role, then keeps a loopback transport responsive
+with Ping/Pong. These checks provide no identity authentication, messaging,
+peer route, or media capability. The optional PostgreSQL migration already
+in the backend does not establish a required enrollment service. See the
+[integration contract](integration.md) for the working behavior.

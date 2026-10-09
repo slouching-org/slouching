@@ -1,13 +1,10 @@
 # Slouching peer-first backend specification
 
-> **Superseded architecture proposal.** The owner's PDF and explicit stack
-> correction assign the service backend to Elixir. See
-> [ADR 0005](adr-0005-elixir-server-core.md) and the [current service
-> boundary](elixir-backend.md). This document remains for traceability and
-> does not define the current backend implementation.
-
-**Status:** architecture proposal; only a local scaffold and commit-chain policy gate are implemented
-**Revision:** 0.3, 2026-10-07
+**Status:** current product specification; storage, deployment, and peer-first
+behavior reaffirmed by the owner. Elixir backend and Rust client ownership
+follow [ADR 0005](adr-0005-elixir-server-core.md); local storage and optional
+helpers follow [ADR 0006](adr-0006-local-storage-optional-helper.md).
+**Revision:** 0.4, 2026-10-09. Working code remains a development scaffold.
 **Requirement clarified by the project owner:** friends run Slouching on their own connected computers, over local Wi-Fi or the internet, without depending on a third-party Slouching server. A friend may optionally run a helper for their group.
 **Source input:** the [complete owner-provided PDF](sources/architecture-p2p-v0.1.pdf), with a [page-by-page transcript](sources/README.md). Its Rust/Iced client, cryptography, and feature goals remain inputs; its mandatory central Elixir/PostgreSQL server is superseded by the peer-first requirement. The previous interpretation is preserved in [the archived draft](archive/centralized-draft.md). See the [technology stack](tech-stack.md) and [ADRs](../README.md) for current decisions.
 
@@ -19,7 +16,7 @@ Every peer runs the application and its protocol core. The peer owns its identit
 
 Likewise, an encrypted message remains on its sender's device until another authorized peer or a chosen mailbox receives it. If no copy can reach a recipient, delivery waits. No device or helper can promise availability when every holder of the ciphertext is disconnected or loses its data. **The product does not require messages to stay available after all holders leave or discard their copies.** A live call requires the participants to be connected; a peer acting as SFU must have sufficient uplink and CPU.
 
-This proposal preserves the source document's aim of end-to-end encrypted chat, files, voice/video calls, screen sharing, and groups. The technical route to those features changes: the Rust core is the network service on each computer; an Elixir helper is an **optional deployment**, never the authority required for normal operation. Current v0.1 scope and release criteria must be approved against the new availability tradeoffs before implementation.
+This proposal preserves the source document's aim of end-to-end encrypted chat, files, voice/video calls, screen sharing, and groups. The technical route to those features changes: Rust implements the local client components and Elixir implements backend services. A hosted helper remains an **optional deployment** and never owns cryptographic group authority. The language boundary does not change the local storage, direct-route, or availability requirements.
 
 ## 2. Core architecture
 
@@ -33,7 +30,7 @@ flowchart LR
   C -. optional ciphertext replication .-> H
 ```
 
-Each installed app can listen for peers while it is running, and can initiate outbound connections. A helper is another authorized node with an explicit role and quota; it is not a trusted decryptor. One user's ordinary app may serve this role. A headless edition may run the same protocol on a friend's always-on PC **or on a VPS rented and administered by a group member**. A separate Elixir implementation is permissible later as a protocol-compatible convenience service, not a prerequisite and not the source of truth for clients' private state.
+Each installed app can listen for peers while it is running, and can initiate outbound connections. A helper is another authorized node with an explicit role and quota; it is not a trusted decryptor. One user's ordinary app may serve this role. A headless edition may run the same protocol on a friend's always-on PC **or on a VPS rented and administered by a group member**. Backend services use Elixir/OTP under ADR 0005. Packaging and process lifecycle still need implementation; a hosted helper is not a prerequisite or the source of truth for clients' private state.
 
 On a VPS, the headless node can provide a stable public address, encrypted mailbox storage, rendezvous, a traffic relay, and (if its capacity permits) an SFU. Group members explicitly authorize those roles and set storage, bandwidth, and retention limits. The node has its own transport identity but holds no member's account private key, MLS group secret, file key, or SFrame media key. The VPS provider can observe network and resource metadata and may access stored ciphertext; end-to-end encryption must still hold if the VPS is compromised. A VPS outage removes those conveniences, not the ability of peers with another working route to communicate. If the VPS is the group's **only** route across restrictive networks, internet connectivity will pause until it returns or another route is configured.
 
@@ -77,6 +74,9 @@ Use a participant-operated reachable relay **only if the group chooses one**. Th
 
 ## 5. Delivery and replication
 
+The [local storage contract](local-storage.md) defines the persistence
+requirements and distinguishes planned behavior from the current scaffold.
+
 Each client maintains a durable encrypted outbox and inbox in its own SQLite database. Every application event has a stable random ID, author device, group ID, MLS epoch, parent/checkpoint reference, ciphertext digest, and bounded expiry policy. Sender retries preserve the same ID and bytes. Receiving peers commit locally before ACKing; repeated events deduplicate by ID and digest. A same ID with different bytes is an attack/error. A peer may ACK receipt without claiming the user read the message.
 
 For an online group, sender transmits directly to reachable members. A participating peer can accept delegated ciphertext copies for temporarily unreachable members, with a signed delegation and explicit quota/TTL. The sender may then go offline; the holder forwards when it later meets the recipient. Multiple holders improve resilience, but replication is optional and **not a promise of permanent availability**. A helper does exactly this more continuously. Each holder reports **which copy it durably stored**, not that the final recipient received it. Receipts show `local`, `held by peer`, `received by device`, `read if enabled`, `expired`, or `failed`; no network-wide exactly-once claim.
@@ -109,42 +109,26 @@ Room-only chat stays in RAM on participating devices, with no durable outbox unl
 
 ## 8. Code and process skeleton
 
-The [workspace map](workspace.md) distinguishes current code from the target.
-The backend now lives in a standalone repository. The frontend lives in
-`slouching-org/slouching-frontend`. A possible future backend layout is:
+The [repository map](workspace.md) distinguishes implemented code from the
+planned product. `slouching-frontend` owns the Rust/Iced UI and local
+identity, cryptography, encrypted SQLite storage, peer networking, and
+media components. `slouching-backend` owns Elixir backend services and the
+optional hosted helper roles. Shared wire contracts must be versioned and
+tested across repositories.
 
-```text
-slouching-backend/
-  Cargo.toml
-  peer/                           # current Rust binary and library
-  crates/
-    identity/                     # device keys, pairing, signed roster
-    crypto/                       # MLS, SFrame, file encryption adapters
-    store/                        # local encrypted database and migrations
-    protocol/                     # versioned peer wire protocol
-    network/                      # discovery, QUIC, optional relay
-    sync/                         # outbox, ACK, replicas, checkpoints
-    groups/                       # commit agreement and fork detection
-    files/                        # encrypted chunks
-    calls/                        # signaling, ICE, topology, SFrame
-    core/                         # UI-independent orchestration
-  helper/                         # optional headless peer
-  docs/fichas/                    # domain notes and ADRs
-```
+The current Elixir `server/` implements only loopback diagnostics and a
+protobuf WebSocket transport with Ping/Pong. Its optional PostgreSQL Repo
+and device-key migration are an experiment for helper deployment, not the
+product's required persistence path. The older Rust `peer/` crate is an
+experimental policy gate. Local encrypted SQLite, authenticated peer
+transport, synchronization, and media are not implemented.
 
-Only `peer/` exists today. The expanded crates are a target, not implemented
-files. The eventual core exposes intent/state APIs to the separately
-versioned frontend. Network, cryptography, local storage and call media
-should be independently testable. Media capture and encoding belong off
-UI/database threads. A helper is built from compatible protocol crates and
-remains optional. An Elixir helper, if ever built, must pass the same
-conformance tests.
-
-The `peer/` directory holds peer code, not a mandatory central server.
-No PostgreSQL service is a normal startup dependency. The finished app should
-start and communicate on a LAN without an internet route. A helper may run on
-a group member's PC or private VPS. Dependency choices require feasibility
-and security review; the PDF's list is not a lockfile.
+The installed application's local process lifecycle and packaging remain
+open implementation work. The finished app must start and communicate on
+a LAN without PostgreSQL, a hosted helper, or an internet route. Media
+capture and encoding must stay off UI and database threads. A helper on a
+member's PC or private VPS must obey the same protocol, quota, key-custody,
+and delivery rules. The PDF's dependency list is not a lockfile.
 
 ## 9. Verification gates
 

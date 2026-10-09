@@ -1,36 +1,33 @@
 # ADR 0004 — Separate frontend and backend repositories
 
-> **Stack correction:** [ADR 0005](adr-0005-elixir-server-core.md) keeps the
-> repository split but restores Elixir as the service backend. References
-> below to a Rust peer backend or Rust-library UI/backend boundary are
-> historical.
-
-**Status:** accepted by the owner on 2026-10-08.
+**Status:** accepted by the owner on 2026-10-08. Language ownership follows
+[ADR 0005](adr-0005-elixir-server-core.md); deployment follows
+[ADR 0006](adr-0006-local-storage-optional-helper.md).
 
 ## Context
 
-The first implementation used one Cargo workspace with `frontend/`,
-`backend/peer/`, and a combined Git repository. The owner then directed
-the project to use separate organization repositories.
+The first implementation used one Cargo workspace and Git repository.
+The owner directed the project to use separate organization repositories.
 
 ## Decision
 
-Keep native UI code and visual sources in
-`slouching-org/slouching-frontend`. Keep the Rust peer core, optional
-helper implementations, and backend protocol/security fichas in
-`slouching-org/slouching-backend`. The `slouching-org/slouching`
-repository is the project entry point, design bank, and cross-repository
-documentation index. Its Git submodules identify the two code repositories.
+`slouching-org/slouching-frontend` owns the Rust/Iced UI, visual sources, and
+local Rust client components. `slouching-org/slouching-backend` owns Elixir
+backend services and their protocol/domain documentation. The older Rust
+`peer/` crate is preserved there as an experiment.
 
-Build integration must pin compatible revisions and test the pair together.
-The preferred application boundary is a Rust library API, not an
-unauthenticated loopback HTTP server. The current status endpoint is a
-development diagnostic and does not decide the product boundary.
+`slouching-org/slouching` is the project entry point, design bank, and
+cross-repository specification. Submodules pin the code snapshots described
+by its implementation notes. Releases must identify compatible frontend
+and backend commits and test their shared contracts.
+
+The current loopback HTTP status and protobuf WebSocket are development
+surfaces. Production transport, local process packaging, and lifecycle
+remain implementation work.
 
 ## Consequences
 
-Source ownership is clearer, but cross-repository CI, compatibility,
-packaging, and release coordination must be designed. Each release must
-identify the exact frontend and core commits it contains. A crew-owned
-helper remains optional; repository separation does not make a hosted
-backend mandatory.
+Repository separation does not require a hosted server or PostgreSQL.
+Local state remains on each device, and any crew-operated helper remains
+optional. Cross-repository CI, packaging, and release coordination must
+preserve those product requirements.

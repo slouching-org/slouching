@@ -92,6 +92,16 @@ asset must be prepared separately from suitable source material. Its exact
 lockup, minimum size, and placement in app chrome await the full application
 frontend; do not silently promote the hat to the finished primary logo.
 
+## Characters and icon fidelity
+
+The supplied familiars, portraits, scenes, and avatars remain part of the
+accepted visual direction. Preserve the wizard, frog, orb, and gnome imagery
+and offer the supplied characters in familiar selection. Recreate the
+board's outline icons with matching stroke, proportion, and state treatments;
+check extracted vector assets and licenses before production use. Use the
+[Iced design plan](../frontend/iced-design.md) to translate these assets into
+native components. Characters shown in previews do not imply live participants.
+
 ## Visual acceptance
 
 Compare actual running UI captures against **all eleven** numbered PNGs at

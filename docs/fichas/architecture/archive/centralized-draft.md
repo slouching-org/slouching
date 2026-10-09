@@ -2,8 +2,10 @@
 
 > Historical draft based on the source PDF. The active stack direction is
 > [Elixir backend with a Rust client](../adr-0005-elixir-server-core.md), with
-> member-operated deployment permitted. This draft contains proposals that
-> still require review and does not describe implemented service features.
+> optional helper deployment under [ADR 0006](../adr-0006-local-storage-optional-helper.md).
+> Its mandatory PostgreSQL, enrollment, authoritative server-log, and server
+> ordering assumptions are historical and do not define the current product.
+> This draft does not describe implemented service features.
 
 **Status:** proposed architecture, implementation not started
 **Revision:** 0.1, 2026-10-07

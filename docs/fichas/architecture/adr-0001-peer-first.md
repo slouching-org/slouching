@@ -1,9 +1,9 @@
 # ADR 0001 — Núcleo em cada dispositivo
 
-> **Escopo corrigido pela [ADR 0005](adr-0005-elixir-server-core.md):** chaves,
-> criptografia e caminho direto ficam no cliente; o backend de serviço é
-> Elixir. A interpretação abaixo de que o backend seria apenas um helper Rust
-> opcional não é mais vigente.
+> **Decisão vigente:** [ADR 0005](adr-0005-elixir-server-core.md) define
+> Elixir como backend e Rust como cliente. [ADR 0006](adr-0006-local-storage-optional-helper.md)
+> reafirma armazenamento local em SQLite e helper opcional; a escolha de
+> linguagem não exige servidor hospedado ou Postgres.
 
 **Estado:** aceita pelo dono do produto em 2026-10-07.
 
@@ -16,7 +16,8 @@ servidor operado por terceiros.
 ## Decisão
 
 Cada dispositivo executa o core e guarda suas próprias chaves, estado MLS,
-histórico e fila local. Pares se conectam diretamente quando possível. Um
+histórico e fila local em SQLite criptografado. Postgres não é dependência
+de inicialização do aplicativo. Pares se conectam diretamente quando possível. Um
 membro pode operar voluntariamente um helper em seu PC ou VPS, com funções
 limitadas de rendezvous, mailbox, relay ou SFU. Nenhum helper guarda segredos
 de membros nem decide o estado criptográfico do grupo.
