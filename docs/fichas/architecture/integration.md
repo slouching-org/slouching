@@ -42,7 +42,7 @@ lookup are disabled. The receiver stores inbound text in its local SQLCipher
 history before ACK, and the sender stores it after receiving ACK. ACK does not
 mean the user read it. On disconnect, an unacknowledged
 send is reported as delivery unknown and is not replayed. See the frontend's
-[direct peer transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v3.md)
+[direct peer transport v4 contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v4.md)
 for the screen flow and protocol.
 
 The frontend can also send MLS application events through that direct session
@@ -59,15 +59,18 @@ the new invitee while allowing a removed device to receive its removal Commit.
 The receiver authenticates and persists the
 Commit before ACK; the sender records ACK per recipient, exposes the durable
 adoption state in the UI, deduplicates exact redelivery, and drains each
-recipient's eligible Commit chain in order. Multi-member fan-out, offline delivery, and MLS invitation
-exchange remain manual/open. The ACK confirms
+recipient's eligible Commit chain in order. A recipient that is missing an
+epoch requests that predecessor over the pinned session; the committer replays
+it only when that device is in the saved recipient snapshot, including after a
+prior ACK. The v4 request is bounded per session. Multi-member fan-out, offline
+delivery, and MLS invitation exchange remain manual/open. The ACK confirms
 durable client acceptance, not reading. MLS invitations still require a trusted
 manual channel.
 
-The v3 protocol has no verified contact roster, group discovery, relay, NAT
+The v4 protocol has no verified contact roster, group discovery, relay, NAT
 traversal, offline delivery, or cross-device history. Automated integration
-tests launch two separate client processes and exchange multiple text and MLS
-events in both directions, verify wrong-key rejection, and check unknown
+tests launch two separate client processes and exchange text, MLS messages,
+Commits, and predecessor requests, verify wrong-key rejection, and check unknown
 pending delivery on disconnect. A manual test uses two app instances on a
 reachable LAN and requires firewall access to the chosen UDP port. Linux
 requires an available Secret Service for local device identity.

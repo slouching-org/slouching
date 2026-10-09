@@ -114,6 +114,9 @@ ACK and the sender records it per recipient; the MLS screen shows each member's
 adoption status. A new invitee is excluded from that older Commit; a removed
 device can still receive its removal Commit. One click drains the ordered
 Commits for the connected member, then connect to each other member and repeat.
+If a peer lacks an epoch, it requests that predecessor over the pinned session;
+the committer can replay it only to a device in that Commit's saved recipient
+snapshot, even after recording an earlier ACK.
 Invite setup remains manual; automatic group fan-out,
 cross-network connections, NAT traversal, and offline delivery
 are not implemented. See the [frontend test flow](https://github.com/slouching-org/slouching-frontend#run-the-native-scaffold).
