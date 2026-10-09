@@ -1,14 +1,16 @@
 # Local storage contract
 
-**Status:** product requirements restored from the backup specification;
-local persistence is not implemented. See [ADR 0006](adr-0006-local-storage-optional-helper.md).
+**Status:** the native client now stores its display name and familiar in
+SQLCipher encrypted SQLite, with a random key held in the operating system
+credential store. Inbox, outbox, conversation history, and MLS state remain
+unimplemented. See [ADR 0006](adr-0006-local-storage-optional-helper.md).
 
 Each device owns its identity, MLS state, conversation history, inbox, and
-outbox. The persistence plan uses encrypted SQLite, with SQLCipher as the
-planned integration. The database encryption key must remain under device
-control; its generation, OS protection, unlocking, backup, and recovery
-still require explicit implementation and review. A profile name or avatar
-is not a cryptographic identity.
+outbox. SQLCipher is now used for the local display profile; the app generates
+a random 32-byte database key and stores it in the operating system credential
+store. Identity key generation, user-facing unlock behavior, cross-device
+backup, and recovery still require explicit implementation and review. A
+profile name or avatar is not a cryptographic identity.
 
 ## Required behavior
 
@@ -27,9 +29,10 @@ is not a cryptographic identity.
 - Apply explicit quotas and expiry to delegated ciphertext copies and
   attachment chunks. A holder's absence or data loss may make them unavailable.
 
-The schema, migration strategy, event envelope, transaction boundaries,
-and key lifecycle remain implementation work. Neither the web prototype's
-`localStorage` nor the native UI's in-memory profile satisfies these rules.
+The event envelope, history schema, transaction boundaries, recovery, and
+key lifecycle beyond the local profile remain implementation work. Neither
+the web prototype's `localStorage` nor the profile table satisfies these
+conversation-storage rules.
 
 ## Helper storage and implementation sequence
 
@@ -39,9 +42,9 @@ a device's local identity, prove key ownership, or authorize group membership.
 The experimental PostgreSQL table already in the backend is not the local
 persistence implementation.
 
-The next persistence slice should establish device-controlled storage and
-restart/crash behavior before relying on remote enrollment or a central
-inbox. Verify two isolated LAN peers without Postgres or a hosted helper,
+The next persistence slice should add the local inbox/outbox and history to
+the encrypted store and define their event envelope and recovery behavior
+before relying on remote enrollment or a central inbox. Verify two isolated LAN peers without Postgres or a hosted helper,
 then verify optional ciphertext delegation and helper loss separately.
 These are acceptance requirements, not claims that the current scaffold
 already supports them.

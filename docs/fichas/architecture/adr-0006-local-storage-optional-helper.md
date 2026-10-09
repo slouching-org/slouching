@@ -15,8 +15,10 @@ The owner reaffirmed the backup decisions.
 ## Decision
 
 - Each device owns its identity keys, MLS state, encrypted local history,
-  inbox, and outbox. Local persistence uses SQLite; SQLCipher is the planned
-  encryption integration and remains unimplemented.
+  inbox, and outbox. The first native persistence slice stores only the
+  display name and familiar in SQLCipher encrypted SQLite; its random key is
+  kept in the operating system credential store. The product inbox, outbox,
+  history, and MLS state remain unimplemented.
 - Reachable peers must be able to communicate on a LAN without PostgreSQL,
   a hosted service, or an internet route. Direct internet communication
   depends on a permitted reachable route.
@@ -40,8 +42,8 @@ its deployment interpretation corrected here.
 The current loopback Elixir/Rust handshake is a development slice, not the
 implemented LAN peer mode. The optional PostgreSQL Repo and device-key
 migration already present in the backend are an implementation experiment;
-they do not establish a required directory or enrollment service. Neither
-local SQLite storage nor peer delivery is implemented yet.
+they do not establish a required directory or enrollment service. The local
+profile database is not the product inbox, history, or peer delivery layer.
 
 Messages wait when no authorized holder can reach the recipient. A helper
 receipt proves that a copy was stored, not that the recipient received it.

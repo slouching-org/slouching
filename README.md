@@ -20,6 +20,8 @@
 
 ![Native Rust/Iced home using the supplied scenery, characters, fonts, and icons; first visual pass](docs/design/readme/native-vhs-home.png)
 
+![Native Rust/Iced familiar screen showing local encrypted profile status](docs/design/readme/native-vhs-profile.png)
+
 ![Native Rust/Iced group-call preview with illustrative characters and chat; no media is connected](docs/design/readme/native-vhs-call.png)
 
 The earlier local web preview remains available for design comparison. These are captures of that preview, with illustrative people and video tiles; they show no live peers or media.
@@ -34,7 +36,7 @@ This repository holds the project overview, design sources, and a reconciled doc
 
 | Repository | Owns | Current state |
 | --- | --- | --- |
-| [slouching-frontend](https://github.com/slouching-org/slouching-frontend) | Native Rust/Iced desktop UI and web visual prototype | Eleven native design previews with supplied art and icons; local diagnostic transport |
+| [slouching-frontend](https://github.com/slouching-org/slouching-frontend) | Native Rust/Iced desktop UI and web visual prototype | Eleven native previews; encrypted local display profile; local diagnostic transport |
 | [slouching-backend](https://github.com/slouching-org/slouching-backend) | Elixir service backend | Local transport plus optional PostgreSQL device-key schema; no enrollment or product traffic |
 
 Start with the [fichas index](docs/fichas/README.md). The [product specification](docs/fichas/architecture/backend.md), [Elixir backend boundary](docs/fichas/architecture/elixir-backend.md), [frontend screen specification](docs/fichas/frontend/screens.md), [technology plan](docs/fichas/architecture/tech-stack.md), and [ADRs](docs/fichas/README.md#accepted-decisions) describe the target and distinguish it from working code. The [owner's 11-page architecture PDF](docs/fichas/architecture/sources/architecture-p2p-v0.1.pdf) and [page-by-page transcript](docs/fichas/architecture/sources/README.md) are preserved. [ADR 0005](docs/fichas/architecture/adr-0005-elixir-server-core.md) defines the Rust-client/Elixir-backend division. [ADR 0006](docs/fichas/architecture/adr-0006-local-storage-optional-helper.md) reaffirms the backup specification: local SQLite, optional helpers, and PostgreSQL only as a deployment option.

@@ -7,15 +7,19 @@ The frontend's `src/main.rs` owns application state and local transport;
 `src/ui.rs` composes the eleven source-board views with native widgets,
 original scenery, familiar portraits and cutouts, source-derived SVG icons,
 embedded fonts, translucent panels, scanlines, and vignette. The **Telas**
-gallery reaches every view. Home actions open the lobby preview; profile
-and chat fields edit local in-memory values. Familiar selection, settings
-and share-source tabs, and the interface texture toggle work locally.
+gallery reaches every view. Home actions open the lobby preview; invitation
+and chat fields edit in-memory values. Familiar selection, settings and
+share-source tabs, and the interface texture toggle work locally. The
+familiar screen saves only the display name and familiar in SQLCipher
+encrypted SQLite; its random database key is kept in the operating system
+credential store. This profile is distinct from device identity and does not
+create cryptographic keys or message history.
 
 Every view is labeled as a visual preview. Character scenes and messages
 are examples. Camera/microphone actions explain their unavailable state;
 send, capture, and verification controls cannot perform product operations.
 The app does not generate keys, enumerate devices, send messages, join calls,
-or persist a local identity/history. The settings **Rede & P2P** tab exposes
+or persist a local identity/conversation history. The settings **Rede & P2P** tab exposes
 real backend diagnostics separately from the illustrative call routes.
 
 The earlier HTML/CSS/JavaScript preview is retained under
@@ -29,7 +33,7 @@ target. Native captures were compared at 1280 × 800 and a compact 960 × 640
 window. The first visual pass covers all eleven views; exact parity,
 accessibility, and permissions still need further implementation and review. See the [Iced design plan](iced-design.md) for
 preserving the supplied scenery, characters, avatars, and outline icons.
-Encrypted local SQLite and the LAN peer mode remain unimplemented;
+Encrypted local SQLite for inbox, outbox, MLS state, and history and the LAN peer mode remain unimplemented;
 the development HTTP/WebSocket diagnostics do not satisfy those requirements.
 
 The native UI now requests a v1 development status snapshot from the local

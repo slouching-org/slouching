@@ -6,7 +6,7 @@ storage and optional deployment reaffirmed by [ADR 0006](adr-0006-local-storage-
 | Layer | Direction | Current state |
 | --- | --- | --- |
 | Desktop UI and local client core | Rust/Iced and Tokio | Eleven native preview views; local backend diagnostics only |
-| Local persistence | Encrypted SQLite; SQLCipher integration planned | Not implemented; each device will own history, inbox, outbox, and MLS state |
+| Local persistence | Encrypted SQLite using SQLCipher; OS credential store holds the DB key | Frontend persists display name and familiar only; history, inbox, outbox, and MLS state remain unimplemented |
 | Client cryptography and P2P | Rust; OpenMLS, iroh, SFrame candidates | Not implemented; dependency selection still requires review |
 | Backend service components | Elixir/OTP | Supervised Bandit loopback scaffold |
 | Gateway | Versioned binary WebSocket/protobuf | Handshake v1 and Ping/Pong only; no authenticated product traffic |

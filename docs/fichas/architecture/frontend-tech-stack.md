@@ -9,7 +9,7 @@ Its Elixir server/backend core and Rust/Iced client direction are retained.
 | Desktop UI | Rust 2024 + pinned Iced 0.14.0 | Native state in `src/main.rs` and eleven views in `src/ui.rs` |
 | Rendering | Iced/wgpu | Eleven visual-preview views with images, SVG icons, and canvas texture; live video unbuilt |
 | Local client core | Rust identity, cryptography, encrypted SQLite storage, transport, media | Not yet implemented |
-| Local persistence | SQLite with SQLCipher integration planned | History, inbox, outbox, and MLS state stay on the device; not implemented |
+| Local persistence | SQLCipher encrypted SQLite plus OS credential store for the database key | Native client persists only display name and familiar; inbox, outbox, history, and MLS state are not implemented |
 | Server/backend | Elixir, separately versioned backend repo | Development status and protobuf handshake implemented |
 | State boundary | Versioned protocol | Asynchronous loopback HTTP status and binary protobuf WebSocket handshake v1 integrated; production boundary pending |
 | Browser UI | HTML/CSS/JavaScript | Historical visual prototype in `prototypes/web/`; not product runtime |
