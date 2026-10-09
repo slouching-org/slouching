@@ -1,6 +1,6 @@
 # Slouching frontend specification
 
-**Status:** design and interaction specification; the Rust/Iced client has eleven screens, including persistent direct-LAN text sessions with manually pinned device keys. MLS, durable history and the broader product flow remain open.
+**Status:** design and interaction specification; the Rust/Iced client has eleven screens, including direct-LAN text sessions with manually pinned device keys and per-peer SQLCipher history. MLS group messaging, synchronized history and the broader product flow remain open.
 **Revision:** 0.4, 2026-10-09; reconciled with ADRs 0003–0006
 **Sources:** the [11-screen design bank](../brand/source-bank.md), [five earlier references](../brand/references.md), [visual style](../brand/visual-style.md), and [Rust-client/Elixir-backend decision](../architecture/adr-0005-elixir-server-core.md).
 

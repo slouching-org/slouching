@@ -38,15 +38,17 @@ directions over one session with a manually pinned device on a reachable LAN.
 Both endpoints use the durable Ed25519 device identity as their Iroh EndpointId;
 QUIC authenticates and encrypts the connection. Users manually exchange public
 keys; the sender supplies the receiver's LAN IP and UDP port. Relay and address
-lookup are disabled. An ACK means the peer added text to its in-memory
-transcript; it does not mean the user read it. On disconnect, an unacknowledged
+lookup are disabled. The receiver stores inbound text in its local SQLCipher
+history before ACK, and the sender stores it after receiving ACK. ACK does not
+mean the user read it. On disconnect, an unacknowledged
 send is reported as delivery unknown and is not replayed. See the frontend's
 [LAN text transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-text-v2.md)
 for the screen flow and protocol.
 
-This slice has no MLS credential or group, verified contact roster, durable
-history, offline delivery, discovery, NAT traversal, or relay fallback. Its
-transcript lasts only for the current app session. Automated integration tests
+This slice has no MLS credential or group messaging, verified contact roster,
+offline delivery, discovery, NAT traversal, or relay fallback. Its direct
+history is local per device and is not synchronized or connected to the MLS
+event journal. Automated integration tests
 launch two separate client processes, exchange multiple messages in both
 directions over one connection, verify wrong-key rejection, and check pending
 send behavior on disconnect. A manual test uses two app

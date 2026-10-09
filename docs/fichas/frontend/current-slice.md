@@ -2,7 +2,7 @@
 
 **Status:** eleven native Rust/Iced screens; the chat screen supports
 persistent bidirectional direct-LAN text sessions with manually pinned device
-keys and a session-only transcript. Core MLS admission and Welcome processing
+keys and per-peer transcript in SQLCipher. Core MLS admission and Welcome processing
 are implemented, but the UI, network delivery, and MLS messaging remain open.
 
 The frontend's `src/main.rs` owns application state and local transport;
@@ -15,8 +15,9 @@ share-source tabs, and the interface texture toggle work locally. In Chat,
 each user manually pins the other's Ed25519 device key; the UI rejects a peer
 pin equal to the local key. One side starts a listener and can copy its
 announced LAN address; the other enters that address and connects. Both sides
-can send multiple messages over that connection. Received text enters the in-memory
-transcript before ACK; sent text appears only after ACK. Disconnect with a
+can send multiple messages over that connection. Received text is saved locally
+before ACK; sent text is saved after ACK. The latest 200 messages reload for
+the pinned peer. Disconnect with a
 pending send is shown as delivery unknown. The
 familiar screen saves only the display name and familiar in SQLCipher
 encrypted SQLite; its random database key is kept in the operating system
@@ -43,9 +44,9 @@ and fingerprint/QR derivation remain unimplemented.
 
 Character scenes and call views remain visual previews. The chat screen now
 sends and receives actual pairwise text over direct Iroh/QUIC; it does not use
-MLS or persist history. Camera/microphone actions explain their unavailable
+MLS or the event journal. Camera/microphone actions explain their unavailable
 state; verification controls cannot verify MLS membership. The app does not
-enumerate contacts, join calls, or persist conversation history. The settings
+enumerate contacts or join calls. The settings
 **Rede & P2P** tab exposes
 real backend diagnostics separately from the illustrative call routes.
 
@@ -60,16 +61,17 @@ target. Native captures were compared at 1280 × 800 and a compact 960 × 640
 window. The first visual pass covers all eleven views; exact parity,
 accessibility, and permissions still need further implementation and review. See the [Iced design plan](iced-design.md) for
 preserving the supplied scenery, characters, avatars, and outline icons.
-Encrypted local SQLite initializes the OpenMLS provider schema and persists
-MLS group state, but usable group UI, inbox/outbox UI, and durable conversation
-history remain unimplemented;
+Encrypted local SQLite initializes the OpenMLS provider schema, persists MLS
+group state, and stores direct-LAN transcripts per peer. Usable MLS group UI,
+event-journal inbox/outbox UI, and MLS conversation history remain unimplemented;
 the development HTTP/WebSocket diagnostics do not satisfy those requirements.
 
 The chat transport is separate from the Elixir diagnostics. It pins each
 device's durable Ed25519 key as its Iroh endpoint identity, disables relays,
 and exchanges multiple bounded UTF-8 frames with sequence ACKs over one
-bidirectional QUIC stream. ACK means accepted into the peer's in-memory
-transcript, not read. This is not an MLS message or a verified contact pairing.
+bidirectional QUIC stream. The receiver persists the text locally before ACK;
+the sender persists after ACK. ACK does not mean read. This is not an MLS
+message or a verified contact pairing.
 Linux requires Secret Service to store/load the device key. See [LAN text
 transport v2](../transport/lan-text-v2.md).
 

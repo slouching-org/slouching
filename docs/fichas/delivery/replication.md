@@ -6,9 +6,15 @@
 > Elixir backend and Rust client language boundary.
 
 **Estado:** contrato especificado; o cliente tem agora esquema e operações
-iniciais para persistir eventos criptografados opacos localmente. MLS,
-integração com inbox/outbox, transporte, ACKs e replicação ainda não estão
-implementados.
+iniciais para persistir eventos criptografados opacos localmente. O transporte
+direto por LAN tem ACK e histórico local por peer; entrega de eventos MLS,
+integração com inbox/outbox MLS, replicação e entrega offline ainda não estão
+implementadas.
+
+O chat direto por Iroh/QUIC mantém um histórico local separado por chave
+pública fixada. O destinatário salva a mensagem no SQLCipher antes do ACK; o
+remetente salva após receber o ACK. Esse transcript local não usa o event
+journal MLS, não sincroniza entre dispositivos e não oferece entrega offline.
 
 Cada app manterá outbox e inbox persistentes em SQLite criptografado,
 IDs estáveis de evento,

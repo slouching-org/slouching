@@ -44,6 +44,15 @@ backup, recovery, and using the key to authenticate protocol messages still
 require implementation and review. A profile name or avatar is not a
 cryptographic identity.
 
+The direct-LAN text screen stores sent and received message text in a separate
+`local_direct_messages` table in the same SQLCipher database, indexed by the
+other device's pinned public key. The receiver writes each inbound message
+before sending its transport ACK; the sender writes it after receiving that
+ACK. The UI reloads the newest 200 rows for the selected peer and retains at
+most 1,000 per peer. This is local
+pairwise chat history, not MLS ciphertext, group history, or cross-device
+replication. There is no user-facing deletion control yet.
+
 ## Required behavior
 
 - Save an outbound encrypted event locally before attempting delivery.
@@ -70,7 +79,9 @@ receipt; no such transport integration exists yet. Inbox and outbox reads use
 bounded pages with a stable local sequence cursor. MLS validation, history
 presentation, recovery, and key lifecycle beyond local profile/key creation
 remain implementation work. OpenMLS group state is persisted locally, but it
-is not connected to the event journal or product messaging. Neither
+is not connected to the event journal or MLS product messaging. The direct
+transcript table does not satisfy the event journal's encrypted-envelope,
+deduplication, expiry, or offline-delivery contract. Neither
 the web prototype's `localStorage` nor the profile table satisfies these
 conversation-storage rules.
 
