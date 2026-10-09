@@ -51,8 +51,11 @@ validates event metadata and the sender's device-bound MLS credential, then
 persists the ciphertext, ratchet update, and local plaintext transcript in one
 SQLCipher transaction before ACK. Exact event redelivery is deduplicated. The
 sender advances its outbox state only after the peer ACK and exposes a control
-to retry queued events after reconnecting. The ACK confirms durable client
-acceptance, not reading. MLS invitations still require a trusted manual channel.
+to retry queued events after reconnecting. Membership Commits are journaled
+atomically with the committer epoch; existing members can manually import and
+authenticate them, with exact redelivery deduplicated. Automatic Commit
+distribution/fan-out remains open. The ACK confirms durable client acceptance,
+not reading. MLS invitations still require a trusted manual channel.
 
 The v3 protocol has no verified contact roster, group discovery, relay, NAT
 traversal, offline delivery, or cross-device history. Automated integration
@@ -67,7 +70,9 @@ event, and has no application command or subscription channel. [ADR 0005](adr-00
 defines the language division: Rust client plus Elixir backend.
 [ADR 0006](adr-0006-local-storage-optional-helper.md) retains local SQLite
 and optional helpers. The loopback Elixir diagnostics do not implement the
-LAN path or make PostgreSQL a startup dependency. Product messaging still needs automated trusted group provisioning, authorization policy, helper delivery, and offline synchronization.
+LAN path or make PostgreSQL a startup dependency. Product messaging still
+needs automated trusted group provisioning, concurrent proposal handling,
+helper delivery, and offline synchronization.
 
 ## Local checkout and validation
 

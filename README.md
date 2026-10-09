@@ -16,7 +16,7 @@
 **Conceived by Rodrigo and Vitchola**, Slouching is an early native desktop app for a small crew to chat, call, and share a screen. The Rust/Iced client owns local keys, cryptography, direct peer paths, and per-peer chat history in encrypted SQLite. Elixir remains the backend language. A member may optionally host a helper on a PC or VPS for ciphertext delivery, discovery, relay, or group media. Pinned-device text works between reachable LAN peers without a hosted helper or PostgreSQL.
 
 > [!IMPORTANT]
-> This is an early build, **not a secure messenger**. Direct pinned-device LAN text and MLS application messaging work over Iroh/QUIC. The MLS screen supports manual KeyPackage/Welcome setup; the receiver validates and persists ciphertext, ratchet state, and transcript in SQLCipher before ACK, and queued messages can be retried. Membership Commits are stored atomically with the committer's new group epoch and can be copied after restart, but transport and adoption by existing members remain in progress. Group discovery, contact verification, relay, offline delivery, calls, and screen sharing remain unimplemented. The Elixir backend uses SQLite locally; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is an experiment, not the service backend.
+> This is an early build, **not a secure messenger**. Direct pinned-device LAN text and MLS application messaging work over Iroh/QUIC. The MLS screen supports manual KeyPackage/Welcome setup; the receiver validates and persists ciphertext, ratchet state, and transcript in SQLCipher before ACK, and queued messages can be retried. Membership Commits are stored atomically with the committer's new group epoch and can be copied after restart. Existing members can authenticate and apply a copied Commit before sending at the new epoch; automatic distribution and fan-out remain in progress. Group discovery, contact verification, relay, offline delivery, calls, and screen sharing remain unimplemented. The Elixir backend uses SQLite locally; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is an experiment, not the service backend.
 
 ![Native Rust/Iced home with the supplied night scenery and icon-based feature strip, without the frog mage or gnome cutouts](docs/design/readme/native-vhs-home.png)
 
@@ -104,5 +104,11 @@ Both devices need to
 be on a reachable LAN, with the chosen UDP port allowed by the local firewall.
 On Linux, Secret Service must be available for device identity storage. Each
 device keeps its own encrypted transcript for that pinned peer after the app
-closes; history is not synchronized. Cross-network connections, NAT traversal,
-MLS group messaging, and offline delivery are not implemented.
+closes; history is not synchronized. For MLS group chat, provision the same
+group on both devices through **Grupo MLS**, connect them in **Texto direto ·
+LAN**, select the same group ID, and send from the MLS screen. Later members
+receive a Welcome and ratchet tree; existing members paste and apply the
+committer's Commit before sending at the new epoch. Invite and Commit exchange
+is manual, and a peer session currently addresses one remote device. Automatic
+group fan-out, cross-network connections, NAT traversal, and offline delivery
+are not implemented. See the [frontend test flow](https://github.com/slouching-org/slouching-frontend#run-the-native-scaffold).

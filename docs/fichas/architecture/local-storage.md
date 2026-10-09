@@ -21,7 +21,7 @@ only the public bytes. The setup screen exposes public KeyPackage exchange. The 
 also creates and persists a local single-member MLS group and indexes the
 creator as designated committer. Member admission validates the device-bound
 KeyPackage, enforces the designated committer, merges the Commit locally, and
-returns Commit, Welcome, and ratchet-tree bytes. The exact Commit bytes and digest are stored in a separate queued local Commit outbox in the same SQLCipher transaction as the group epoch update. The pending Commit reloads after restart and is available to copy for distribution; automatic delivery/adoption by existing members remains open. A forced outbox-write failure test verifies the group epoch and membership roll back together. The invitee processes Welcome
+returns Commit, Welcome, and ratchet-tree bytes. The exact Commit bytes and digest are stored in a separate queued local Commit outbox in the same SQLCipher transaction as the group epoch update. The pending Commit reloads after restart and is available to copy for distribution; existing members can authenticate and apply a copied Commit, with exact redelivery deduplicated; automatic distribution/fan-out and concurrent proposal handling remain open. A forced outbox-write failure test verifies the group epoch and membership roll back together. The invitee processes Welcome
 against its encrypted private package and indexes the sender as committer.
 Group creation and admission are exposed in the local setup UI. Outbound MLS
 application messages are saved as queued ciphertext with the ratchet update in
@@ -39,6 +39,10 @@ and Welcome processing across two isolated encrypted databases, including
 rejection of a non-designated committer. Two-database application tests cover
 queued outbound persistence, authenticated inbound decrypt, deduplication, and
 rollback of forged envelopes. Separate-process tests cover opaque MLS event transport, ACK, and unknown delivery on disconnect; the Iced screen presents the local MLS transcript.
+The MLS admission test also exercises a three-device chain: it rejects a valid
+noncommitter Commit and altered bytes, applies a designated Commit, deduplicates
+exact redelivery, and forces an inbound journal failure to verify that group
+epoch changes roll back atomically.
 
 Each device owns its identity, MLS state, conversation history, inbox, and
 outbox. SQLCipher is now used for the local display profile; the app generates
@@ -102,6 +106,6 @@ The optional Elixir helper has its own SQLite database by default and may use
 PostgreSQL through explicit deployment configuration. That helper database is
 not the local client persistence implementation.
 
-The next slice should distribute trusted group setup and queued membership Commits safely, add receiver Commit validation/adoption, then add helper delivery and offline synchronization. Verify MLS messaging between two real app instances on a LAN without Postgres or a hosted helper, then verify optional ciphertext delegation and helper loss separately.
+The next slice should automate trusted group setup and queued membership Commit distribution/fan-out, handle concurrent proposals and authenticated equivocation, then add helper delivery and offline synchronization. Verify MLS messaging between two real app instances on a LAN without Postgres or a hosted helper, then verify optional ciphertext delegation and helper loss separately.
 These are acceptance requirements, not claims that the current scaffold
 already supports them.
