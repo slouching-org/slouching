@@ -53,10 +53,12 @@ SQLCipher transaction before ACK. Exact event redelivery is deduplicated. The
 sender advances its outbox state only after the peer ACK and exposes a control
 to retry queued events after reconnecting. Membership Commits are journaled
 atomically with the committer epoch. A pending Commit can be sent over the
-active pinned session to one current member at a time after checking its
-device-bound MLS membership. The receiver authenticates and persists the Commit
-before ACK; exact redelivery is deduplicated. Multi-member fan-out, offline
-delivery, and MLS invitation exchange remain manual/open. The ACK confirms
+active pinned session to one member in the predecessor-epoch roster at a time,
+after checking its device-bound MLS membership. This excludes the new invitee
+from receiving the older Commit. The receiver authenticates and persists the
+Commit before ACK; the sender records ACK per recipient and exact redelivery is
+deduplicated. Multi-member fan-out, offline delivery, and MLS invitation
+exchange remain manual/open. The ACK confirms
 durable client acceptance, not reading. MLS invitations still require a trusted
 manual channel.
 

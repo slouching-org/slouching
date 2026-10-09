@@ -108,8 +108,10 @@ closes; history is not synchronized. For MLS group chat, provision the same
 group on both devices through **Grupo MLS**, connect them in **Texto direto ·
 LAN**, select the same group ID, and send from the MLS screen. Later members
 receive a Welcome and ratchet tree. Existing members receive Commits through
-the active session; the sender verifies membership, and the receiver persists
-the new epoch before ACK. Send the next pending Commit separately to each
-connected member. Invite setup remains manual; automatic group fan-out,
+the active session; the sender uses the predecessor-epoch member snapshot and
+verifies current membership, while the receiver persists the new epoch before
+ACK and the sender records it per recipient. A new invitee is excluded from
+that older Commit. Send the next pending Commit separately to each connected
+member. Invite setup remains manual; automatic group fan-out,
 cross-network connections, NAT traversal, and offline delivery
 are not implemented. See the [frontend test flow](https://github.com/slouching-org/slouching-frontend#run-the-native-scaffold).
