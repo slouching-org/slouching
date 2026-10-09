@@ -33,11 +33,13 @@ This repository holds the project overview, design sources, and a reconciled doc
 | Repository | Owns | Current state |
 | --- | --- | --- |
 | [slouching-frontend](https://github.com/slouching-org/slouching-frontend) | Native Rust/Iced desktop UI and web visual prototype | Three-view native scaffold; local Elixir status and persistent development transport |
-| [slouching-backend](https://github.com/slouching-org/slouching-backend) | Elixir service backend | Local status and persistent development WebSocket transport; older Rust peer crate retained as experimental code |
+| [slouching-backend](https://github.com/slouching-org/slouching-backend) | Elixir service backend | Local transport plus optional PostgreSQL device-key schema; no enrollment or product traffic |
 
 Start with the [fichas index](docs/fichas/README.md). The [Elixir backend boundary](docs/fichas/architecture/elixir-backend.md), [frontend screen specification](docs/fichas/frontend/screens.md), [technology plan](docs/fichas/architecture/tech-stack.md), and [ADRs](docs/fichas/README.md#accepted-decisions) describe the target and distinguish it from working code. The [owner's 11-page architecture PDF](docs/fichas/architecture/sources/architecture-p2p-v0.1.pdf) and [page-by-page transcript](docs/fichas/architecture/sources/README.md) are preserved. [ADR 0005](docs/fichas/architecture/adr-0005-elixir-server-core.md) restores its Rust-client/Elixir-backend division while allowing member-operated deployment.
 
 The [client/server integration contract](docs/fichas/architecture/integration.md) describes the local status exchange and persistent binary WebSocket transport after a protobuf v1 handshake. They establish reachability and wire compatibility only; there is no authenticated messaging or call API.
+
+The backend now has a [device directory storage foundation](repositories/backend/docs/fichas/identity/device-directory.md). Its public-key table has no enrollment or lookup route, and it grants no device access.
 
 ADR 0004 changed the original single-workspace plan to [separate repositories](docs/fichas/architecture/adr-0004-separate-repositories.md). Its old Rust-backend wording is corrected by ADR 0005. The [old workspace ADR](docs/fichas/architecture/archive/adr-0004-workspace-superseded.md) is retained only as history.
 
