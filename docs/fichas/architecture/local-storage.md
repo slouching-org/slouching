@@ -21,7 +21,7 @@ only the public bytes. The setup screen exposes public KeyPackage exchange. The 
 also creates and persists a local single-member MLS group and indexes the
 creator as designated committer. Member admission validates the device-bound
 KeyPackage, enforces the designated committer, merges the Commit locally, and
-returns Commit, Welcome, and ratchet-tree bytes. The invitee processes Welcome
+returns Commit, Welcome, and ratchet-tree bytes. The exact Commit bytes and digest are stored in a separate queued local Commit outbox in the same SQLCipher transaction as the group epoch update. The pending Commit reloads after restart and is available to copy for distribution; automatic delivery/adoption by existing members remains open. A forced outbox-write failure test verifies the group epoch and membership roll back together. The invitee processes Welcome
 against its encrypted private package and indexes the sender as committer.
 Group creation and admission are exposed in the local setup UI. Outbound MLS
 application messages are saved as queued ciphertext with the ratchet update in
@@ -102,6 +102,6 @@ The optional Elixir helper has its own SQLite database by default and may use
 PostgreSQL through explicit deployment configuration. That helper database is
 not the local client persistence implementation.
 
-The next slice should distribute trusted group setup and membership Commits safely, then add helper delivery and offline synchronization. Verify MLS messaging between two real app instances on a LAN without Postgres or a hosted helper, then verify optional ciphertext delegation and helper loss separately.
+The next slice should distribute trusted group setup and queued membership Commits safely, add receiver Commit validation/adoption, then add helper delivery and offline synchronization. Verify MLS messaging between two real app instances on a LAN without Postgres or a hosted helper, then verify optional ciphertext delegation and helper loss separately.
 These are acceptance requirements, not claims that the current scaffold
 already supports them.
