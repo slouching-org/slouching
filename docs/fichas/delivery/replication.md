@@ -23,7 +23,7 @@ criptográfica, com ID, autor, grupo, época, checkpoint, digest BLAKE3 e prazo.
 Ela deduplica IDs idênticos e rejeita conteúdo ou metadados divergentes. Ainda
 não cria ciphertext, conversa, ACK ou rota de entrega.
 
-A outbox já pode listar páginas limitadas com cursor estável e persistir estados locais de fila,
+A inbox e a outbox já podem listar páginas limitadas com cursor estável; a outbox ainda persiste estados locais de fila,
 retenção por peer, recebimento, expiração e falha. Esses estados ainda não são
 atualizados por um transporte; só código de protocolo confiável poderá marcar
 um recibo real quando a entrega for implementada.

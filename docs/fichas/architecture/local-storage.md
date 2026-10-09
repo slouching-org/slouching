@@ -39,8 +39,8 @@ checkpoint, ciphertext digest, opaque ciphertext, expiry, and an outbound
 state. The storage operations reject reused IDs with changed ciphertext or
 envelope metadata, list bounded batches, and guard local queued/held/received/
 expired/failed transitions. Only trusted protocol code may record a real
-receipt; no such transport integration exists yet. Outbox reads use bounded
-pages with a stable local sequence cursor. MLS validation, history
+receipt; no such transport integration exists yet. Inbox and outbox reads use
+bounded pages with a stable local sequence cursor. MLS validation, history
 presentation, recovery, and key lifecycle beyond local profile/key creation
 remain implementation work. Neither
 the web prototype's `localStorage` nor the profile table satisfies these
