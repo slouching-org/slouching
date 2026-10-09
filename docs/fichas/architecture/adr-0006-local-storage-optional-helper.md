@@ -17,8 +17,9 @@ The owner reaffirmed the backup decisions.
 - Each device owns its identity keys, MLS state, encrypted local history,
   inbox, and outbox. The first native persistence slice stores only the
   display name and familiar in SQLCipher encrypted SQLite; its random key is
-  kept in the operating system credential store. The product inbox, outbox,
-  history, and MLS state remain unimplemented.
+  kept in the operating system credential store. A separate explicit action
+  can create an Ed25519 signing seed in that store. Authentication, pairing,
+  product inbox, outbox, history, and MLS state remain unimplemented.
 - Reachable peers must be able to communicate on a LAN without PostgreSQL,
   a hosted service, or an internet route. Direct internet communication
   depends on a permitted reachable route.

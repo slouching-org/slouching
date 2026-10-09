@@ -13,13 +13,16 @@ share-source tabs, and the interface texture toggle work locally. The
 familiar screen saves only the display name and familiar in SQLCipher
 encrypted SQLite; its random database key is kept in the operating system
 credential store. This profile is distinct from device identity and does not
-create cryptographic keys or message history.
+create message history. A separate explicit action creates an Ed25519 device
+signing seed in the system credential store and displays its public key as
+unverified. The key does not authenticate peers or sign protocol messages;
+fingerprint/QR derivation and pairing remain unimplemented.
 
 Every view is labeled as a visual preview. Character scenes and messages
 are examples. Camera/microphone actions explain their unavailable state;
 send, capture, and verification controls cannot perform product operations.
-The app does not generate keys, enumerate devices, send messages, join calls,
-or persist a local identity/conversation history. The settings **Rede & P2P** tab exposes
+The app does not enumerate devices, send messages, join calls, or persist
+conversation history. The settings **Rede & P2P** tab exposes
 real backend diagnostics separately from the illustrative call routes.
 
 The earlier HTML/CSS/JavaScript preview is retained under

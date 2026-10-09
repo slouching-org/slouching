@@ -5,19 +5,21 @@
 > [ADR 0005](../architecture/adr-0005-elixir-server-core.md) defines the
 > Elixir backend and Rust client language boundary.
 
-**Estado:** especificada; não implementada.
+**Estado:** criação e armazenamento local da chave Ed25519 implementados;
+pareamento, fingerprint/QR e integração MLS ainda não implementados.
 
 O dispositivo criará sua própria identidade de assinatura e folha MLS. Não há
 conta ou email obrigatório. Nome e familiar são escolhas de perfil, diferentes
 da identidade criptográfica. A comparação de fingerprint/QR com outro membro
 é o ato que permite rotulá-lo como verificado.
 
-A tela nativa Rust/Iced mantém nome e familiar apenas em memória para
-prévia visual. O protótipo web histórico usa `localStorage`. Nenhuma dessas
-telas cria chaves ou identidade autenticada. A identidade e o estado MLS
-ficarão no dispositivo; histórico, inbox e outbox usarão SQLite criptografado.
-SQLCipher e proteção das chaves ainda precisam de implementação.
+A tela nativa salva nome e familiar em SQLite cifrado. Uma ação explícita
+cria uma seed Ed25519 de 32 bytes e a guarda no chaveiro do sistema; a tela
+mostra a chave pública correspondente como não verificada. A chave não é
+criada automaticamente, enviada a um peer ou usada para assinar mensagens.
+O protótipo web histórico continua usando `localStorage` e não cria chaves.
+O estado MLS, histórico, inbox e outbox ainda não estão implementados.
 
-Pendências de segurança: formato e proteção da chave local, múltiplos
-dispositivos, recuperação, política de troca de chave e derivação exata da
-comparação visual. Ver [modelo de confiança](../architecture/backend.md#3-trust-and-security-model).
+Pendências de segurança: derivação e formato do fingerprint/QR, verificação
+por canal independente, pareamento, múltiplos dispositivos, recuperação e
+política de troca de chave. Ver [modelo de confiança](../architecture/backend.md#3-trust-and-security-model).

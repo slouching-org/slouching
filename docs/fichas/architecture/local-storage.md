@@ -2,15 +2,18 @@
 
 **Status:** the native client now stores its display name and familiar in
 SQLCipher encrypted SQLite, with a random key held in the operating system
+credential store. The Ed25519 signing seed is stored separately in that
 credential store. Inbox, outbox, conversation history, and MLS state remain
 unimplemented. See [ADR 0006](adr-0006-local-storage-optional-helper.md).
 
 Each device owns its identity, MLS state, conversation history, inbox, and
 outbox. SQLCipher is now used for the local display profile; the app generates
 a random 32-byte database key and stores it in the operating system credential
-store. Identity key generation, user-facing unlock behavior, cross-device
-backup, and recovery still require explicit implementation and review. A
-profile name or avatar is not a cryptographic identity.
+store. The app can also explicitly create an Ed25519 device signing seed and
+store it in a separate credential. User-facing unlock behavior, cross-device
+backup, recovery, and using the key to authenticate protocol messages still
+require implementation and review. A profile name or avatar is not a
+cryptographic identity.
 
 ## Required behavior
 
@@ -30,7 +33,7 @@ profile name or avatar is not a cryptographic identity.
   attachment chunks. A holder's absence or data loss may make them unavailable.
 
 The event envelope, history schema, transaction boundaries, recovery, and
-key lifecycle beyond the local profile remain implementation work. Neither
+key lifecycle beyond local profile/key creation remains implementation work. Neither
 the web prototype's `localStorage` nor the profile table satisfies these
 conversation-storage rules.
 
