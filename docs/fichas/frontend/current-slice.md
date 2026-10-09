@@ -30,8 +30,10 @@ in the encrypted database and return its device-signed binding. Repeated
 calls reuse the key and refuse silent rotation if the indexed key material is
 missing. The core can create a one-use OpenMLS KeyPackage with a BasicCredential
 containing the device-signed binding; its private bundle is stored in SQLCipher.
-No UI flow publishes or consumes the package, and no group is created.
-Fingerprint/QR derivation remains unimplemented.
+No UI flow publishes or consumes the package. The core creates and persists a
+local single-member MLS group and indexes its creator as designated committer;
+the UI exposes no group flow. Member addition, Welcome processing, MLS
+messaging, and fingerprint/QR derivation remain unimplemented.
 
 Character scenes and call views remain visual previews. The chat screen now
 sends and receives actual pairwise text over direct Iroh/QUIC; it does not use

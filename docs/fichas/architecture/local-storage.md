@@ -16,15 +16,19 @@ binding. A missing indexed key fails closed instead of silently rotating the
 device's MLS signing identity. The client core now creates a one-use OpenMLS
 KeyPackage whose BasicCredential contains the device-signed binding. OpenMLS
 stores the corresponding private bundle in SQLCipher while the caller receives
-only the public bytes. No UI flow publishes or consumes this package, and no
-group is created. Opening the database composes OpenMLS RustCrypto with its
+only the public bytes. No UI flow publishes or consumes this package. The core
+also creates and persists a local single-member MLS group and indexes the
+creator as designated committer; this metadata is not yet enforced by a commit
+policy. Group creation is not exposed in the UI. Opening the database composes OpenMLS RustCrypto with its
 SQLite storage provider and initializes the versioned schema on the same
 SQLCipher connection. See
 [ADR 0006](adr-0006-local-storage-optional-helper.md).
 Automated tests reopen a temporary SQLCipher database, check that the OpenMLS
 schema remains available, reload an MLS signing key, and validate an exported
 KeyPackage plus its device binding while confirming the private bundle was
-stored. These tests do not create a product group or messaging flow.
+stored. A group test reloads the one-member state and verifies the creator
+credential and index. These tests do not create a product group or messaging
+flow.
 
 Each device owns its identity, MLS state, conversation history, inbox, and
 outbox. SQLCipher is now used for the local display profile; the app generates
