@@ -88,14 +88,16 @@ on both clients from the Familiar screen and exchange each displayed public
 key over a trusted channel. On the receiving computer, run:
 
 ```sh
-cargo run -- --lan-listen 45873 --expect-peer <FRIEND_PUBLIC_KEY_HEX>
+PEER_KEY='REPLACE_WITH_FRIEND_64_CHAR_PUBLIC_KEY_HEX'
+cargo run -- --lan-listen 45873 --expect-peer "$PEER_KEY"
 ```
 
 On the sending computer, replace the address with the receiver's LAN IPv4
 address and use the receiver's public key:
 
 ```sh
-cargo run -- --lan-send 192.168.1.20:45873 --expect-peer <RECEIVER_PUBLIC_KEY_HEX> --text 'hello from the crew'
+PEER_KEY='REPLACE_WITH_RECEIVER_64_CHAR_PUBLIC_KEY_HEX'
+cargo run -- --lan-send 192.168.1.20:45873 --expect-peer "$PEER_KEY" --text 'hello from the crew'
 ```
 
 Both devices must be on a reachable LAN, with inbound UDP allowed on port
