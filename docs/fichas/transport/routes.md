@@ -5,9 +5,9 @@
 > [ADR 0005](../architecture/adr-0005-elixir-server-core.md) defines the
 > Elixir backend and Rust client language boundary.
 
-**Estado:** endereço direto por IP manual implementado para um teste de texto
-de uma mensagem na LAN; descoberta, pareamento de contatos, relay e travessia
-de NAT continuam não implementados.
+**Estado:** endereço direto por IP manual implementado para sessões de texto
+persistentes nos dois sentidos na LAN; descoberta, pareamento de contatos,
+relay e travessia de NAT continuam não implementados.
 
 Na mesma rede local, dois clientes Rust podem trocar chaves públicas, usar o
 IP/porta manual do receptor e se autenticar diretamente pela chave fixada.

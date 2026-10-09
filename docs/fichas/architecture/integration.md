@@ -1,8 +1,8 @@
 # Rust client and Elixir server integration
 
 **Status:** local development status exchange and persistent binary WebSocket
-transport after a version 1 handshake, plus a separate direct-LAN one-shot text
-exchange in the Rust client. The Rust/Iced frontend and Elixir/OTP backend
+transport after a version 1 handshake, plus a separate persistent bidirectional
+direct-LAN text session in the Rust client. The Rust/Iced frontend and Elixir/OTP backend
 communicate across processes. The Elixir diagnostics are not part of peer
 traffic.
 
@@ -33,20 +33,23 @@ HTTP status route is a separate diagnostic.
 
 ## Direct LAN messaging in the Iced client
 
-The Iced chat screen can send and receive one bounded UTF-8 text frame directly
-to a manually pinned device on a reachable LAN. Both endpoints use the durable
-Ed25519 device identity as their Iroh EndpointId; QUIC authenticates and
-encrypts the connection. Users manually exchange public keys; the sender
-supplies the receiver's LAN IP and UDP port. Relay and address lookup are
-disabled. See the frontend's
-[LAN text transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-text-v1.md)
+The Iced chat screen can exchange multiple bounded UTF-8 text messages in both
+directions over one session with a manually pinned device on a reachable LAN.
+Both endpoints use the durable Ed25519 device identity as their Iroh EndpointId;
+QUIC authenticates and encrypts the connection. Users manually exchange public
+keys; the sender supplies the receiver's LAN IP and UDP port. Relay and address
+lookup are disabled. An ACK means the peer added text to its in-memory
+transcript; it does not mean the user read it. On disconnect, an unacknowledged
+send is reported as delivery unknown and is not replayed. See the frontend's
+[LAN text transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-text-v2.md)
 for the screen flow and protocol.
 
 This slice has no MLS credential or group, verified contact roster, durable
 history, offline delivery, discovery, NAT traversal, or relay fallback. Its
 transcript lasts only for the current app session. Automated integration tests
-launch two separate client processes, check text and acknowledgement delivery,
-and verify rejection of an unpinned identity. A manual test uses two app
+launch two separate client processes, exchange multiple messages in both
+directions over one connection, verify wrong-key rejection, and check pending
+send behavior on disconnect. A manual test uses two app
 instances on a reachable LAN and requires firewall access to the chosen UDP
 port. Linux requires an available Secret Service for local device identity.
 

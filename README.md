@@ -13,10 +13,10 @@
   <img src="docs/design/readme/badges/early-build.svg" alt="Early build" />
 </p>
 
-**Conceived by Rodrigo and Vitchola**, Slouching is a planned private place for a small crew to chat, call, and share a screen. The Rust/Iced client owns local keys, cryptography, history, and direct peer paths. Each device is planned to retain its own encrypted SQLite history, inbox, outbox, and MLS state. Elixir remains the backend language. A member may optionally host a helper on a PC or VPS for ciphertext delivery, discovery, relay, or group media. A one-shot pinned-device text transport now works directly between reachable LAN peers without a hosted helper or PostgreSQL.
+**Conceived by Rodrigo and Vitchola**, Slouching is a planned private place for a small crew to chat, call, and share a screen. The Rust/Iced client owns local keys, cryptography, history, and direct peer paths. Each device is planned to retain its own encrypted SQLite history, inbox, outbox, and MLS state. Elixir remains the backend language. A member may optionally host a helper on a PC or VPS for ciphertext delivery, discovery, relay, or group media. A pinned-device text session now supports multiple messages in both directions between reachable LAN peers without a hosted helper or PostgreSQL.
 
 > [!IMPORTANT]
-> This is an early build, **not a secure messenger**. The Rust/Iced frontend has eleven screens based on the design board, local encrypted profile/event storage, OpenMLS provider tables inside SQLCipher, explicit Ed25519 device-key creation, and a core API that creates/loads a distinct MLS signing key and signs its binding to the device key. The chat screen can exchange one text message at a time with a manually pinned device over direct LAN Iroh/QUIC; its transcript is session-only. No MLS credential, KeyPackage, contact roster, MLS group, durable chat history, media calls, or screen sharing is implemented. The Elixir backend has local SQLite development storage plus status and a development WebSocket handshake with Ping/Pong; PostgreSQL is optional for deployment. The older Rust `slouching-peer` crate is preserved as an experiment, not the service backend.
+> This is an early build, **not a secure messenger**. The Rust/Iced frontend has eleven screens based on the design board, local encrypted profile/event storage, OpenMLS provider tables inside SQLCipher, explicit Ed25519 device-key creation, and a core API that creates/loads a distinct MLS signing key and signs its binding to the device key. The chat screen supports persistent pairwise direct-LAN Iroh/QUIC sessions with manually pinned device keys; its transcript is session-only, and ACK means accepted into the peer's memory rather than read. No MLS credential, KeyPackage, contact roster, MLS group, durable chat history, media calls, or screen sharing is implemented. The Elixir backend has local SQLite development storage plus status and a development WebSocket handshake with Ping/Pong; PostgreSQL is optional for deployment. The older Rust `slouching-peer` crate is preserved as an experiment, not the service backend.
 
 ![Native Rust/Iced home with the supplied night scenery and icon-based feature strip, without the frog mage or gnome cutouts](docs/design/readme/native-vhs-home.png)
 
@@ -38,7 +38,7 @@ This repository holds the project overview, design sources, and a reconciled doc
 
 | Repository | Owns | Current state |
 | --- | --- | --- |
-| [slouching-frontend](https://github.com/slouching-org/slouching-frontend) | Native Rust/Iced desktop UI and web visual prototype | Eleven native screens; direct-LAN one-shot text messaging in Iced; encrypted local profile/event journal and OpenMLS storage; Ed25519 identity plus persisted device-bound MLS signer |
+| [slouching-frontend](https://github.com/slouching-org/slouching-frontend) | Native Rust/Iced desktop UI and web visual prototype | Eleven native screens; persistent bidirectional direct-LAN text sessions in Iced; encrypted local profile/event journal and OpenMLS storage; Ed25519 identity plus persisted device-bound MLS signer |
 | [slouching-backend](https://github.com/slouching-org/slouching-backend) | Elixir service backend | Local SQLite Repo, no-PostgreSQL smoke check, and transport diagnostics; PostgreSQL deployment option; no enrollment or product traffic |
 
 Start with the [fichas index](docs/fichas/README.md). The [product specification](docs/fichas/architecture/backend.md), [Elixir backend boundary](docs/fichas/architecture/elixir-backend.md), [frontend screen specification](docs/fichas/frontend/screens.md), [technology plan](docs/fichas/architecture/tech-stack.md), and [ADRs](docs/fichas/README.md#accepted-decisions) describe the target and distinguish it from working code. The [owner's 11-page architecture PDF](docs/fichas/architecture/sources/architecture-p2p-v0.1.pdf) and [page-by-page transcript](docs/fichas/architecture/sources/README.md) are preserved. [ADR 0005](docs/fichas/architecture/adr-0005-elixir-server-core.md) defines the Rust-client/Elixir-backend division. [ADR 0006](docs/fichas/architecture/adr-0006-local-storage-optional-helper.md) reaffirms the backup specification: local SQLite, optional helpers, and PostgreSQL only as a deployment option.
@@ -90,10 +90,11 @@ To use direct-LAN messaging, open the **chat** screen in both clients. Create
 an identity in **Familiar** if needed, then use **Copiar minha chave pública**
 and exchange the two keys over a trusted channel. Each person pastes the
 other's key into **Chave pública do peer**. The receiving device selects a UDP
-port and clicks **Aguardar uma mensagem**; share its displayed LAN address and
-port with the sender. The sender enters that address, writes a message, and
-clicks **Enviar**. Both devices need to be on a reachable LAN, with the chosen
-UDP port allowed by the local firewall. On Linux, Secret Service must be
-available for device identity storage. The listener accepts one message per
-start; the transcript lasts only while the app remains open. Cross-network
-connections, NAT traversal, MLS, and durable history are not implemented.
+port and clicks **Aguardar peer**; share its displayed LAN address and port
+with the sender. The sender enters that address, writes a message, and clicks
+**Conectar e enviar**. Once connected, either side can send multiple messages
+over that session; use **Desconectar sessão** to close it. Both devices need to
+be on a reachable LAN, with the chosen UDP port allowed by the local firewall.
+On Linux, Secret Service must be available for device identity storage. The
+transcript lasts only while the app remains open. Cross-network connections,
+NAT traversal, MLS, and durable history are not implemented.

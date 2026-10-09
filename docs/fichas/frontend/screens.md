@@ -1,6 +1,6 @@
 # Slouching frontend specification
 
-**Status:** design and interaction specification; the Rust/Iced client has eleven screens, including one-shot direct-LAN text messaging with manually pinned device keys. MLS, durable history and the broader product flow remain open.
+**Status:** design and interaction specification; the Rust/Iced client has eleven screens, including persistent direct-LAN text sessions with manually pinned device keys. MLS, durable history and the broader product flow remain open.
 **Revision:** 0.4, 2026-10-09; reconciled with ADRs 0003–0006
 **Sources:** the [11-screen design bank](../brand/source-bank.md), [five earlier references](../brand/references.md), [visual style](../brand/visual-style.md), and [Rust-client/Elixir-backend decision](../architecture/adr-0005-elixir-server-core.md).
 
@@ -82,4 +82,4 @@ Compare running captures against **all eleven** screens at 1280 × 800 logical p
 
 For behavior acceptance, run at least two clean peers through identity setup and verification, invitation, direct connection, encrypted chat, call join/leave, permission denial, route failure and screen sharing. Test an authorized helper path separately. A seeded screenshot serves visual review, not proof of functioning P2P, MLS or media.
 
-Pending: licensed font/icon files or approved package sources, production logo exports if available, exact navigation and localization decisions, animation preferences and platform-specific capture behavior. Mock protocol values and security copy require review before release. The current [native scaffold](current-slice.md) has eleven screens; Chat supports one-shot direct-LAN text with manually pinned device keys, while the remaining product behavior and full acceptance flow are open.
+Pending: licensed font/icon files or approved package sources, production logo exports if available, exact navigation and localization decisions, animation preferences and platform-specific capture behavior. Mock protocol values and security copy require review before release. The current [native scaffold](current-slice.md) has eleven screens; Chat supports persistent direct-LAN text sessions with manually pinned device keys, while the remaining product behavior and full acceptance flow are open.
