@@ -28,6 +28,7 @@ printf 'Checking Elixir backend...\n'
   mix format --check-formatted
   mix test
   mix compile --warnings-as-errors
+  ./scripts/smoke-local-sqlite.sh
 )
 printf 'Checking Rust/Iced client...\n'
 cargo check --manifest-path "${frontend_root}/Cargo.toml"
