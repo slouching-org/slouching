@@ -33,6 +33,11 @@ Group invitations still require a separately trusted channel.
 Groups saved on the device are listed with their current epoch and quarantine
 state. Opening one restores its ID, transcript, pending Commits, and security
 alert from SQLCipher after an app restart.
+Members can prepare signed self-update proposals and transfer them to the
+designated committer through a separately trusted channel. The committer
+authenticates and stores the proposal, then creates an atomic Commit for the
+existing per-member delivery flow. Other proposal types and network proposal
+delivery remain unimplemented.
 
 The direct-LAN text screen manually pins the peer's Ed25519 device key. One
 side listens and shares its announced LAN address; the other connects. Both can
