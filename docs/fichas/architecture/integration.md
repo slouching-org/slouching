@@ -78,9 +78,9 @@ remain unimplemented.
 The v5 protocol has no verified contact roster, group discovery, relay, NAT
 traversal, offline delivery, or cross-device history. Automated integration
 tests launch two separate client processes and exchange text, MLS messages,
-Commits, and predecessor requests, verify wrong-key rejection, and check
-unknown pending delivery on disconnect. A loopback transport test exchanges an
-MLS proposal and verifies its ACK after receiver acceptance. A manual test uses two app instances on a
+Commits, predecessor requests, and proposals, verify wrong-key rejection, and
+check unknown pending delivery on disconnect for text, MLS events, Commits, and
+proposals. A manual test uses two app instances on a
 reachable LAN and requires firewall access to the chosen UDP port. Linux
 requires an available Secret Service for local device identity.
 
