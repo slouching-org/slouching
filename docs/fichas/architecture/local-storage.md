@@ -10,6 +10,8 @@ inbox/outbox/history are not connected to it. The same SQLCipher connection
 also initializes the versioned OpenMLS SQLite provider schema; no MLS
 provider/client, credentials, key packages, or groups are created yet. See
 [ADR 0006](adr-0006-local-storage-optional-helper.md).
+An automated test opens a temporary SQLCipher database twice and checks that
+the OpenMLS schema remains available after both migration runs.
 
 Each device owns its identity, MLS state, conversation history, inbox, and
 outbox. SQLCipher is now used for the local display profile; the app generates
