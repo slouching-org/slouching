@@ -15,14 +15,13 @@ The owner reaffirmed the backup decisions.
 ## Decision
 
 - Each device owns its identity keys, MLS state, encrypted local history,
-  inbox, and outbox. The first native persistence slice stores only the
-  display name and familiar in SQLCipher encrypted SQLite; its random key is
-  kept in the operating system credential store. A separate explicit action
-  can create an Ed25519 signing seed in that store. Authentication, pairing,
-  product inbox, outbox, history, and MLS state remain unimplemented.
-  The Rust core can sign a local binding from that device key to a separate
-  MLS signing key, but the binding is not connected to peer verification or
-  product credentials.
+  inbox, and outbox. The native client stores the profile, device identity,
+  MLS state, per-peer direct history, MLS transcript, and retryable event
+  outbox in SQLCipher encrypted SQLite; the random database key and device
+  seed use the operating system credential store. A device-signed MLS key
+  binding is carried in KeyPackages and checked during group messaging, but
+  it does not establish user-verified contact pairing. Delegated inboxes,
+  synchronized history, and recovery remain unimplemented.
 - Reachable peers must be able to communicate on a LAN without PostgreSQL,
   a hosted service, or an internet route. Direct internet communication
   depends on a permitted reachable route.
@@ -43,13 +42,14 @@ server enrollment, and authoritative server-log assumptions do not override
 these decisions. ADR 0005 continues to define the language boundary, with
 its deployment interpretation corrected here.
 
-The current loopback Elixir/Rust handshake is a development slice, not the
-implemented LAN peer mode. The Elixir helper now uses SQLite by default for
+The loopback Elixir/Rust handshake is a development diagnostic, separate from
+the implemented pinned-device LAN text and MLS paths. The Elixir helper uses SQLite by default for
 local development, with PostgreSQL available through explicit deployment
 configuration. Its device-key migration does not establish a required
 directory or enrollment service. The backend repository includes a repeatable
 SQLite startup smoke check in the integration script. The local profile
-database is not the product inbox, history, or peer delivery layer.
+database contains the client's profile, history, and outbox; it is not a
+delegated mailbox or synchronization service.
 
 Messages wait when no authorized holder can reach the recipient. A helper
 receipt proves that a copy was stored, not that the recipient received it.
