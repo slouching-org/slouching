@@ -62,6 +62,6 @@ group fan-out,
 relay, and offline delivery are not implemented. The older web UI under
 `prototypes/web/` is a design benchmark, not the product runtime.
 
-See the [v4 direct peer transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v4.md),
+See the [v5 direct peer transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v5.md),
 the [screen specification](screens.md), and the
 [technology plan](../architecture/frontend-tech-stack.md).

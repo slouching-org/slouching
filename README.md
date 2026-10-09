@@ -18,10 +18,11 @@
 > [!IMPORTANT]
 > This is an early build, **not a secure messenger**. Direct pinned-device LAN text and MLS application messaging work over Iroh/QUIC. The MLS screen supports manual KeyPackage/Welcome setup; the receiver validates and persists ciphertext, ratchet state, and transcript in SQLCipher before ACK, and queued messages can be retried. Membership Commits are stored atomically with the committer's new group epoch. When a pinned group member connects, its eligible pending Commits start sending automatically, one at a time with a durable ACK before advancing; the manual control remains available. Exact redelivery is harmless. Clients detect authenticated committer equivocation against saved historical OpenMLS state, preserve both conflicting Commits, and quarantine the affected group without changing its accepted epoch. Simultaneous multi-member fan-out, group discovery, contact verification, relay, offline delivery, calls, and screen sharing remain unimplemented. The Elixir backend uses SQLite locally; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is an experiment, not the service backend.
 
-Members can also prepare a signed MLS self-update proposal for transfer to the
-designated committer through a separately trusted channel. The committer
-authenticates and saves it before generating a Commit. Other proposal types and
-network delivery of proposals remain unimplemented.
+Members can also send a signed MLS self-update proposal to the designated
+committer over the active pinned peer session, with copy/paste over a separately
+trusted channel as a fallback. The committer binds the MLS author to the pinned
+device and saves the authenticated proposal before ACK or Commit generation.
+Other proposal types and approval controls remain unimplemented.
 
 The MLS screen lists local groups with their current epoch and quarantine state;
 opening a saved group restores its transcript and security state from SQLCipher.
@@ -32,7 +33,7 @@ opening a saved group restores its transcript and security state from SQLCipher.
 
 ![Actual native direct-LAN chat UI showing its local-history label; this capture has no peer data and Secret Service is unavailable, so identity-gated controls are disabled](repositories/frontend/docs/design/runtime/native-vhs/06-chat.png)
 
-![Actual native MLS group screen captured from the running frontend, showing the self-update proposal control and no selected group](repositories/frontend/docs/design/runtime/native-vhs/11-mls.png)
+![Actual 1884 × 1000 native MLS group screen captured from the running frontend, showing setup and self-update controls in the scrollable member panel](repositories/frontend/docs/design/runtime/native-vhs/11-mls.png)
 
 ![Native Rust/Iced group-call preview with illustrative characters and chat; no media is connected](docs/design/readme/native-vhs-call.png)
 

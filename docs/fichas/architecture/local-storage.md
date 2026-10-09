@@ -21,7 +21,7 @@ only the public bytes. The setup screen exposes public KeyPackage exchange. The 
 also creates and persists a local single-member MLS group and indexes the
 creator as designated committer. Member admission validates the device-bound
 KeyPackage, enforces the designated committer, merges the Commit locally, and
-returns Commit, Welcome, and ratchet-tree bytes. The exact Commit bytes and digest plus a snapshot of predecessor-epoch member devices are stored in the same SQLCipher transaction as the group epoch update. The pending Commit reloads after restart and can be sent to one snapshotted device over the active session; a new invitee is excluded, and a removed device can receive its removal Commit. On each pinned peer connection, the UI automatically drains that device's eligible chain in epoch order, waiting for each durable ACK; a manual send action remains available. A regression test covers two consecutive Commits, ACK advancement, and recovery after database reopen. Each device applies a Commit durably before ACK, which the sender stores per recipient and shows in the MLS screen. Exact redelivery is deduplicated. Simultaneous multi-member fan-out, offline delivery, and concurrent proposal races remain open. Members can generate signed self-update proposals for manual transfer to the committer; the committer verifies the device-bound member credential, journals exact delivery IDs, and can atomically commit the pending proposal queue into the normal recipient-snapshotted outbox. Other proposal types and network proposal delivery remain open. Forced outbox and recipient-ledger failures verify group state rolls back atomically. The invitee processes Welcome
+returns Commit, Welcome, and ratchet-tree bytes. The exact Commit bytes and digest plus a snapshot of predecessor-epoch member devices are stored in the same SQLCipher transaction as the group epoch update. The pending Commit reloads after restart and can be sent to one snapshotted device over the active session; a new invitee is excluded, and a removed device can receive its removal Commit. On each pinned peer connection, the UI automatically drains that device's eligible chain in epoch order, waiting for each durable ACK; a manual send action remains available. A regression test covers two consecutive Commits, ACK advancement, and recovery after database reopen. Each device applies a Commit durably before ACK, which the sender stores per recipient and shows in the MLS screen. Exact redelivery is deduplicated. Simultaneous multi-member fan-out, offline delivery, and concurrent proposal races remain open. Members can send signed self-update proposals to the committer over the pinned session or transfer them manually. The receiver binds the MLS author to the transport peer, verifies the device-bound member credential, journals exact delivery IDs, and ACKs only after durable storage. The committer can atomically commit the pending proposal queue into the normal recipient-snapshotted outbox. Other proposal types and approval controls remain open. Forced outbox and recipient-ledger failures verify group state rolls back atomically. The invitee processes Welcome
 against its encrypted private package and indexes the sender as committer.
 Group creation and admission are exposed in the local setup UI. Outbound MLS
 application messages are saved as queued ciphertext with the ratchet update in
@@ -116,9 +116,10 @@ The optional Elixir helper has its own SQLite database by default and may use
 PostgreSQL through explicit deployment configuration. That helper database is
 not the local client persistence implementation.
 
-The next slice should add network proposal delivery and approval for proposal
-types beyond self-updates, then automate group setup and multi-member Commit
-fan-out before helper delivery and offline synchronization. Verify MLS messaging between two real app instances on a LAN
+Self-update proposals now travel over the active pinned session and are
+persisted before ACK. The next slice should add proposal review and safe
+handling for proposal types beyond self-updates, then automate group setup and
+multi-member Commit fan-out before helper delivery and offline synchronization. Verify MLS messaging between two real app instances on a LAN
 without Postgres or a hosted helper, then verify optional ciphertext delegation
 and helper loss separately.
 These are acceptance requirements, not claims that the current scaffold

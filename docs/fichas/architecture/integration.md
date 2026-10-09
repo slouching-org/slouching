@@ -42,7 +42,7 @@ lookup are disabled. The receiver stores inbound text in its local SQLCipher
 history before ACK, and the sender stores it after receiving ACK. ACK does not
 mean the user read it. On disconnect, an unacknowledged
 send is reported as delivery unknown and is not replayed. See the frontend's
-[direct peer transport v4 contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v4.md)
+[direct peer transport v5 contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v5.md)
 for the screen flow and protocol.
 
 The frontend can also send MLS application events through that direct session
@@ -62,16 +62,25 @@ adoption state in the UI, deduplicates exact redelivery, and drains each
 recipient's eligible Commit chain in order. A recipient that is missing an
 epoch requests that predecessor over the pinned session; the committer replays
 it only when that device is in the saved recipient snapshot, including after a
-prior ACK. The v4 request is bounded per session. Multi-member fan-out, offline
+prior ACK. The v5 request is bounded per session. Multi-member fan-out, offline
 delivery, and MLS invitation exchange remain manual/open. The ACK confirms
 durable client acceptance, not reading. MLS invitations still require a trusted
 manual channel.
 
-The v4 protocol has no verified contact roster, group discovery, relay, NAT
+Members can send signed self-update proposals through the same pinned session.
+The receiver verifies that the envelope author is the pinned transport device,
+then authenticates and persists the proposal with OpenMLS before ACK. Exact
+redelivery is deduplicated; if the ACK is lost, the member can resend the same
+proposal. The designated committer still creates the Commit and uses the
+recipient-snapshotted delivery path. Other proposal types and approval controls
+remain unimplemented.
+
+The v5 protocol has no verified contact roster, group discovery, relay, NAT
 traversal, offline delivery, or cross-device history. Automated integration
 tests launch two separate client processes and exchange text, MLS messages,
-Commits, and predecessor requests, verify wrong-key rejection, and check unknown
-pending delivery on disconnect. A manual test uses two app instances on a
+Commits, and predecessor requests, verify wrong-key rejection, and check
+unknown pending delivery on disconnect. A loopback transport test exchanges an
+MLS proposal and verifies its ACK after receiver acceptance. A manual test uses two app instances on a
 reachable LAN and requires firewall access to the chosen UDP port. Linux
 requires an available Secret Service for local device identity.
 
