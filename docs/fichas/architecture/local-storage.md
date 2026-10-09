@@ -21,7 +21,7 @@ only the public bytes. The setup screen exposes public KeyPackage exchange. The 
 also creates and persists a local single-member MLS group and indexes the
 creator as designated committer. Member admission validates the device-bound
 KeyPackage, enforces the designated committer, merges the Commit locally, and
-returns Commit, Welcome, and ratchet-tree bytes. The exact Commit bytes and digest are stored in a separate queued local Commit outbox in the same SQLCipher transaction as the group epoch update. The pending Commit reloads after restart and is available to copy for distribution; existing members can authenticate and apply a copied Commit, with exact redelivery deduplicated; automatic distribution/fan-out and concurrent proposal handling remain open. A forced outbox-write failure test verifies the group epoch and membership roll back together. The invitee processes Welcome
+returns Commit, Welcome, and ratchet-tree bytes. The exact Commit bytes and digest are stored in a separate queued local Commit outbox in the same SQLCipher transaction as the group epoch update. The pending Commit reloads after restart and can be sent to one authenticated current member over the active session; that member applies it durably before ACK, with exact redelivery deduplicated. Multi-member fan-out, offline delivery, and concurrent proposal handling remain open. A forced outbox-write failure test verifies the group epoch and membership roll back together. The invitee processes Welcome
 against its encrypted private package and indexes the sender as committer.
 Group creation and admission are exposed in the local setup UI. Outbound MLS
 application messages are saved as queued ciphertext with the ratchet update in

@@ -52,10 +52,13 @@ persists the ciphertext, ratchet update, and local plaintext transcript in one
 SQLCipher transaction before ACK. Exact event redelivery is deduplicated. The
 sender advances its outbox state only after the peer ACK and exposes a control
 to retry queued events after reconnecting. Membership Commits are journaled
-atomically with the committer epoch; existing members can manually import and
-authenticate them, with exact redelivery deduplicated. Automatic Commit
-distribution/fan-out remains open. The ACK confirms durable client acceptance,
-not reading. MLS invitations still require a trusted manual channel.
+atomically with the committer epoch. A pending Commit can be sent over the
+active pinned session to one current member at a time after checking its
+device-bound MLS membership. The receiver authenticates and persists the Commit
+before ACK; exact redelivery is deduplicated. Multi-member fan-out, offline
+delivery, and MLS invitation exchange remain manual/open. The ACK confirms
+durable client acceptance, not reading. MLS invitations still require a trusted
+manual channel.
 
 The v3 protocol has no verified contact roster, group discovery, relay, NAT
 traversal, offline delivery, or cross-device history. Automated integration
