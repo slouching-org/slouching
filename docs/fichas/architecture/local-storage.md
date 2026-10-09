@@ -6,9 +6,10 @@ credential store. The Ed25519 signing seed is stored separately in that
 credential store. The encrypted database now has an initial opaque event
 journal schema and storage operations with ID/digest deduplication. The UI,
 MLS client state, transport, delivery receipts, and product
-inbox/outbox/history are not connected to it. The same SQLCipher connection
-also initializes the versioned OpenMLS SQLite provider schema; no MLS
-provider/client, credentials, key packages, or groups are created yet. See
+inbox/outbox/history are not connected to it. Opening the database now
+composes OpenMLS RustCrypto with its SQLite storage provider and initializes
+the versioned schema on the same SQLCipher connection; no MLS credentials,
+key packages, or groups are created yet. See
 [ADR 0006](adr-0006-local-storage-optional-helper.md).
 An automated test opens a temporary SQLCipher database twice, checks that the
 OpenMLS schema remains available, and stores/reloads an MLS signing key using
