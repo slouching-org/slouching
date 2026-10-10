@@ -254,17 +254,21 @@ member separately.
 If a peer lacks an epoch, it requests that predecessor over the pinned session;
 the committer can replay it only to a device in that Commit's saved recipient
 snapshot, even after recording an earlier ACK.
-Group creation and committer admission require explicit user action. Automatic group fan-out,
-unassisted cross-network connections, NAT traversal, and offline delivery are
-not implemented. A member-operated Iroh Relay can be configured for direct-text
-connections when a route needs relaying; the relay must be reachable over HTTPS
-and configured with the same shared token on each peer. Remote relay and VPN
-behavior still need testing. See the [frontend test flow](https://github.com/slouching-org/slouching-frontend#run-the-native-scaffold).
+Group creation and committer admission require explicit user action. The MLS
+screen can fan out queued events over saved peer routes, and reconnecting peers
+drain their eligible Commit chain. There is no automatic NAT traversal. A
+member-operated Iroh Relay can be configured for direct-text connections when
+a route needs relaying; the relay must be reachable over HTTPS and configured
+with the same shared token on each peer. Remote relay and VPN behavior still
+need testing. See the [frontend test flow](https://github.com/slouching-org/slouching-frontend#run-the-native-scaffold).
 
-An opted-in delegated MLS-copy helper can accept the author and recipient in
-separate authenticated sessions; ordinary application frames still require
-the manually pinned peer. This is store-and-forward over a reachable direct or
-configured participant-relay route. Local mDNS can discover listener routes
-on the same LAN, but it neither crosses VPNs nor performs hole-punching. A
-VPN may provide a direct route between devices, but cross-network VPN behavior
-has not yet been verified.
+An opted-in peer helper can accept an author and recipient in separate
+authenticated sessions; ordinary application frames still require the
+manually pinned peer. A separate optional Elixir HTTPS mailbox supports
+fallback uploads and manual fetches, with the recipient persisting an MLS
+event before ACKing helper deletion. Both are best-effort store-and-forward,
+not live connectivity or guaranteed offline delivery. Local mDNS can discover
+listener routes on the same LAN, but it neither crosses VPNs nor performs
+hole-punching. A VPN may provide a direct route between devices if it carries
+UDP and the receiving firewall allows it; cross-network VPN behavior has not
+yet been verified.
