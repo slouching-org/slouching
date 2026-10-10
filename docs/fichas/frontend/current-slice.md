@@ -3,8 +3,8 @@
 **Status:** eleven design-board views plus a native MLS group screen. Direct
 LAN chat uses pinned Ed25519 device identities and persistent Iroh/QUIC
 sessions. Successful outbound peer handshakes save the pinned device key and
-last-seen socket address in the encrypted local route book, a foundation for
-planned multi-member Commit fan-out. MLS group setup sends a device-bound KeyPackage over the active
+last-seen socket address in the encrypted local route book. The MLS screen uses
+these routes for sequential multi-member Commit fan-out. MLS group setup sends a device-bound KeyPackage over the active
 pinned session. The committer reviews and admits it after matching the package
 identity to the transport peer. After admission, the committer sends Welcome
 and ratchet tree over the pinned session. The invitee validates the target
@@ -17,8 +17,11 @@ The sender marks the outbox event held by the peer after receiving that ACK.
 Queued events can be retried from the MLS screen after reconnecting. When a
 pinned peer connects, the client automatically checks and sends the eligible
 Commit chain for that device, waiting for each durable ACK before advancing;
-the manual send control remains available. Every member still uses a separate
-peer session.
+the manual send control remains available. A separate fan-out control walks
+queued recipients with saved routes, sends bounded ordered batches, and records
+each durable ACK before continuing. An unavailable peer does not block other
+recipients; missing or stale routes leave that device queued for retry. Every
+member still uses a separate peer session.
 
 Before applying each next-epoch Commit, the client saves the prior OpenMLS
 state in SQLCipher. A different, valid Commit for an already accepted
