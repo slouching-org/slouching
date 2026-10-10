@@ -5,7 +5,7 @@
 > [ADR 0005](../architecture/adr-0005-elixir-server-core.md) defines the
 > Elixir backend and Rust client language boundary.
 
-**Estado:** chamadas não implementadas. O painel enumera dispositivos de áudio
+**Estado:** chamadas ao vivo não implementadas. O painel enumera dispositivos de áudio
 via CPAL e permite pré-seleção em memória. Uma ação explícita abre o microfone
 selecionado para medir nível RMS local; samples não são salvos nem enviados, e
 o fluxo fecha ao sair da tela/aba. A seleção não é consumida por uma chamada.
@@ -15,10 +15,14 @@ O cliente agora contém um módulo isolado de proteção SFrame para quadros de
 mídia codificados, com chave por membro/época, limite de tamanho e rejeição de
 replay. A persistência MLS diferencia grupos de chamada e conversa, transporta
 essa finalidade no Welcome autenticado e expõe um exportador de chave de mídia
-que rejeita grupos de conversa e grupos em quarentena. A tela de chamada pode
-criar um grupo isolado, copiar seu ID e abrir o fluxo MLS existente para
-convidar participantes. Ela ainda não conecta o exportador ao SFrame, WebRTC,
-captura ou reprodução; portanto, áudio e vídeo continuam indisponíveis.
+que rejeita grupos de conversa e grupos em quarentena. O remetente SFrame usa o
+índice da folha MLS local autenticada; o receptor resolve a chave pública do
+dispositivo remetente para o índice atual do grupo. Um teste com dois perfis
+confirma índices distintos e cifra/decifra um quadro usando a chave exportada
+compartilhada. A tela de chamada pode criar um grupo isolado, copiar seu ID e
+abrir o fluxo MLS existente para convidar participantes. Ainda não existe fluxo
+na interface que envie quadros SFrame, nem WebRTC, captura ou reprodução; áudio
+e vídeo continuam indisponíveis.
 
 Uma chamada tem grupo MLS separado contendo somente seus participantes.
 Áudio/vídeo usam chaves derivadas desse grupo; membros da conversa que não
