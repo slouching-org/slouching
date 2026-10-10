@@ -52,9 +52,12 @@ ACK. IDs iguais com bytes ou metadados divergentes são rejeitados.
 
 A inbox e a outbox listam páginas limitadas com cursor estável. Fan-out MLS
 registra separadamente o ACK de cada membro da fotografia de destinatários; o
-evento global só fecha quando todos confirmam. O consentimento local do helper
-já pode ser ativado ou desativado em Settings; estados de cópia delegada,
-expiração visível e falha ainda não aparecem como recibos completos de produto.
+evento global só fecha quando todos confirmam. O histórico MLS mostra
+confirmações diretas por dispositivo, inclusive entrega parcial e expiração. O resultado do
+fan-out informa separadamente quantas cópias foram guardadas por peers e pelo
+helper remoto. Ainda não há recibo persistente por evento e por holder, nem
+estados completos de falha ou leitura humana. O consentimento local do helper
+pode ser ativado ou desativado em Settings.
 
 Uma cópia em helper não prova entrega ao destinatário. Nenhum membro ganha
 histórico anterior automaticamente ao ingressar no grupo. A conversa
