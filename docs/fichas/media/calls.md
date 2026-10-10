@@ -5,10 +5,11 @@
 > [ADR 0005](../architecture/adr-0005-elixir-server-core.md) defines the
 > Elixir backend and Rust client language boundary.
 
-**Estado:** chamadas não implementadas. O painel de configurações enumera os
-dispositivos de áudio do host via CPAL e permite uma pré-seleção apenas em
-memória. A escolha não abre captura ou reprodução nem é consumida por uma
-chamada. Vídeo e tela permanecem como prévias visuais.
+**Estado:** chamadas não implementadas. O painel enumera dispositivos de áudio
+via CPAL e permite pré-seleção em memória. Uma ação explícita abre o microfone
+selecionado para medir nível RMS local; samples não são salvos nem enviados, e
+o fluxo fecha ao sair da tela/aba. A seleção não é consumida por uma chamada.
+Vídeo e tela permanecem como prévias visuais.
 
 Uma chamada tem grupo MLS separado contendo somente seus participantes.
 Áudio/vídeo usam chaves derivadas desse grupo; membros da conversa que não

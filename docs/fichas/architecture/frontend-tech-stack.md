@@ -8,7 +8,7 @@ Its Elixir server/backend core and Rust/Iced client direction are retained.
 | --- | --- | --- |
 | Desktop UI | Rust 2024 + pinned Iced 0.14.0 | Native state in `src/main.rs`; eleven design-board views plus an MLS group setup screen |
 | Rendering | Iced/wgpu | Native views with images, SVG icons, and canvas texture; live video unbuilt |
-| Local audio devices | CPAL 0.18.2 | Real input/output device enumeration and in-memory selection in settings; no stream capture, playback, persistence, or call transport yet |
+| Local audio devices | CPAL 0.18.2 | Real device enumeration and in-memory selection; an explicit microphone test reports RMS locally, with no saved samples, playback, persistent selection, or call transport yet |
 | Local client core | Rust identity, cryptography, encrypted SQLite storage, transport, media | Device-bound OpenMLS credentials and group admission; application events are encrypted/decrypted with authenticated envelope metadata and ratchet changes committed with journal writes |
 | Local persistence | SQLCipher encrypted SQLite plus OS credential store for keys | Persists profile, direct chat history, MLS state, and opaque application ciphertext atomically with OpenMLS ratchet updates; membership Commits are stored with group epochs and inbound Commits apply atomically with deduplication |
 | Server/backend | Elixir, separately versioned backend repo | Development status and protobuf handshake implemented |

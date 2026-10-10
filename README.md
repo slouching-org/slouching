@@ -74,11 +74,12 @@ opening a saved group restores its transcript and security state from SQLCipher.
 
 ![Actual native Iced MLS screen with an encrypted attachment card and save action; attachment and connected state are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/12-mls-attachments.png)
 
-![Actual native Iced audio settings enumerating this session's input and output devices; names are machine-specific and the selections do not feed a call yet](repositories/frontend/docs/design/runtime/native-vhs/13-audio-devices.png)
+![Actual native Iced audio settings with real input/output devices and an inactive local microphone-test button; names are machine-specific and no call is connected](repositories/frontend/docs/design/runtime/native-vhs/13-audio-devices.png)
 
 The audio settings list real devices available to the current system session.
-The selected input/output stays in memory and is not connected to call capture
-or playback; voice and video calls remain unimplemented.
+The selected input/output stays in memory and is not connected to calls. An
+explicit local microphone test shows input level without saving or sending
+samples; voice and video calls remain unimplemented.
 
 ![Actual native identity verification screen showing a local full-key comparison and verified-key action; both keys are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/08-verify.png)
 
