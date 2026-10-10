@@ -32,11 +32,14 @@ membros precisam sincronizar a nova época e renegociar a chamada.
 O botão de microfone silencia localmente os quadros de saída sem encerrar a
 captura. O teste local de microfone em **Áudio & vídeo** continua separado da
 chamada. **Escolher tela** enumera monitores e captura uma imagem local sob
-demanda para prévia; não transmite essa imagem ao peer. Captura contínua,
-transporte WebRTC e renderização de vídeo remoto ainda faltam. Um codec local
-H.264/SFrame já cifra e autentica quadros e rejeita replay em teste, mas ainda
-não está ligado à captura nem à chamada. Captura de janela/câmera, supressão de
-ruído, cancelamento de eco, push-to-talk, TURN e descoberta automática também
-não estão implementados.
+demanda para prévia. Durante uma chamada ativa, **Compartilhar tela na chamada**
+captura a tela selecionada, codifica quadros H.264, protege cada quadro com a
+chave SFrame do grupo MLS e envia fragmentos limitados por DataChannel. O peer
+remonta, autentica e decodifica o quadro antes de exibi-lo; parar o
+compartilhamento limpa a imagem remota. Testes locais cobrem codec, proteção,
+fragmentação, entrega WebRTC, decodificação e sinal de parada. Ainda falta
+validar captura/permissões entre computadores reais e por VPN. Captura de
+janela/câmera, supressão de ruído, cancelamento de eco, push-to-talk, TURN e
+descoberta automática também não estão implementados.
 
 Ver [spec detalhada](../architecture/backend.md#7-calls-files-and-temporary-room-chat).
