@@ -75,12 +75,14 @@ are not bound to MLS credentials.
 
 The MLS composer can attach a local file. It encrypts the file into the local
 blob store, sends the key-bearing offer as an MLS application event, then
-streams ciphertext to the connected, snapshotted peer after the offer ACK.
+streams ciphertext to each connected, snapshotted peer after the offer ACK.
 The receiver authenticates membership and the exact offer before storing the
-ciphertext; its transcript card decrypts to a user-selected path after digest
-verification. Sending is currently point-to-point, retry state lasts only
-while the sender app remains open, and the two-machine database-authorized
-flow has not yet been runtime-validated.
+ciphertext, then confirms storage on the stream. Its transcript card decrypts
+to a user-selected path after digest verification. Directly routed recipients
+can be retried after restart from the persisted outbox and blob store. Helpers
+and the optional Elixir mailbox carry the MLS offer but not its attachment
+blob, so that recipient stays pending until a direct route is available. The
+two-machine database-authorized flow has not yet been runtime-validated.
 
 The direct-peer text screen manually pins the peer's Ed25519 device key. One
 side listens and shares an announced LAN/VPN address; the other connects. The

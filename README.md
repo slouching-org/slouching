@@ -68,21 +68,25 @@ reference. Stored ciphertext can be decrypted chunk by chunk and published to
 a destination only after AEAD and ciphertext-digest validation, without
 replacing an existing file; Unix staging files use mode 0600. A local
 two-endpoint QUIC test covers authorized retrieval and rejects an
-unauthorized peer. The peer layer also has a separate unidirectional QUIC
-stream for sending ciphertext against a group-bound offer, with a two-endpoint
-transfer-and-save test. The bounded receive-store path stages ciphertext in a
+unauthorized peer. The peer layer also has a separate bidirectional QUIC
+stream for sending ciphertext against a group-bound offer. The receiver sends
+an ACK only after validating and persisting the ciphertext; the two-endpoint
+transfer-and-save test covers that receipt. The bounded receive-store path stages ciphertext in a
 private temporary file and rejects streams whose size or digest differs from
 the MLS offer before adding a blob reference. Its plaintext receive core
 stages data and publishes it only after digest validation, without replacing
 an existing destination. The MLS composer imports and encrypts a chosen file,
 sends its offer as an MLS event, and starts a separate QUIC ciphertext stream
 after the receiver ACKs that event. The receiver checks active membership in
-that MLS group and the exact stored offer before importing the bounded stream.
-The attachment card can save by decrypting to a chosen path and publishing
-only after integrity checks. Failed outbound streams can be retried while the
-app remains open. The separate two-endpoint stream test covers transfer and
-save; the full database-authorized desktop flow and cross-machine file
-transfer still need runtime validation. Offer persistence in SQLCipher has
+that MLS group and the exact stored offer before importing the bounded stream;
+it then confirms storage on that same stream. Group fan-out sends each
+attachment over a direct member route and leaves that recipient queued until
+the blob ACK. The outbox and encrypted blob store allow retries after restart.
+Helpers and the Elixir mailbox carry MLS events but not attachment blobs, so
+attachments stay queued until a direct route is available. The attachment card
+can save by decrypting to a chosen path after integrity checks. The full
+database-authorized desktop flow and cross-machine file transfer still need
+runtime validation. Offer persistence in SQLCipher has
 group-state checks, idempotent retries, member-device validation, transfer-ID
 conflict checks, and a 200 MiB per-profile quota. The pinned iroh-blobs
 0.103.1 release is marked by its maintainers as not production quality, so
