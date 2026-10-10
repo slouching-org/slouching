@@ -120,8 +120,9 @@ Self-update proposals now travel over the active pinned session and are
 persisted before ACK. The committer screen lists current-epoch proposals by
 member and proposal ID before one explicit Commit includes the full list.
 Individual proposal approval/rejection and safe handling for proposal types
-beyond self-updates remain open. Next, automate trusted group setup and
-multi-member Commit fan-out before helper delivery and offline synchronization. Verify MLS messaging between two real app instances on a LAN
+beyond self-updates remain open. Next, transfer the Welcome and ratchet tree
+over the pinned session, then automate multi-member Commit fan-out before
+helper delivery and offline synchronization. Verify MLS messaging between two real app instances on a LAN
 without Postgres or a hosted helper, then verify optional ciphertext delegation
 and helper loss separately.
 These are acceptance requirements, not claims that the current scaffold

@@ -7,7 +7,7 @@ storage and optional deployment reaffirmed by [ADR 0006](adr-0006-local-storage-
 | --- | --- | --- |
 | Desktop UI and local client core | Rust/Iced and Tokio | Eleven native screens; direct-LAN text works with manual device-key pinning and local per-peer history |
 | Local persistence | Encrypted SQLite using SQLCipher; OS credential store holds the DB key | Frontend persists profile, up to 1,000 direct messages per peer, opaque event journal, OpenMLS signer/private KeyPackage bundle, and local MLS group state; outbound and inbound MLS application events update the ratchet and journal atomically |
-| Client cryptography and P2P | Rust; OpenMLS for MLS, iroh and SFrame candidates | Device binding, KeyPackage, group admission, and Welcome processing; authenticated MLS application encryption/decryption, durable deduplication, local chat UI, and direct-session delivery exist |
+| Client cryptography and P2P | Rust; OpenMLS for MLS, iroh and SFrame candidates | Device binding, pinned-session KeyPackage delivery with committer review, group admission, and Welcome processing; authenticated MLS application encryption/decryption, durable deduplication, local chat UI, and direct-session delivery exist; Welcome transport remains manual |
 | Backend service components | Elixir/OTP | Supervised Bandit loopback scaffold |
 | Gateway | Versioned binary WebSocket/protobuf | Handshake v1 and Ping/Pong only; no authenticated product traffic |
 | Optional helper storage | SQLite supported by the plan; Postgres optional for larger deployments | Elixir helper defaults to a local SQLite Repo; PostgreSQL is selectable by URL; device table has no enrollment or lookup |
