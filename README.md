@@ -33,9 +33,9 @@ QR pairing and short verification codes remain unimplemented.
 
 The native client now contains an internal file-transfer crypto foundation:
 random per-file keys, authenticated 48 KiB chunks, a 100 MiB bound, ciphertext
-digests, and a filename-only offer format. Users cannot send or receive files
-yet; peer-protocol integration, accept/save handling, streaming disk I/O, and
-the interface remain to be implemented.
+digests, bounded streaming encryption/decryption, and a filename-only offer
+format. Users cannot send or receive files yet; peer-protocol integration,
+accept/save handling, disk integration, and the interface remain to be built.
 
 The MLS screen lists local groups with their current epoch and quarantine state;
 opening a saved group restores its transcript and security state from SQLCipher.
