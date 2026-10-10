@@ -36,9 +36,9 @@ sends and attachments disabled for that inactive group.
 
 The identity screen signs a 10-minute QR invite containing the device key and,
 when a listener is active, its announced addresses. Import from PNG or scan
-with the camera verifies the signature and labels each address as LAN,
-VPN/CGNAT, or routable IP. Select the VPN address (such as a Tailscale `100.x`
-address) when the devices are on different networks. Keep the receiver's
+with the camera verifies the signature and labels each address by IP range.
+Select the VPN address (Tailscale usually assigns `100.64.0.0/10`; other VPNs
+may use a private address) when the devices are on different networks. Keep the receiver's
 listener open and allow its UDP port through the device firewall and VPN ACL.
 Camera access is explicit and local to the scan; captured frames are
 not stored or sent. Neither import path identifies the person behind an image
