@@ -124,6 +124,11 @@ The selected input/output stays in memory and is used by direct voice calls. An
 explicit local microphone test shows input level without saving or sending
 samples. Calls use Opus/SFrame over WebRTC RTP after MLS membership and peer
 signaling; video and physical two-device validation remain outstanding.
+The call audio decoder now keeps an independent Opus state and SFrame replay
+window for each remote member in the call MLS group, selecting by the SFrame
+sender index. The current call UI still establishes one remote WebRTC peer; this
+change prepares multi-source audio reception but does not implement mesh or SFU
+calls.
 
 ![Actual native identity screen showing a signed peer invitation QR; the device keys and VPN address are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/08-verify.png)
 
