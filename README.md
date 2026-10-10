@@ -181,10 +181,13 @@ VPN address, provided that VPN carries UDP between them. This has not yet been
 verified across machines and does not add NAT traversal to Slouching.
 For voice and screen sharing, both devices also need membership in the same
 dedicated call MLS group. The caller negotiates WebRTC from **Chamada**; the
-recipient accepts the incoming call. To share a monitor, select it in
+recipient accepts the incoming call. The call panel's **Chat temporário** sends
+SFrame-protected text and keeps up to 100 messages in memory; it is discarded
+when the call ends. To share a monitor, select it in
 **Escolher tela** and press **Compartilhar tela na chamada**. The local codec,
-protected DataChannel, remote decode, and stop signal pass loopback tests, but
-physical-device capture and calls over VPN remain unverified. See the
+protected call DataChannel, bidirectional ephemeral chat, remote video decode,
+and stop signal pass loopback tests, but physical-device capture and calls over
+VPN remain unverified. See the
 [frontend call trial instructions](https://github.com/slouching-org/slouching-frontend#direct-voice-call-with-another-device).
 On Linux, Secret Service must be available for device identity storage. Each
 device keeps its own encrypted transcript for that pinned peer after the app

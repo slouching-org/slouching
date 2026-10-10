@@ -18,6 +18,13 @@ RTP. No recebimento, valida SFrame, rejeita replay, decodifica Opus e envia PCM
 para a saída selecionada, com conversão para a taxa padrão do dispositivo. Os
 dispositivos escolhidos ficam em memória durante a sessão do app.
 
+O painel **Chat temporário** envia texto pelo DataChannel confiável da chamada,
+protegido pela chave SFrame do grupo MLS de chamada. Cada mensagem tem limite
+de 4 KiB e o cliente mantém no máximo 100 mensagens visíveis em memória. O
+transcript não entra no SQLite, não sincroniza histórico para quem entra tarde
+e é apagado ao terminar a chamada. O loopback valida envio e recepção nos dois
+sentidos; não há confirmação de entrega ou leitura.
+
 Há teste de loopback com dois peers WebRTC: negocia host ICE/DTLS, envia um
 quadro Opus/SFrame pela track RTP e verifica amostras decodificadas no sink
 remoto. Isso valida o pipeline local de mídia sem hardware físico. Ainda falta
