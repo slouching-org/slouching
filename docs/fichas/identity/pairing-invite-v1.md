@@ -38,7 +38,10 @@ Changing the key clears any address choices from that invitation.
 The desktop client imports PNG files or explicitly scans camera frames on the
 receiving device. It stops after a valid signed invite or 30 seconds; frames
 are not stored or sent. QR rendezvous, contact discovery, and key recovery
-are outside this slice. The trust screen also derives a symmetric 12-digit safety code from both device
-keys for live out-of-band comparison. It is not a SPAKE2 rendezvous code and
-does not establish trust by itself; users still compare it and explicitly mark
-the exact peer key as verified. The binary format and trust flow still require security review before public release.
+are outside this slice. The trust screen also derives a symmetric full 256-bit
+BLAKE3 fingerprint from both public device keys for live out-of-band
+comparison. It is not a SPAKE2
+rendezvous code and does not authenticate who supplied a transferred QR; users
+still compare it with the intended contact and explicitly mark the exact peer
+key as verified. The binary format and trust flow still require security review
+before public release.

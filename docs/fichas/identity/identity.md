@@ -12,10 +12,10 @@ Ed25519 completa por um canal independente e registrar localmente essa decisão
 no perfil SQLCipher. Convites QR assinados agora carregam a chave do dispositivo
 e, quando disponíveis, endereços IP/porta com validade de 10 minutos. Importar
 um QR PNG preenche a chave e permite escolher o endereço, mas não marca o peer
-como verificado automaticamente. Um código de segurança de 12 dígitos,
-derivado simetricamente das duas chaves, pode ser comparado em uma conversa ao
-vivo antes de marcar o peer como verificado. Isso não implementa rendezvous
-SPAKE2, descoberta de contatos ou recuperação.
+como verificado automaticamente. Um fingerprint simétrico completo de 256 bits,
+derivado das duas chaves públicas, pode ser comparado ao vivo antes de marcar
+o peer como verificado.
+Ele não implementa rendezvous SPAKE2, descoberta de contatos ou recuperação.
 
 O dispositivo cria sua própria identidade de assinatura e folha MLS. Não há
 conta ou email obrigatório. Nome e familiar são escolhas de perfil, diferentes
