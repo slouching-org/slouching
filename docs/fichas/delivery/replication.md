@@ -5,13 +5,12 @@
 > [ADR 0005](../architecture/adr-0005-elixir-server-core.md) defines the
 > Elixir backend and Rust client language boundary.
 
-**Estado:** contrato especificado; o cliente tem agora esquema e operações
-iniciais para persistir eventos criptografados opacos localmente. O transporte
-direto por LAN tem ACK e histórico local por peer; entrega de eventos MLS,
-integração com inbox/outbox MLS, replicação e entrega offline ainda não estão
-implementadas.
+**Estado:** o cliente nativo persiste eventos MLS cifrados na outbox e inbox
+locais, entrega diretamente por LAN e mantém ACKs duráveis por dispositivo.
+Fan-out para membros com rotas salvas e cópias em helper ou peer delegado
+continuam pendentes.
 
-O chat direto por Iroh/QUIC mantém um histórico local separado por chave
+O chat de texto direto por Iroh/QUIC mantém um histórico local separado por chave
 pública fixada. O destinatário salva a mensagem no SQLCipher antes do ACK; o
 remetente salva após receber o ACK. Esse transcript local não usa o event
 journal MLS, não sincroniza entre dispositivos e não oferece entrega offline.
@@ -24,15 +23,16 @@ cópias de **ciphertext** com quota e prazo explícitos. Um helper opcional
 oferece a mesma função por mais tempo e pode usar SQLite. Postgres é uma
 opção operacional para um helper maior; a entrega entre peers não depende dele.
 
-A primeira base no cliente armazena ciphertext já produzido por uma camada
-criptográfica, com ID, autor, grupo, época, checkpoint, digest BLAKE3 e prazo.
-Ela deduplica IDs idênticos e rejeita conteúdo ou metadados divergentes. Ainda
-não cria ciphertext, conversa, ACK ou rota de entrega.
+Mensagens de grupo são cifradas pelo OpenMLS antes de entrar na outbox local.
+O registro guarda ID, autor, grupo, época, digest e prazo; o envio usa a sessão
+QUIC autenticada pelo pin do dispositivo. O destinatário valida os metadados,
+persiste o estado MLS, ciphertext e transcript na mesma transação e então envia
+ACK. IDs iguais com bytes ou metadados divergentes são rejeitados.
 
-A inbox e a outbox já podem listar páginas limitadas com cursor estável; a outbox ainda persiste estados locais de fila,
-retenção por peer, recebimento, expiração e falha. Esses estados ainda não são
-atualizados por um transporte; só código de protocolo confiável poderá marcar
-um recibo real quando a entrega for implementada.
+A inbox e a outbox listam páginas limitadas com cursor estável. Fan-out MLS
+registra separadamente o ACK de cada membro da fotografia de destinatários; o
+evento global só fecha quando todos confirmam. Estados de cópia delegada,
+expiração visível e falha ainda não têm fluxo completo de produto.
 
 Uma cópia em helper não prova entrega ao destinatário. Nenhum membro ganha
 histórico anterior automaticamente ao ingressar no grupo. A conversa

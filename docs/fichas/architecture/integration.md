@@ -62,8 +62,10 @@ adoption state in the UI, deduplicates exact redelivery, and drains each
 recipient's eligible Commit chain in order. A recipient that is missing an
 epoch requests that predecessor over the pinned session; the committer replays
 it only when that device is in the saved recipient snapshot, including after a
-prior ACK. The current v7 request is bounded per session. Multi-member fan-out and offline
-delivery remain open. The ACK confirms durable client acceptance, not reading.
+prior ACK. The current v7 request is bounded per session. The UI can fan out
+queued Commits and application events sequentially over saved routes, persisting
+each recipient ACK. Stale or unreachable peers remain queued. Offline delivery
+remains open. The ACK confirms durable client acceptance, not reading.
 
 Members can send signed self-update proposals through the same pinned session.
 The receiver verifies that the envelope author is the pinned transport device,
@@ -86,11 +88,11 @@ tests launch two separate client processes and exchange text, MLS messages,
 Commits, predecessor requests, proposals, KeyPackages, and Welcome bundles,
 verify wrong-key rejection, and check unknown pending delivery on disconnect
 for text, MLS events, Commits, and proposals. A successful outbound peer handshake stores its pinned device key and socket
-address in the encrypted local route book. Those remembered routes will support
-future multi-member Commit fan-out; current delivery still follows a connected
-peer session. A manual test uses two app instances on a reachable LAN and
-requires firewall access to the chosen UDP port. Linux
-requires an available Secret Service for local device identity.
+address in the encrypted local route book. The MLS UI uses those routes for
+multi-member Commit and application-event fan-out. Real multi-member operation
+still needs a manual test with two or more app instances on a reachable LAN and
+firewall access to the chosen UDP ports. Linux requires an available Secret
+Service for local device identity.
 
 The Elixir diagnostic transport authenticates no device, carries no encrypted
 event, and has no application command or subscription channel. [ADR 0005](adr-0005-elixir-server-core.md)
