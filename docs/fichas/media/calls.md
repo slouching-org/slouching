@@ -11,6 +11,13 @@ selecionado para medir nível RMS local; samples não são salvos nem enviados, 
 o fluxo fecha ao sair da tela/aba. A seleção não é consumida por uma chamada.
 Vídeo e tela permanecem como prévias visuais.
 
+O cliente agora contém um módulo isolado de proteção SFrame para quadros de
+mídia codificados, com chave por membro/época, limite de tamanho e rejeição de
+replay. O módulo recebe material de chave exportado por um grupo MLS de chamada,
+mas esse exportador, a criação/separação do grupo e o transporte ainda não
+estão conectados. Portanto, isso não habilita chamadas nem altera o estado
+acima.
+
 Uma chamada tem grupo MLS separado contendo somente seus participantes.
 Áudio/vídeo usam chaves derivadas desse grupo; membros da conversa que não
 entraram não recebem chaves de mídia. Dois peers tentam rota direta. Mesh

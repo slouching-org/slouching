@@ -94,10 +94,13 @@ KeyPackages; the binding alone does not verify a person. Linux needs Secret
 Service in the user session. The settings **Rede & P2P** screen separately
 shows local Elixir HTTP/WebSocket diagnostics; it does not carry chat traffic.
 
-Character scenes and call views remain visual previews. Camera and screen
-capture, contact discovery, and offline delivery are not implemented. Remote
-relay and cross-network behavior still need testing. QR invitation binary
-format and trust flow require security review before public release.
+Character scenes and call views remain visual previews. An isolated SFrame
+module now bounds and encrypts encoded frames, assigns MLS epoch/member key IDs,
+and rejects replays; call MLS export, group membership, WebRTC, and device media
+are not connected to it. Camera and screen capture, contact discovery, and
+offline delivery are not implemented. Remote relay and cross-network behavior
+still need testing. QR invitation binary format and trust flow require security
+review before public release.
 The older web UI under
 `prototypes/web/` is a design benchmark, not the product runtime.
 
