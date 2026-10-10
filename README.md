@@ -68,7 +68,7 @@ opening a saved group restores its transcript and security state from SQLCipher.
 
 ![Actual Native Rust/Iced familiar screen showing local profile and keyring status after adding the device-to-MLS binding core](docs/design/readme/native-vhs-profile.png)
 
-![Native Iced direct chat with relay settings and separate copy controls for sample LAN and VPN socket addresses; addresses are illustrative and Secret Service is unavailable](repositories/frontend/docs/design/runtime/native-vhs/06-chat.png)
+![Native Iced direct chat with explicit listener and VPN address guidance, relay settings, and copy controls for sample LAN and VPN socket addresses; addresses are illustrative and Secret Service is unavailable](repositories/frontend/docs/design/runtime/native-vhs/06-chat.png)
 
 ![Actual 934 × 1000 native MLS screen showing pending, approved, and rejected self-update proposal review controls; proposal rows are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/11-mls.png)
 
@@ -151,10 +151,13 @@ including native runtime screenshots.
 To use direct peer messaging, open the **chat** screen in both clients. Create
 an identity in **Familiar** if needed, then use **Copiar minha chave pública**
 and exchange the two keys over a trusted channel. Each person pastes the
-other's key into **Chave pública do peer**. The receiving device selects a UDP
+other's key into **Chave pública do peer**: the listener pins the sender's key,
+and the sender pins the listener's key. The receiving device selects a UDP
 port and clicks **Aguardar peer**; use the copy button beside the address for
-the reachable interface and share it with the sender. The sender enters that
-address, writes a message, and clicks
+the reachable interface and share it with the sender. For a VPN test, share
+the listener's VPN IP with that same UDP port and allow inbound UDP in its
+firewall. The VPN must route UDP between both devices. The sender enters the
+listener's address, writes a message, and clicks
 **Conectar e enviar**. Once connected, either side can send multiple messages
 over that session; use **Desconectar sessão** to close it. **Apagar histórico
 local deste peer** removes only this peer's local transcript after confirmation.
