@@ -61,8 +61,10 @@ replayed requests return `401`.
 
 The HTTP contract has backend tests against SQLite. The Rust desktop client
 also has an opt-in HTTPS helper setting, fallback uploads, and manual fetch
-with local persistence before ACK. Remote helper deployment and cross-device
-runtime validation remain open.
+that follows every cursor page and persists each accepted event before ACK. A
+cross-repository smoke test uploads 18 signed copies through the live Elixir
+helper, reads both pages, and ACKs each copy. Remote helper deployment and
+cross-device runtime validation remain open.
 
 The Elixir listener defaults to loopback HTTP. Remote deployment must either
 terminate TLS in a reverse proxy while Bandit remains on loopback, or configure

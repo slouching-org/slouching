@@ -23,8 +23,9 @@ O backend Elixir também implementa uma API HTTP opcional de mailbox para grant
 MLS assinado: upload idempotente, quota por destinatário, expiração periódica,
 listagem paginada autenticada por Ed25519 e ACK do helper. O cliente Rust já
 permite configurar e ativar um helper HTTPS, tenta guardar cópias assinadas
-quando a entrega direta falha e oferece busca manual. O destinatário valida o
-grant e persiste o evento localmente antes do ACK HTTP. Esse ACK só confirma a
+quando a entrega direta falha e oferece busca manual que percorre todas as
+páginas disponíveis. O destinatário valida o grant e persiste o evento
+localmente antes do ACK HTTP. Esse ACK só confirma a
 remoção da cópia guardada pelo helper; o ACK do dispositivo segue a aplicação
 MLS. Ainda falta validar o fluxo completo contra um helper remoto e entre
 dispositivos físicos. A mailbox não faz NAT traversal nem mantém uma chamada ou
