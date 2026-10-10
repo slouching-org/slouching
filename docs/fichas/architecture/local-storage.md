@@ -30,7 +30,10 @@ snapshot member accepts the event. The sender can retry to one pinned member or
 fan out over saved routes in bounded order after confirming that member has no
 pending Commits. Inbound processing authenticates sender and event metadata,
 persists ciphertext before releasing plaintext, and deduplicates exact
-redelivery alongside the ratchet update. The UI lists locally stored
+redelivery alongside the ratchet update. New MLS chat events expire after 30
+days. Expired queued events are marked and omitted from fan-out; recipients
+reject new expired events before processing MLS ciphertext, and a late ACK
+cannot revive an expired event. The UI lists locally stored
 groups with their current epoch and quarantine state; opening one reloads its
 transcript, pending Commits, and security alert from SQLCipher. Opening the
 database composes OpenMLS RustCrypto with its
