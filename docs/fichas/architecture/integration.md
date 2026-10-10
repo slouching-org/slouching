@@ -1,39 +1,42 @@
 # Rust client and Elixir server integration
 
 **Status:** the Rust/Iced frontend and Elixir/OTP backend communicate across
-processes for local diagnostics, experimental SPAKE2 rendezvous, and optional
-signed-ciphertext mailbox delivery. Direct chat, MLS groups, and calls use
-peer-to-peer transports. Remote helper deployment and physical-device
-cross-repository validation remain open. The diagnostic WebSocket is not part
-of peer traffic.
+processes for diagnostics, experimental SPAKE2 rendezvous, optional
+signed-ciphertext mailbox delivery, and experimental SFU calls. Direct chat,
+MLS groups, and the normal call path use peer-to-peer transports. Local
+two-client pairing, SFU audio forwarding, and core peer flows have integration
+coverage; remote helper deployment and physical-device validation remain open.
 
 ## Boundary
 
 - `slouching-backend/server` owns the Elixir service, `GET /api/status`, binary
-  WebSocket `/ws`, and process `/health` endpoint. Its optional helper APIs
-  include SPAKE2 rendezvous and a signed-ciphertext mailbox. Bandit defaults to
-  loopback and requires TLS for a non-loopback bind.
-- `slouching-frontend` requests status and performs the WebSocket handshake
-  asynchronously so the UI remains responsive. It must distinguish backend
-  unavailable, unsupported contract, and the reported scaffold capabilities.
-- The response reports `contract_version: 1`, `backend: "elixir_scaffold"`,
-  `not_implemented` for identity, messaging, and calls, and zero peer
-  connections. Controls for unavailable capabilities stay disabled.
+  WebSocket `/ws`, and process `/health` endpoint. Optional APIs include SPAKE2
+  rendezvous and a signed-ciphertext mailbox; the authenticated WebSocket also
+  carries SFU call signaling. Bandit defaults to loopback and requires TLS for
+  a non-loopback bind.
+- `slouching-frontend` requests local diagnostic status asynchronously and
+  uses the authenticated WebSocket for SFU calls. The normal direct chat, MLS,
+  and call paths remain in the Rust client and peer transports.
+- Diagnostic status reports `contract_version: 1`,
+  `backend: "elixir_scaffold"`, no central identity or messaging service, and
+  calls available. These capabilities do not imply contact trust, MLS
+  membership, or reachability from another network.
 
 The shared [protobuf schema](../../../proto/slouching/v1/handshake.proto)
 defines `ClientFrame.hello(protocol_version = 2, device_public_key)` followed
 by `ServerFrame.hello` with a fresh 32-byte challenge. The client proves key
 possession with a domain-separated Ed25519 signature; Elixir replies with
-`ServerFrame.authenticated`. That confirmation grants no application route or
-group membership. Version mismatch returns `ServerFrame.version_error`. Once
-authenticated, the socket stays open for WebSocket control Ping/Pong only;
-product data frames remain unavailable. Ping runs every 5 seconds, requires a
+`ServerFrame.authenticated`. This confirms device-key possession. The optional
+SFU route then accepts a signed call roster and bounded WebRTC signaling; the
+helper cannot independently verify MLS membership. Version mismatch returns
+`ServerFrame.version_error`. Ping runs every 5 seconds, requires a
 matching Pong within 10 seconds, and the server closes after 15 seconds without
 Ping. Missing hello or proof closes after 5 seconds. The client retries
 unavailable transport with bounded 1/2/4/8-second backoff.
 
-These checks prove device-key possession for the socket and local transport
-liveness only. The HTTP status route is a separate diagnostic.
+The handshake alone proves device-key possession and transport liveness. SFU
+roster admission and media negotiation are separate application steps. The HTTP
+status route remains a separate diagnostic.
 
 ## Direct LAN messaging in the Iced client
 
@@ -41,9 +44,9 @@ The Iced chat screen can exchange multiple bounded UTF-8 text messages in both
 directions over one session with a manually pinned device on a reachable LAN.
 Both endpoints use the durable Ed25519 device identity as their Iroh EndpointId;
 QUIC authenticates and encrypts the connection. Users manually exchange public
-keys; the sender supplies the receiver's LAN IP and UDP port. A participant
-relay is available only when configured with its URL and token; automatic
-address discovery remains disabled. The receiver stores inbound text in its local SQLCipher
+keys; the sender supplies the receiver's LAN IP and UDP port or selects an
+untrusted listener hint found by local mDNS. A participant relay is available
+only when configured with its URL and token. mDNS does not cross VPNs. The receiver stores inbound text in its local SQLCipher
 history before ACK, and the sender stores it after receiving ACK. ACK does not
 mean the user read it. On disconnect, an unacknowledged
 send is reported as delivery unknown and is not replayed. See the frontend's
@@ -113,8 +116,8 @@ still needs a manual test with two or more app instances on a reachable LAN and
 firewall access to the chosen UDP ports. Linux requires an available Secret
 Service for local device identity.
 
-The Elixir diagnostic WebSocket authenticates no device, carries no encrypted
-event, and has no application command or subscription channel. The optional
+The Elixir WebSocket proves possession of a device Ed25519 key before accepting
+SFU signaling. It does not carry application chat or MLS events. The optional
 backend also exposes an experimental SPAKE2 rendezvous HTTP API; it stores
 bounded messages in memory, expires them after two minutes, and permits one
 exchange attempt per session. It relays encrypted signed device identity
@@ -128,29 +131,33 @@ still need runtime validation. See the
 mailbox stores opaque signed copies, supports cursor pagination, and requires
 the recipient to persist an accepted MLS event before ACK; a live local
 cross-repository test covers two pages. See the
-[mailbox contract](../delivery/mailbox-http-v1.md). [ADR 0005](adr-0005-elixir-server-core.md)
+[mailbox contract](../delivery/mailbox-http-v1.md). The authenticated SFU route
+supports two-device audio forwarding in the current Rust client and passes a
+local two-client smoke test; the settings connectivity check validates WSS and
+device authentication, not the media UDP path. See the
+[calls ficha](../media/calls.md). [ADR 0005](adr-0005-elixir-server-core.md)
 defines the language division: Rust client plus Elixir backend.
 [ADR 0006](adr-0006-local-storage-optional-helper.md) retains local SQLite
 and optional helpers. The loopback Elixir diagnostics do not implement the
 LAN path or make PostgreSQL a startup dependency. Product messaging still
-needs automated trusted group provisioning, concurrent proposal handling,
-and cross-device validation of the remote mailbox flow. Offline delivery is
-opportunistic and depends on a reachable authorized holder.
+needs concurrent proposal handling and cross-device validation of remote
+mailbox delivery. Physical-device calls, multi-member SFU calls, and remote
+helper deployment remain unverified. Offline delivery is opportunistic and
+depends on a reachable authorized holder.
 
 ## Local checkout and validation
 
 Keep the frontend, backend, and project repositories side by side under one
 directory. Run `scripts/check-integration.sh` from this repository to test
 the Elixir server, smoke-test its optional SQLite Repo without PostgreSQL,
-and compile/test the Rust frontend, including the separate-process direct-LAN
-peer integration tests. It also authenticates a fixed Rust/Iroh test identity
-over the live Elixir WebSocket and checks Ping/Pong. The backend test suite
-checks valid and invalid proof handling, challenge expiry, and a cross-language
-signature vector.
+and compile/test the Rust frontend, including separate-process peer tests. It
+also runs live-helper SPAKE2 pairing, authenticates a fixed Rust/Iroh test
+identity, and checks two-client SFU negotiation, ICE/DTLS, and protected audio.
+The backend suite checks valid and invalid device proofs, challenge expiry,
+call-roster signatures, SDP negotiation, and a cross-language signature vector.
 The old Rust `peer/` crate is preserved in the backend repository as a
 historical scaffold and must not be started on the same port.
 
-Before release, test the product MLS protocol end to end and document which
-service features remain available without a reachable self-hosted server.
-Neither status checks nor the direct-LAN experiment prove product MLS
-messaging, media, or offline delivery.
+Before release, validate physical devices, remote WSS/UDP deployment, VPN and
+cross-network routes, and camera/screen permissions. Status checks alone do
+not prove media reachability or offline delivery.

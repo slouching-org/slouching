@@ -6,32 +6,33 @@ Its Elixir server/backend core and Rust/Iced client direction are retained.
 
 | Layer | Choice | Current state |
 | --- | --- | --- |
-| Desktop UI | Rust 2024 + pinned Iced 0.14.0 | Native state in `src/main.rs`; eleven design-board views plus an MLS group setup screen |
-| Rendering | Iced/wgpu | Native views with images, SVG icons, and canvas texture; live video unbuilt |
-| Local audio devices | CPAL 0.18.2 | Real device enumeration and in-memory selection; an explicit microphone test reports RMS locally, with no saved samples, playback, persistent selection, or call transport yet |
+| Desktop UI | Rust 2024 + pinned Iced 0.14.0 | Twelve native design-board views, MLS group flows, and settings for optional helpers |
+| Rendering | Iced/wgpu | Native views with images, SVG icons, canvas textures, decoded remote video frames, and explicit capture previews |
+| Local audio devices | CPAL 0.18.2 | Real device enumeration and selection; Opus/SFrame audio is connected to local capture and playback for direct and experimental SFU calls |
 | Local client core | Rust identity, cryptography, encrypted SQLite storage, transport, media | Device-bound OpenMLS credentials and group admission; application events are encrypted/decrypted with authenticated envelope metadata and ratchet changes committed with journal writes |
 | Local persistence | SQLCipher encrypted SQLite plus OS credential store for keys | Persists profile, direct chat history, MLS state, and opaque application ciphertext atomically with OpenMLS ratchet updates; membership Commits are stored with group epochs and inbound Commits apply atomically with deduplication |
-| Server/backend | Elixir, separately versioned backend repo | Development status and protobuf handshake implemented |
-| State boundary | Versioned protocol | Asynchronous loopback HTTP status and binary protobuf WebSocket handshake v2 with Ed25519 device proof integrated; product authorization pending |
+| Server/backend | Elixir, separately versioned backend repo | Optional pairing, signed ciphertext mailbox, and experimental SFU services; remote deployment remains unverified |
+| State boundary | Versioned protocol | Binary protobuf WebSocket v2 proves Ed25519 device-key possession; product endpoints separately enforce their request or call-roster proofs, while MLS membership is derived and checked by clients |
 | Browser UI | HTML/CSS/JavaScript | Historical visual prototype in `prototypes/web/`; not product runtime |
-| Identity, MLS, storage, transport, calls | Client and server responsibilities per source PDF | Device binding, KeyPackages, local groups, designated-committer admission, durable Welcome retry with duplicate receipts, authenticated application messages with epoch member snapshots and per-device ACKs, per-proposal review, and Commit delivery with predecessor snapshots, missing-epoch recovery, and saved-route multi-member fan-out exist; direct text accepts an explicitly configured participant Iroh relay and has a local end-to-end test; signed 10-minute QR invitations bind a device key to up to eight address choices and can be imported from PNG or a local camera scan without establishing human trust; LAN mDNS provides untrusted listener hints; experimental SPAKE2 pairing uses the Elixir helper; call-only MLS groups and pinned WebRTC signaling feed a local WebRTC controller with Opus/SFrame audio and H.264/SFrame camera, screen, and window video; peer and optional Elixir mailbox copies provide best-effort offline delivery; a live cross-repository test covers two pages of mailbox copies. Authenticated contact discovery, remote helper/relay deployment, and physical multi-device media calls remain unimplemented or unverified |
+| Identity, MLS, storage, transport, calls | Client and server responsibilities per source PDF | Device-bound MLS credentials, pinned-session admission and durable Welcome/Commit delivery, authenticated MLS events with per-device ACKs, QR invitations, LAN mDNS hints, experimental SPAKE2 pairing, best-effort peer/mailbox copies, and direct WebRTC media are implemented; two-device SFU signaling and protected audio pass a local live-helper test. Authenticated remote contact discovery is unimplemented; remote helper deployment, physical media, and cross-network calls remain unverified |
 
 Under [ADR 0006](adr-0006-local-storage-optional-helper.md), the installed
 client has no PostgreSQL startup requirement. An optional helper may use
 SQLite or choose Postgres for a larger deployment. Direct LAN operation and
-explicit participant-relay settings are implemented in the Iced client;
-remote cross-network behavior and release packaging remain to be verified.
+explicit participant-relay settings are implemented in the Iced client. Remote
+cross-network behavior, physical-device media, and release packaging remain to
+be verified.
 
 The frontend must render authoritative implemented state. It must not generate
 security claims, route badges, presence, or capture status independently.
 
-The frontend currently requests `GET http://127.0.0.1:3707/api/status`
-as a development diagnostic. It checks status contract v1 and the Elixir
-backend marker, then renders the reported capabilities. It also sends a
-single binary protobuf ClientHello v1 to `/ws` and validates the response;
-the development transport stays open with Ping/Pong heartbeats. Before a release, define an
-authenticated production boundary and integration tests for identity,
-routing, MLS transitions, and capture state.
+The frontend requests `GET http://127.0.0.1:3707/api/status` as a local
+development diagnostic. It checks status contract v1 and the Elixir backend
+marker. The separate binary protobuf WebSocket uses protocol v2, proves
+possession of the device Ed25519 key, and stays open with Ping/Pong heartbeats.
+The authenticated socket can carry signed SFU call signaling; that proof does
+not itself authorize MLS membership. The client derives call rosters from its
+local MLS state, and the helper validates each member's roster signature.
 
 See [ADR 0003](adr-0003-rust-iced-client.md) and the
 [backend stack ficha](tech-stack.md).
