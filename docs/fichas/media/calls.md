@@ -47,10 +47,11 @@ compartilhamento limpa a imagem remota. Testes locais cobrem codec, proteção,
 fragmentação, entrega WebRTC, decodificação e sinal de parada. Ainda falta
 validar captura/permissões entre computadores reais e por VPN. A aba **Janelas**
 enumera janelas visíveis, permite prévia local explícita e compartilha quadros
-H.264/SFrame pelo mesmo canal de vídeo da tela e da câmera. No Linux, a
-enumeração usa X11/Xorg; a biblioteca atual não lista janelas nativas em sessão
-Wayland pura e o seletor informa essa limitação. Seleção via portal do desktop
-continua pendente. Supressão de ruído, cancelamento de eco, push-to-talk, TURN, SFU e
+H.264/SFrame pelo mesmo canal de vídeo da tela e da câmera. No Linux, X11 usa
+xcap; em Wayland puro, o portal ScreenCast seleciona a janela e fornece quadros
+PipeWire para a prévia ou chamada. O portal precisa oferecer fontes de janela;
+a validação em compositores reais ainda falta. Supressão de ruído, cancelamento
+de eco, push-to-talk, TURN, SFU e
 descoberta automática ainda não estão implementados.
 
 A aba **Câmera** enumera dispositivos V4L2, Media Foundation ou AVFoundation.

@@ -101,7 +101,8 @@ controller with explicit incoming-call acceptance, Opus/SFrame audio, temporary
 call chat, and H.264/SFrame screen or camera video over one bounded data
 channel. Screen and window capture use xcap; window enumeration on Linux uses
 X11/Xorg and reports the limitation in a pure Wayland session. Native Wayland
-window selection via desktop portal is still pending. Camera capture uses the
+window selection and streaming use the desktop portal and PipeWire, but still
+need runtime validation on supported compositors. Camera capture uses the
 native V4L2, Media Foundation, or AVFoundation API, with preview only after an
 explicit action.
 Local loopback covers media, chat, video decode, and stop signaling; physical

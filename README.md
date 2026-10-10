@@ -195,10 +195,9 @@ camera and monitor share one video slot; use **Parar compartilhamento** to stop.
 Physical camera permissions and camera video between separate computers still
 need testing.
 The **Janelas** tab lists visible windows, offers an explicit local preview, and
-shares H.264/SFrame frames through the same video slot. Linux window enumeration
-uses X11/Xorg; pure Wayland enumeration is not supported by the current capture
-library, and the picker reports this limitation. Native Wayland window capture
-through the desktop portal remains unimplemented.
+shares H.264/SFrame frames through the same video slot. Linux X11 uses xcap;
+Wayland uses the ScreenCast portal and PipeWire to select and capture one
+window. Portal support still needs runtime validation with real compositors.
 On Linux, Secret Service must be available for device identity storage. Each
 device keeps its own encrypted transcript for that pinned peer after the app
 closes; history is not synchronized. For MLS group chat, provision the same
