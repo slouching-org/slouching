@@ -134,8 +134,9 @@ addressed LAN/VPN routes and an explicitly configured participant relay, with a
 local relay message/ACK test; VPN between machines and remote relay deployment
 remain unverified. This is pairwise transport authentication, not MLS. The
 client can record a user's full-key comparison locally and exchange
-signed, short-lived peer invitations through QR images; camera scanning,
-contact discovery, synchronization, and media are not implemented. Durable
+signed, short-lived peer invitations through PNG import or local camera scan;
+contact discovery, synchronization, and several group-media paths are not
+implemented. Durable
 chat history and MLS state remain local.
 
 The installed application's local process lifecycle and packaging remain

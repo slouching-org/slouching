@@ -35,7 +35,8 @@ may mark the exact key verified after importing a QR shown directly by the
 intended contact or after comparing the key through another trusted channel.
 Changing the key clears any address choices from that invitation.
 
-The current desktop importer reads PNG files; live camera scanning, QR
-rendezvous, contact discovery, key recovery, and short verification codes are
-outside this slice. The binary format and trust flow still require security
-review before public release.
+The desktop client imports PNG files or explicitly scans camera frames on the
+receiving device. It stops after a valid signed invite or 30 seconds; frames
+are not stored or sent. QR rendezvous, contact discovery, key recovery, and
+short verification codes are outside this slice. The binary format and trust
+flow still require security review before public release.

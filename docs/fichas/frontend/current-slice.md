@@ -84,15 +84,18 @@ the bytes in the encrypted profile. A built-in familiar selection clears that
 custom image.
 the database key and Ed25519 device seed use the operating system credential
 store. The trust screen displays a signed QR invitation with the device key and
-current listener addresses, and imports one from a PNG image. The invite
+current listener addresses, and imports one from a PNG image or a local camera
+scan. The invite
 signature binds its address list to that key, expires after 10 minutes, and
 never contains private keys or relay tokens. Importing it fills the peer key
 and lets the user choose among its addresses, but does not automatically mark
 the contact verified. The user must authenticate the QR source or compare the
 complete 64-digit key through an independent channel before marking that exact
-key verified in SQLCipher. A replacement key does not inherit trust. Camera
-scanning, short verification codes, and discovery remain open. A device-signed
-binding connects that identity to the MLS signing key and is carried in
+key verified in SQLCipher. A replacement key does not inherit trust. Short
+verification codes and discovery remain open. Camera QR scanning uses an
+explicit local camera session and applies the same signature and trust checks
+as PNG import. A device-signed binding connects that identity to the MLS
+signing key and is carried in
 KeyPackages; the binding alone does not verify a person. Linux needs Secret
 Service in the user session. The settings **Rede & P2P** screen separately
 shows local Elixir HTTP/WebSocket diagnostics; it does not carry chat traffic.

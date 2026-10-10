@@ -27,12 +27,13 @@ only approved proposal references enter the Commit. Decisions persist in the
 encrypted local profile. Other MLS proposal types remain unsupported.
 
 The identity screen signs a 10-minute QR invite containing the device key and,
-when a listener is active, its announced addresses. PNG import verifies the
-signature and offers each address as a route choice. It does not identify the
-human behind an image or mark the key trusted; users must authenticate the QR
-source or compare the complete key independently. Camera scanning and short
-verification codes remain unimplemented. See the [invite format and trust
-boundary](docs/fichas/identity/pairing-invite-v1.md).
+when a listener is active, its announced addresses. Import from PNG or scan
+with the camera verifies the signature and offers each address as a route
+choice. Camera access is explicit and local to the scan; captured frames are
+not stored or sent. Neither import path identifies the person behind an image
+or marks the key trusted; users must authenticate the QR source or compare the
+complete key independently. Short verification codes remain unimplemented.
+See the [invite format and trust boundary](docs/fichas/identity/pairing-invite-v1.md).
 
 The native client now contains an internal file-transfer crypto foundation:
 random per-file keys, authenticated 48 KiB chunks, a 100 MiB bound, ciphertext
@@ -170,12 +171,13 @@ local deste peer** removes only this peer's local transcript after confirmation.
 The familiar can be one of the supplied characters or a custom PNG saved in
 the encrypted local profile.
 To exchange identity keys, each person can show a signed QR on **Conferir
-identidade do peer**, save a screenshot as PNG, and import it on the other
-device. After the listener starts, show a fresh QR to include its active
-addresses; import it and choose the LAN or VPN route. QR import does not
-automatically mark a contact trusted, and an image must come from a channel
-you trust. The importer accepts PNG files; live camera scanning is not yet
-available. See the [QR invite format and trust boundary](docs/fichas/identity/pairing-invite-v1.md).
+identidade do peer**. The other person can choose **Escanear QR** and point the
+camera at it, or import a screenshot as PNG. After the listener starts, show a
+fresh QR to include its active addresses; import it and choose the LAN or VPN
+route. Camera scanning stays on the receiving device, runs only after the user
+starts it, and stops after a valid invite or 30 seconds. QR import does not
+automatically mark a contact trusted, and a displayed QR must come from a
+channel you trust. See the [QR invite format and trust boundary](docs/fichas/identity/pairing-invite-v1.md).
 For a LAN test, both devices need to be on a reachable LAN, with the chosen
 UDP port allowed by the local firewall.
 Two devices on the same VPN can try the same direct flow by using the receiver's
