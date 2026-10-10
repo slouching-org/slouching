@@ -167,6 +167,8 @@ listener's address, writes a message, and clicks
 **Conectar e enviar**. Once connected, either side can send multiple messages
 over that session; use **Desconectar sessão** to close it. **Apagar histórico
 local deste peer** removes only this peer's local transcript after confirmation.
+The familiar can be one of the supplied characters or a custom PNG saved in
+the encrypted local profile.
 To exchange identity keys, each person can show a signed QR on **Conferir
 identidade do peer**, save a screenshot as PNG, and import it on the other
 device. After the listener starts, show a fresh QR to include its active

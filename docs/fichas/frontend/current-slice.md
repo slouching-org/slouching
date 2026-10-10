@@ -79,6 +79,9 @@ queued until its own ACK. This is best-effort retention within helper quota and
 expiry, not guaranteed offline availability.
 
 The familiar screen stores the display name and familiar in encrypted SQLite;
+it also accepts an optional PNG avatar, bounds and resizes it before storing
+the bytes in the encrypted profile. A built-in familiar selection clears that
+custom image.
 the database key and Ed25519 device seed use the operating system credential
 store. The trust screen displays a signed QR invitation with the device key and
 current listener addresses, and imports one from a PNG image. The invite
