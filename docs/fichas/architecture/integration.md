@@ -46,9 +46,10 @@ send is reported as delivery unknown and is not replayed. See the frontend's
 [direct peer transport v10 contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v10.md)
 for the screen flow and protocol. The v10 `CALL_SIGNAL` frame carries bounded
 WebRTC offer, answer, ICE candidate, and end payloads through that pinned
-session. It uses the normal sequenced ACK/REJECT flow; the app must verify the
+session. It uses the normal sequenced ACK/REJECT flow; the app verifies the
 call MLS group ID, epoch, and sender membership before accepting a signal. The
-current UI rejects these frames until its WebRTC controller is implemented.
+Iced call screen connects signaling to the local WebRTC controller and asks
+before accepting an incoming call; physical multi-device calls remain untested.
 
 The frontend can also send MLS application events through that direct session
 once both devices have joined the same manually provisioned group. The receiver
@@ -69,30 +70,35 @@ epoch requests that predecessor over the pinned session; the committer replays
 it only when that device is in the saved recipient snapshot, including after a
 prior ACK. The v7 predecessor request is bounded per session. The UI can fan out
 queued Commits and application events sequentially over saved routes, persisting
-each recipient ACK. Stale or unreachable peers remain queued. Offline delivery
-remains open. The ACK confirms durable client acceptance, not reading.
+each recipient ACK. Stale or unreachable peers remain queued. Best-effort
+offline copies can use an authorized peer helper or the optional Elixir
+mailbox; delivery still depends on a holder reaching the recipient. The ACK
+confirms durable client acceptance, not reading.
 
 Members can send signed self-update proposals through the same pinned session.
 The receiver verifies that the envelope author is the pinned transport device,
 then authenticates and persists the proposal with OpenMLS before ACK. Exact
 redelivery is deduplicated; if the ACK is lost, the member can resend the same
 proposal. The designated committer still creates the Commit and uses the
-recipient-snapshotted delivery path. Its UI lists the current-epoch proposals
-by member and proposal ID prefixes; the explicit Commit action includes all
-listed proposals together. Individual approval/rejection controls and other
-proposal types remain unimplemented.
+recipient-snapshotted delivery path. Its UI lists current-epoch proposals by
+member and proposal ID prefix, with explicit per-proposal approval or
+rejection. Only approved proposal references enter the Commit; other proposal
+types remain unsupported.
 
 The invitee can also send its device-bound KeyPackage through that session.
 The committer UI holds the inbound frame for explicit admission; it verifies
 the package's device binding against the pinned peer and ACKs only after the
 membership Commit and Welcome are stored locally. After KeyPackage admission, the committer sends the Welcome and ratchet tree over the same pinned session. The invitee validates the device binding, group ID, local KeyPackage and pinned committer, stores the joined group, then ACKs. Copy/paste remains an explicit fallback when delivery is unknown.
 
-The v8 protocol adds signed delegated ciphertext copies, holder opt-in, and a
-bounded recipient fetch. The UI fan-out action tries an available group helper
-after a direct target failure; helper ACK remains distinct from recipient
-delivery. Retention is best-effort, with no relay or NAT traversal. There is no
-verified contact roster, group discovery, guaranteed offline delivery, or
-cross-device history. Automated integration
+The v10 peer protocol adds signed delegated ciphertext copies, holder opt-in,
+and a bounded recipient fetch. The UI fan-out action tries an available group
+helper after a direct target failure; helper ACK remains distinct from
+recipient delivery. The optional Elixir HTTP mailbox adds configured HTTPS
+upload fallback and manual fetch; the recipient persists the event locally
+before its helper ACK. Neither helper path implements NAT traversal. LAN mDNS
+provides untrusted listener hints, but there is no verified contact roster,
+authenticated group discovery, guaranteed offline delivery, or cross-device
+history. Automated integration
 tests launch two separate client processes and exchange text, MLS messages,
 Commits, predecessor requests, proposals, KeyPackages, Welcome bundles, and a call offer over pinned QUIC,
 verify wrong-key rejection, and check unknown pending delivery on disconnect
@@ -120,7 +126,8 @@ defines the language division: Rust client plus Elixir backend.
 and optional helpers. The loopback Elixir diagnostics do not implement the
 LAN path or make PostgreSQL a startup dependency. Product messaging still
 needs automated trusted group provisioning, concurrent proposal handling,
-helper delivery, and offline synchronization.
+and cross-device validation of the remote mailbox flow. Offline delivery is
+opportunistic and depends on a reachable authorized holder.
 
 ## Local checkout and validation
 

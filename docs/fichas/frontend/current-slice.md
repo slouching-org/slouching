@@ -75,12 +75,14 @@ peer and supports confirmed history deletion. A member may configure an
 HTTPS/token Iroh Relay for direct-text fallback or relay-only routes; the local
 authenticated relay path has an end-to-end message test. VPN between machines,
 remote relay deployment, and MLS fan-out over a relay remain unverified. There
-is no contact discovery, hole-punching, or offline delivery. The MLS ACK
-confirms durable local acceptance by the other client, not that a person read
-the message.
+is no authenticated contact discovery or hole-punching. Best-effort offline
+copies can be stored by an opted-in group peer or the optional remote Elixir
+mailbox; delivery cannot be promised when no holder can reach the recipient.
+The MLS ACK confirms durable local acceptance by the other client, not that a
+person read the message.
 
 Network & P2P settings expose the opt-in for a bounded delegated MLS-copy
-queue. QUIC v8 transports a signed author grant and lets a connecting recipient
+queue. QUIC v10 transports a signed author grant and lets a connecting recipient
 fetch up to 16 copies addressed to its device. A helper ACKs only after local
 SQLCipher persistence; the recipient verifies the grant, applies the MLS
 event, persists its transcript, then ACKs so the helper can erase the copy.
@@ -88,6 +90,14 @@ When a direct target route fails, the explicit MLS fan-out action tries a
 reachable routed group member for each queued event. The target outbox stays
 queued until its own ACK. This is best-effort retention within helper quota and
 expiry, not guaranteed offline availability.
+
+The same settings page has an optional HTTPS Elixir mailbox URL. When enabled,
+MLS fan-out stores signed opaque event copies there after direct routes and
+opted-in peer copies leave recipients uncovered. Recipients manually fetch up
+to 16 copies per action. The client verifies the author grant, persists each
+event locally, and then ACKs helper deletion. Repeating fetch drains later
+pages. Remote deployment and physical-device flow remain unverified; this is
+asynchronous storage and does not provide a live route across NAT.
 
 The familiar screen stores the display name and familiar in encrypted SQLite;
 it also accepts an optional PNG avatar, bounds and resizes it before storing
@@ -104,8 +114,10 @@ the contact verified. The user must authenticate the QR source or compare the
 complete 64-character key through an independent channel before marking that
 exact key verified in SQLCipher. A replacement key does not inherit trust. The
 identity screen derives a symmetric full 256-bit BLAKE3 fingerprint from both
-public device keys for live comparison; SPAKE2 rendezvous and contact discovery
-remain open.
+public device keys for live comparison. Experimental SPAKE2 rendezvous pairing
+uses the optional Elixir helper and transcript-bound signed device proofs; it
+does not verify a human or trust a contact automatically. A verified contact
+roster remains open.
 Camera QR scanning uses an explicit local camera session and applies the same signature and trust checks
 as PNG import. A device-signed binding connects that identity to the MLS
 signing key and is carried in
@@ -116,8 +128,8 @@ shows local Elixir HTTP/WebSocket diagnostics; it does not carry chat traffic.
 The **Conexão & rotas** screen reports live local identity, listener and QUIC
 send state, WebRTC connection state, and Elixir diagnostics. Its links open the
 existing direct-text, MLS, call, and network settings flows. It labels text
-relay separately from WebRTC TURN; automatic discovery, TURN, and SFU remain
-unimplemented.
+relay separately from WebRTC TURN. LAN mDNS listener hints and configured
+direct-text relay routes exist; TURN and SFU remain unimplemented.
 
 Character scenes remain illustrations rather than live participants. Dedicated
 call MLS groups, authenticated member-index resolution, and bounded SFrame
@@ -132,8 +144,8 @@ native V4L2, Media Foundation, or AVFoundation API, with preview only after an
 explicit action.
 Local loopback covers media, chat, video decode, and stop signaling; physical
 capture, OS permissions, calls across machines/VPN, small-group mesh, and SFU
-still need validation or implementation. Contact discovery and offline
-delivery remain unimplemented. QR invitation binary format and
+still need validation or implementation. Authenticated contact discovery and
+cross-device validation of offline mailbox delivery remain open. QR invitation binary format and
 trust flow require security review before public release.
 The older web UI under
 `prototypes/web/` is a design benchmark, not the product runtime.
