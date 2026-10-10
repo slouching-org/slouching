@@ -100,7 +100,8 @@ protection are implemented. Pinned QUIC signaling feeds a direct WebRTC
 controller with explicit incoming-call acceptance, Opus/SFrame audio, temporary
 call chat, and H.264/SFrame screen or camera video over one bounded data
 channel. Screen and window capture use xcap; window enumeration on Linux uses
-X11/Xorg and is unavailable in a pure Wayland session. Camera capture uses the
+X11/Xorg and reports the limitation in a pure Wayland session. Native Wayland
+window selection via desktop portal is still pending. Camera capture uses the
 native V4L2, Media Foundation, or AVFoundation API, with preview only after an
 explicit action.
 Local loopback covers media, chat, video decode, and stop signaling; physical

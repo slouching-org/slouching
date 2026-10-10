@@ -197,7 +197,8 @@ need testing.
 The **Janelas** tab lists visible windows, offers an explicit local preview, and
 shares H.264/SFrame frames through the same video slot. Linux window enumeration
 uses X11/Xorg; pure Wayland enumeration is not supported by the current capture
-library.
+library, and the picker reports this limitation. Native Wayland window capture
+through the desktop portal remains unimplemented.
 On Linux, Secret Service must be available for device identity storage. Each
 device keeps its own encrypted transcript for that pinned peer after the app
 closes; history is not synchronized. For MLS group chat, provision the same
