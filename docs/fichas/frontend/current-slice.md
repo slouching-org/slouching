@@ -56,14 +56,17 @@ authenticates and stores the proposal, then creates an atomic Commit for the
 existing per-member delivery flow. Other proposal types and network proposal
 delivery remain unimplemented.
 
-The direct-LAN text screen manually pins the peer's Ed25519 device key. One
-side listens and shares its announced LAN address; the other connects. Both can
-send multiple messages. The receiver stores inbound text before ACK; the sender
-stores sent text after ACK. It reloads the newest 200 messages for the peer and
-supports confirmed history deletion. This pairwise text path is separate from
-MLS. Neither path provides relay, address discovery, NAT traversal, or offline
-delivery. The MLS ACK confirms durable local acceptance by the other client,
-not that a person read the message.
+The direct-peer text screen manually pins the peer's Ed25519 device key. One
+side listens and shares an announced LAN/VPN address; the other connects. Both
+can send multiple messages. The receiver stores inbound text before ACK; the
+sender stores sent text after ACK. It reloads the newest 200 messages for the
+peer and supports confirmed history deletion. A member may configure an
+HTTPS/token Iroh Relay for direct-text fallback or relay-only routes; the local
+authenticated relay path has an end-to-end message test. VPN between machines,
+remote relay deployment, and MLS fan-out over a relay remain unverified. There
+is no address discovery, hole-punching, or offline delivery. The MLS ACK
+confirms durable local acceptance by the other client, not that a person read
+the message.
 
 Network & P2P settings expose the opt-in for a bounded delegated MLS-copy
 queue. QUIC v8 transports a signed author grant and lets a connecting recipient
@@ -84,8 +87,9 @@ available in the user session. The settings **Rede & P2P** screen separately
 shows local Elixir HTTP/WebSocket diagnostics; it does not carry chat traffic.
 
 Character scenes and call views remain visual previews. Camera, microphone,
-screen capture, contact discovery, verified pairing, relay, and offline
-delivery are not implemented. The older web UI under
+screen capture, contact discovery, verified pairing, and offline delivery are
+not implemented. Remote relay and cross-network behavior still need testing.
+The older web UI under
 `prototypes/web/` is a design benchmark, not the product runtime.
 
 See the [v8 direct peer transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v8.md),

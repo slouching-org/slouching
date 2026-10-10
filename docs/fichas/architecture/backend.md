@@ -120,10 +120,13 @@ The current Elixir `server/` implements only loopback diagnostics and a
 protobuf WebSocket transport with Ping/Pong. Its optional PostgreSQL Repo
 and device-key migration are an experiment for helper deployment, not the
 product's required persistence path. The older Rust `peer/` crate is an
-experimental policy gate. The current Iced client has a persistent bidirectional direct-LAN
-Iroh/QUIC text session with manually pinned device keys; it is pairwise transport
-authentication, not MLS. Durable chat history, contact verification,
-synchronization, and media are not implemented.
+experimental policy gate. The current Iced client has a persistent bidirectional
+Iroh/QUIC text session with manually pinned device keys. It supports manually
+addressed LAN/VPN routes and an explicitly configured participant relay, with a
+local relay message/ACK test; VPN between machines and remote relay deployment
+remain unverified. This is pairwise transport authentication, not MLS. Durable
+chat history and MLS state are local; contact verification, synchronization,
+and media are not implemented.
 
 The installed application's local process lifecycle and packaging remain
 open implementation work. The finished app must start and communicate on
