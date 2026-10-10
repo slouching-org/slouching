@@ -106,13 +106,17 @@ To use direct-LAN messaging, open the **chat** screen in both clients. Create
 an identity in **Familiar** if needed, then use **Copiar minha chave pública**
 and exchange the two keys over a trusted channel. Each person pastes the
 other's key into **Chave pública do peer**. The receiving device selects a UDP
-port and clicks **Aguardar peer**; share its displayed LAN address and port
-with the sender. The sender enters that address, writes a message, and clicks
+port and clicks **Aguardar peer**; use the copy button beside the address for
+the reachable interface and share it with the sender. The sender enters that
+address, writes a message, and clicks
 **Conectar e enviar**. Once connected, either side can send multiple messages
 over that session; use **Desconectar sessão** to close it. **Apagar histórico
 local deste peer** removes only this peer's local transcript after confirmation.
-Both devices need to
-be on a reachable LAN, with the chosen UDP port allowed by the local firewall.
+For a LAN test, both devices need to be on a reachable LAN, with the chosen
+UDP port allowed by the local firewall.
+Two devices on the same VPN can try the same direct flow by using the receiver's
+VPN address, provided that VPN carries UDP between them. This has not yet been
+verified across machines and does not add NAT traversal to Slouching.
 On Linux, Secret Service must be available for device identity storage. Each
 device keeps its own encrypted transcript for that pinned peer after the app
 closes; history is not synchronized. For MLS group chat, provision the same
@@ -131,8 +135,8 @@ If a peer lacks an epoch, it requests that predecessor over the pinned session;
 the committer can replay it only to a device in that Commit's saved recipient
 snapshot, even after recording an earlier ACK.
 Group creation and committer admission require explicit user action. Automatic group fan-out,
-cross-network connections, NAT traversal, and offline delivery
-are not implemented. See the [frontend test flow](https://github.com/slouching-org/slouching-frontend#run-the-native-scaffold).
+unassisted cross-network connections, NAT traversal, and offline delivery are
+not implemented. See the [frontend test flow](https://github.com/slouching-org/slouching-frontend#run-the-native-scaffold).
 
 An opted-in delegated MLS-copy helper can accept the author and recipient in
 separate authenticated sessions; ordinary application frames still require
