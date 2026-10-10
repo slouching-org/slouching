@@ -99,10 +99,11 @@ confirmation; a storage test verifies that another peer's history remains.
 
 The client now persists a group-bound file offer, content key, author device,
 ciphertext digest, and declared size in SQLCipher. Per-profile declared
-attachment size is capped at 200 MiB; the transaction checks quota before insertion,
-and the v21-to-v22 migration backfills sizes from existing offers. The
-encrypted iroh-blobs store remains separately tagged by transfer ID. Offer
-storage and blob lifecycle are not yet wired into MLS authorization or a user
+attachment size is capped at 200 MiB; validated MLS device credentials bind
+the offer author to active group membership, and a transaction rechecks the
+group epoch before insertion. The v21-to-v22 migration backfills sizes from
+existing offers. The encrypted iroh-blobs store remains separately tagged by
+transfer ID. Offer storage and blob lifecycle are not yet wired into MLS authorization or a user
 send/accept flow, so this is persistence groundwork rather than usable file
 sharing.
 
