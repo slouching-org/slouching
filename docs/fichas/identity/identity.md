@@ -9,7 +9,11 @@
 são persistidas localmente; grupos MLS, histórico, inbox e outbox cifrados têm
 fluxo funcional no cliente nativo. O cliente agora permite comparar a chave
 Ed25519 completa por um canal independente e registrar localmente essa decisão
-no perfil SQLCipher. Pareamento por QR/código e recuperação continuam pendentes.
+no perfil SQLCipher. Convites QR assinados agora carregam a chave do dispositivo
+e, quando disponíveis, endereços IP/porta com validade de 10 minutos. Importar
+um QR PNG preenche a chave e permite escolher o endereço, mas não marca o peer
+como verificado automaticamente. Código curto, recuperação e pareamento de
+contato completo continuam pendentes.
 
 O dispositivo criará sua própria identidade de assinatura e folha MLS. Não há
 conta ou email obrigatório. Nome e familiar são escolhas de perfil, diferentes
@@ -29,8 +33,14 @@ contato foi verificado. A chave privada MLS e o estado dos grupos ficam no
 banco local cifrado. O protótipo web histórico continua usando `localStorage`
 e não cria chaves.
 
-Pendências de segurança: formatos QR/código curto, pareamento, múltiplos
-dispositivos, backup e recuperação, e política de troca de chave. A verificação
-manual exige que os membros comparem a chave completa usando um canal
-independente; o app não valida esse canal. O cliente exige Secret Service no
-Linux para acessar as credenciais. Ver [modelo de confiança](../architecture/backend.md#3-trust-and-security-model).
+O formato do convite QR assinado v1, seus limites, a assinatura da lista de
+endereços e seu limite de confiança estão em
+[pairing-invite-v1.md](pairing-invite-v1.md). A assinatura vincula endereços à
+chave, mas não autentica quem forneceu a imagem. O usuário só deve marcar a
+chave como verificada depois de importar o QR mostrado diretamente pelo contato
+ou conferir a chave completa por canal independente.
+
+Pendências de segurança: revisão do fluxo QR, câmera ao vivo, códigos curtos,
+recuperação, múltiplos dispositivos, backup e política de troca de chave. O
+cliente exige Secret Service no Linux para acessar as credenciais. Ver [modelo
+de confiança](../architecture/backend.md#3-trust-and-security-model).

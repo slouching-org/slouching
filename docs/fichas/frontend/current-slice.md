@@ -80,18 +80,24 @@ expiry, not guaranteed offline availability.
 
 The familiar screen stores the display name and familiar in encrypted SQLite;
 the database key and Ed25519 device seed use the operating system credential
-store. The direct-text trust screen lets members compare the complete 64-digit
-device key over an independent channel and mark that exact key as verified in
-SQLCipher on this device. A replacement key does not inherit trust. QR pairing,
-short verification codes, and discovery remain open. A device-signed binding
-connects that identity to the MLS signing key and is carried in KeyPackages;
-the binding alone does not verify a person. Linux needs Secret Service in the
-user session. The settings **Rede & P2P** screen separately shows local Elixir
-HTTP/WebSocket diagnostics; it does not carry chat traffic.
+store. The trust screen displays a signed QR invitation with the device key and
+current listener addresses, and imports one from a PNG image. The invite
+signature binds its address list to that key, expires after 10 minutes, and
+never contains private keys or relay tokens. Importing it fills the peer key
+and lets the user choose among its addresses, but does not automatically mark
+the contact verified. The user must authenticate the QR source or compare the
+complete 64-digit key through an independent channel before marking that exact
+key verified in SQLCipher. A replacement key does not inherit trust. Camera
+scanning, short verification codes, and discovery remain open. A device-signed
+binding connects that identity to the MLS signing key and is carried in
+KeyPackages; the binding alone does not verify a person. Linux needs Secret
+Service in the user session. The settings **Rede & P2P** screen separately
+shows local Elixir HTTP/WebSocket diagnostics; it does not carry chat traffic.
 
-Character scenes and call views remain visual previews. Camera, microphone,
-screen capture, QR pairing, contact discovery, and offline delivery are not
-implemented. Remote relay and cross-network behavior still need testing.
+Character scenes and call views remain visual previews. Camera and screen
+capture, contact discovery, and offline delivery are not implemented. Remote
+relay and cross-network behavior still need testing. QR invitation binary
+format and trust flow require security review before public release.
 The older web UI under
 `prototypes/web/` is a design benchmark, not the product runtime.
 

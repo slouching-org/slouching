@@ -52,6 +52,14 @@ Each device owns a long-term signing identity and its own MLS leaf. Account-leve
 
 Initial onboarding creates and persists a local device identity and presents its fingerprint. A display name and familiar/avatar are local profile choices; no account or email is required to start. The frontend must not label a newly generated identity as verified by friends until they compare authenticated key material. Recovery and moving that identity to another device remain explicit security decisions, not implicit account login.
 
+The current desktop slice signs a short-lived QR invitation with the device
+key. It carries that public key and up to eight announced IP/UDP addresses;
+the PNG importer verifies the signature and lets the user choose a route. The
+signature binds the addresses to a device key but does not establish the human
+contact identity or the source of a transferred image. Import never auto-marks
+a contact verified. The user confirms the source independently before marking
+that exact key trusted. See the [v1 invitation format and limits](../identity/pairing-invite-v1.md).
+
 Every conversation, including a two-person one, is an MLS group. Clients create, validate, and store MLS state locally. Messages and files leave a device encrypted. A peer holding a mailbox copy can read routing metadata, timings, ciphertext size, and the identities of peers it directly communicates with. Direct connections reveal network addresses to the connected peers. Local database encryption protects at-rest copies but cannot protect plaintext while a compromised endpoint is displaying it.
 
 Separate call MLS groups contain only admitted devices; the larger conversation MLS group carries call invitations. Media keys come from the call group's MLS exporter. A conversation member who did not join a call must not be able to derive its media keys. Group media forwarders see transport metadata and SFrame headers, never decoded media. [MLS protocol](https://www.rfc-editor.org/rfc/rfc9420.html); [SFrame](https://www.rfc-editor.org/rfc/rfc9605.html).
@@ -125,9 +133,10 @@ Iroh/QUIC text session with manually pinned device keys. It supports manually
 addressed LAN/VPN routes and an explicitly configured participant relay, with a
 local relay message/ACK test; VPN between machines and remote relay deployment
 remain unverified. This is pairwise transport authentication, not MLS. The
-client can record a user's full-key comparison locally, but contact discovery,
-QR pairing, synchronization, and media are not implemented. Durable chat history
-and MLS state remain local.
+client can record a user's full-key comparison locally and exchange
+signed, short-lived peer invitations through QR images; camera scanning,
+contact discovery, synchronization, and media are not implemented. Durable
+chat history and MLS state remain local.
 
 The installed application's local process lifecycle and packaging remain
 open implementation work. The finished app must start and communicate on

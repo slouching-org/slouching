@@ -7,7 +7,7 @@ This is the project-level documentation index. The [source architecture PDF](arc
 | Architecture | [Product specification](architecture/backend.md), [Elixir backend boundary](architecture/elixir-backend.md), [technology stack](architecture/tech-stack.md), [frontend technology plan](architecture/frontend-tech-stack.md), [client/server integration](architecture/integration.md), [local storage contract](architecture/local-storage.md), [repository map](architecture/workspace.md), [local status API](architecture/local-status-api.md) |
 | Frontend | [Eleven-screen specification](frontend/screens.md), [current native slice](frontend/current-slice.md), [Iced design implementation](frontend/iced-design.md) |
 | Brand | [Visual style](brand/visual-style.md), [original source bank](brand/source-bank.md), [earlier references](brand/references.md) |
-| Identity | [Local identity](identity/identity.md) |
+| Identity | [Local identity](identity/identity.md), [signed QR invitation v1](identity/pairing-invite-v1.md) |
 | Groups and MLS | [Commit chain](groups/commits.md) |
 | Delivery | [Replication](delivery/replication.md) |
 | Transport | [Routes](transport/routes.md) |

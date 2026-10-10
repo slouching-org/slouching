@@ -16,7 +16,7 @@
 **Conceived by Rodrigo and Vitchola**, Slouching is an early native desktop app for a small crew to chat, call, and share a screen. The Rust/Iced client owns local keys, cryptography, direct peer paths, and per-peer chat history and pinned peer routes in encrypted SQLite. Elixir remains the backend language. A member may optionally host a helper on a PC or VPS for ciphertext delivery, discovery, relay, or group media. Pinned-device text works over manually addressed reachable UDP routes without a hosted helper or PostgreSQL.
 
 > [!IMPORTANT]
-> This is an early build, **not a secure messenger**. Direct pinned-device text and MLS application messaging work over Iroh/QUIC when a manually supplied UDP route is reachable. The MLS screen can send a device-bound KeyPackage through a pinned session, where the committer reviews and admits it. The committer saves the Welcome and ratchet tree in an encrypted retry queue and resends them when the pinned invitee reconnects. The invitee records a content-bound receipt with group admission, so duplicate delivery after a lost ACK returns the existing group. The receiver validates and persists ciphertext, ratchet state, and transcript in SQLCipher before ACK. Each application event snapshots eligible member devices; per-device ACKs keep other recipients queued, and the MLS screen can retry one pinned member or fan out over saved routes. If a recipient route is unavailable, that fan-out action tries a reachable routed group member that opted into retaining signed ciphertext copies. A reconnecting recipient fetches copies addressed to its device, verifies the author grant and persists the event before the helper erases it. Helper ACKs are reported separately from recipient delivery, and retention remains best-effort. Membership Commits are stored atomically with the committer's new group epoch. When a pinned group member connects, its eligible pending Commits start sending automatically, one at a time with a durable ACK before advancing. The committer can also distribute queued Commits sequentially to all eligible members with saved routes; unavailable peers remain queued. Exact redelivery is harmless. Clients detect authenticated committer equivocation against saved historical OpenMLS state, preserve both conflicting Commits, and quarantine the affected group without changing its accepted epoch. The client now supports an explicitly configured, token-protected Iroh Relay 1.3 route, covered by a local end-to-end message/ACK test; remote TLS deployment and cross-network VPN use have not been verified. Group discovery, QR-based pairing, calls, and screen sharing remain unimplemented. The Elixir backend uses SQLite locally; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is an experiment, not the service backend.
+> This is an early build, **not a secure messenger**. Direct pinned-device text and MLS application messaging work over Iroh/QUIC when a manually supplied UDP route is reachable. The MLS screen can send a device-bound KeyPackage through a pinned session, where the committer reviews and admits it. The committer saves the Welcome and ratchet tree in an encrypted retry queue and resends them when the pinned invitee reconnects. The invitee records a content-bound receipt with group admission, so duplicate delivery after a lost ACK returns the existing group. The receiver validates and persists ciphertext, ratchet state, and transcript in SQLCipher before ACK. Each application event snapshots eligible member devices; per-device ACKs keep other recipients queued, and the MLS screen can retry one pinned member or fan out over saved routes. If a recipient route is unavailable, that fan-out action tries a reachable routed group member that opted into retaining signed ciphertext copies. A reconnecting recipient fetches copies addressed to its device, verifies the author grant and persists the event before the helper erases it. Helper ACKs are reported separately from recipient delivery, and retention remains best-effort. Membership Commits are stored atomically with the committer's new group epoch. When a pinned group member connects, its eligible pending Commits start sending automatically, one at a time with a durable ACK before advancing. The committer can also distribute queued Commits sequentially to all eligible members with saved routes; unavailable peers remain queued. Exact redelivery is harmless. Clients detect authenticated committer equivocation against saved historical OpenMLS state, preserve both conflicting Commits, and quarantine the affected group without changing its accepted epoch. The client now supports an explicitly configured, token-protected Iroh Relay 1.3 route, covered by a local end-to-end message/ACK test; remote TLS deployment and cross-network VPN use have not been verified. Signed QR invitations now exchange device keys and announced addresses, but imported images do not automatically establish human trust; camera scanning, short codes, group discovery, calls, and screen sharing remain unimplemented. The Elixir backend uses SQLite locally; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is an experiment, not the service backend.
 
 Members can also send a signed MLS self-update proposal to the designated
 committer over the active pinned peer session, with copy/paste over a separately
@@ -26,10 +26,13 @@ The committer explicitly approves or rejects each current-epoch proposal;
 only approved proposal references enter the Commit. Decisions persist in the
 encrypted local profile. Other MLS proposal types remain unsupported.
 
-The direct-chat identity screen can mark a peer key as locally verified after
-both people compare all 64 hexadecimal characters through an independent
-channel. That decision applies only to the exact key in this encrypted profile.
-QR pairing and short verification codes remain unimplemented.
+The identity screen signs a 10-minute QR invite containing the device key and,
+when a listener is active, its announced addresses. PNG import verifies the
+signature and offers each address as a route choice. It does not identify the
+human behind an image or mark the key trusted; users must authenticate the QR
+source or compare the complete key independently. Camera scanning and short
+verification codes remain unimplemented. See the [invite format and trust
+boundary](docs/fichas/identity/pairing-invite-v1.md).
 
 The native client now contains an internal file-transfer crypto foundation:
 random per-file keys, authenticated 48 KiB chunks, a 100 MiB bound, ciphertext
@@ -81,7 +84,9 @@ The selected input/output stays in memory and is not connected to calls. An
 explicit local microphone test shows input level without saving or sending
 samples; voice and video calls remain unimplemented.
 
-![Actual native identity verification screen showing a local full-key comparison and verified-key action; both keys are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/08-verify.png)
+![Actual native identity screen showing a signed peer invitation QR; the device keys and VPN address are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/08-verify.png)
+
+![Actual native identity screen after importing a QR, with separate LAN and VPN address choices; all values are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/08-verify-invite-imported.png)
 
 ![Native Rust/Iced group-call preview with illustrative characters and chat; no media is connected](docs/design/readme/native-vhs-call.png)
 
@@ -161,6 +166,13 @@ listener's address, writes a message, and clicks
 **Conectar e enviar**. Once connected, either side can send multiple messages
 over that session; use **Desconectar sessão** to close it. **Apagar histórico
 local deste peer** removes only this peer's local transcript after confirmation.
+To exchange identity keys, each person can show a signed QR on **Conferir
+identidade do peer**, save a screenshot as PNG, and import it on the other
+device. After the listener starts, show a fresh QR to include its active
+addresses; import it and choose the LAN or VPN route. QR import does not
+automatically mark a contact trusted, and an image must come from a channel
+you trust. The importer accepts PNG files; live camera scanning is not yet
+available. See the [QR invite format and trust boundary](docs/fichas/identity/pairing-invite-v1.md).
 For a LAN test, both devices need to be on a reachable LAN, with the chosen
 UDP port allowed by the local firewall.
 Two devices on the same VPN can try the same direct flow by using the receiver's
