@@ -37,13 +37,18 @@ The Iced chat screen can exchange multiple bounded UTF-8 text messages in both
 directions over one session with a manually pinned device on a reachable LAN.
 Both endpoints use the durable Ed25519 device identity as their Iroh EndpointId;
 QUIC authenticates and encrypts the connection. Users manually exchange public
-keys; the sender supplies the receiver's LAN IP and UDP port. Relay and address
-lookup are disabled. The receiver stores inbound text in its local SQLCipher
+keys; the sender supplies the receiver's LAN IP and UDP port. A participant
+relay is available only when configured with its URL and token; automatic
+address discovery remains disabled. The receiver stores inbound text in its local SQLCipher
 history before ACK, and the sender stores it after receiving ACK. ACK does not
 mean the user read it. On disconnect, an unacknowledged
 send is reported as delivery unknown and is not replayed. See the frontend's
-[direct peer transport v8 contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v8.md)
-for the screen flow and protocol.
+[direct peer transport v10 contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v10.md)
+for the screen flow and protocol. The v10 `CALL_SIGNAL` frame carries bounded
+WebRTC offer, answer, ICE candidate, and end payloads through that pinned
+session. It uses the normal sequenced ACK/REJECT flow; the app must verify the
+call MLS group ID, epoch, and sender membership before accepting a signal. The
+current UI rejects these frames until its WebRTC controller is implemented.
 
 The frontend can also send MLS application events through that direct session
 once both devices have joined the same manually provisioned group. The receiver
@@ -89,9 +94,9 @@ delivery. Retention is best-effort, with no relay or NAT traversal. There is no
 verified contact roster, group discovery, guaranteed offline delivery, or
 cross-device history. Automated integration
 tests launch two separate client processes and exchange text, MLS messages,
-Commits, predecessor requests, proposals, KeyPackages, and Welcome bundles,
+Commits, predecessor requests, proposals, KeyPackages, Welcome bundles, and a call offer over pinned QUIC,
 verify wrong-key rejection, and check unknown pending delivery on disconnect
-for text, MLS events, Commits, and proposals. A successful outbound peer handshake stores its pinned device key and socket
+for text, MLS events, Commits, and proposals. A separate direct-session test exchanges a call offer and checks its transport ACK. A successful outbound peer handshake stores its pinned device key and socket
 address in the encrypted local route book. The MLS UI uses those routes for
 multi-member Commit and application-event fan-out. Real multi-member operation
 still needs a manual test with two or more app instances on a reachable LAN and

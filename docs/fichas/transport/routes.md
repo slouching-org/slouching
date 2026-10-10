@@ -6,7 +6,9 @@
 > Elixir backend and Rust client language boundary.
 
 **Estado:** endereço direto por IP manual implementado para sessões de texto
-persistentes nos dois sentidos na LAN. O cliente também aceita relay Iroh
+persistentes nos dois sentidos na LAN. O protocolo também transporta sinalização
+limitada de chamada (oferta, resposta, ICE e encerramento) em sessão pinada; a
+interface ainda rejeita essa sinalização até o controlador WebRTC ficar pronto. O cliente também aceita relay Iroh
 1.3 operado por membro, configurado explicitamente por HTTPS e token; uma
 troca autenticada de mensagem/ACK foi testada com servidor local. Descoberta,
 pareamento de contatos, hole-punching e validação remota entre redes continuam

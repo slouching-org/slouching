@@ -94,16 +94,17 @@ KeyPackages; the binding alone does not verify a person. Linux needs Secret
 Service in the user session. The settings **Rede & P2P** screen separately
 shows local Elixir HTTP/WebSocket diagnostics; it does not carry chat traffic.
 
-Character scenes and call views remain visual previews. An isolated SFrame
-module now bounds and encrypts encoded frames, assigns MLS epoch/member key IDs,
-and rejects replays; call MLS export, group membership, WebRTC, and device media
-are not connected to it. Camera and screen capture, contact discovery, and
+Character scenes and call views remain visual previews. Dedicated call MLS
+groups, authenticated member-index resolution, and bounded SFrame protection
+are implemented. QUIC v10 now carries bounded offer, answer, ICE candidate, and
+end signals on pinned sessions, but the UI rejects them until the WebRTC
+controller is integrated; media capture and playback are not connected. Camera and screen capture, contact discovery, and
 offline delivery are not implemented. Remote relay and cross-network behavior
 still need testing. QR invitation binary format and trust flow require security
 review before public release.
 The older web UI under
 `prototypes/web/` is a design benchmark, not the product runtime.
 
-See the [v8 direct peer transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v8.md),
+See the [v10 direct peer transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v10.md),
 the [screen specification](screens.md), and the
 [technology plan](../architecture/frontend-tech-stack.md).
