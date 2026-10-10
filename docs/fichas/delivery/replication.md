@@ -7,10 +7,13 @@
 
 **Estado:** o cliente nativo persiste eventos MLS cifrados na outbox e inbox
 locais, entrega diretamente por LAN e mantém ACKs duráveis por dispositivo.
-Fan-out para membros com rotas salvas e um primitivo SQLCipher de cópia
-delegada com grant assinado, quota e expiração já existem. Transporte de
-mailbox, consentimento visível, busca pelo destinatário e entrega offline ainda
-estão pendentes.
+Fan-out direto para membros com rotas salvas, opt-in visível e persistência
+SQLCipher de cópia delegada com grant assinado, quota e expiração já existem.
+QUIC v8 aceita cópias assinadas e permite que o destinatário busque até 16
+eventos por conexão; o ACK do helper segue a persistência e o ACK do destinatário
+segue a aplicação MLS. A ação de fan-out tenta um membro com rota alcançável
+quando o destinatário falha. A confirmação do helper não fecha o ACK do
+destinatário, e retenção permanece best-effort.
 
 O chat de texto direto por Iroh/QUIC mantém um histórico local separado por chave
 pública fixada. O destinatário salva a mensagem no SQLCipher antes do ACK; o
@@ -33,8 +36,9 @@ ACK. IDs iguais com bytes ou metadados divergentes são rejeitados.
 
 A inbox e a outbox listam páginas limitadas com cursor estável. Fan-out MLS
 registra separadamente o ACK de cada membro da fotografia de destinatários; o
-evento global só fecha quando todos confirmam. Estados de cópia delegada,
-expiração visível e falha ainda não têm fluxo completo de produto.
+evento global só fecha quando todos confirmam. O consentimento local do helper
+já pode ser ativado ou desativado em Settings; estados de cópia delegada,
+expiração visível e falha ainda não aparecem como recibos completos de produto.
 
 Uma cópia em helper não prova entrega ao destinatário. Nenhum membro ganha
 histórico anterior automaticamente ao ingressar no grupo. A conversa

@@ -104,8 +104,13 @@ metadata, verifies metadata through MLS authenticated data, and commits ratchet
 updates with journal writes. Inbox and outbox reads use bounded pages with a
 stable local sequence cursor. The direct pinned peer transport carries MLS
 application events; its ACK follows durable receiver processing, and the UI
-can retry queued events after reconnecting. Helper delivery, replication,
-offline delivery, and read receipts are not implemented. MLS conversation
+can retry queued events after reconnecting. QUIC v8 also carries signed
+delegated-copy grants and one bounded recipient fetch per connection. Helper
+storage ACK follows the local SQLCipher commit; recipient ACK follows MLS
+application and transcript persistence. The explicit MLS fan-out action tries
+a reachable routed group peer when the target route fails. Helper retention is
+best-effort, limited to the holder's quota and expiry; group-wide availability
+and read receipts are not implemented. MLS conversation
 history, recovery, and key lifecycle beyond local identity creation remain
 implementation work. The direct
 text transcript table does not satisfy the event journal's encrypted-envelope,
@@ -118,8 +123,10 @@ store. An Ed25519 grant from the authenticated event author binds opaque
 ciphertext, event digest, group epoch, finite expiry and one recipient device.
 The holder enforces a 64 MiB / 4,096-event quota, a 32 KiB item cap and a
 30-day maximum TTL; it retains deduplication tombstones and clears ciphertext
-after recipient ACK or expiry. Network transfer, visible opt-in and recipient
-retrieval remain unimplemented.
+after recipient ACK, expiry or the holder disabling consent. Network transfer,
+recipient retrieval and fallback helper fan-out from the MLS distribution
+action are implemented in QUIC v8; Settings exposes opt-in. End-to-end offline
+delivery is best-effort, not guaranteed.
 
 ## Helper storage and implementation sequence
 

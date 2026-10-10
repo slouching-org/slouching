@@ -65,6 +65,16 @@ MLS. Neither path provides relay, address discovery, NAT traversal, or offline
 delivery. The MLS ACK confirms durable local acceptance by the other client,
 not that a person read the message.
 
+Network & P2P settings expose the opt-in for a bounded delegated MLS-copy
+queue. QUIC v8 transports a signed author grant and lets a connecting recipient
+fetch up to 16 copies addressed to its device. A helper ACKs only after local
+SQLCipher persistence; the recipient verifies the grant, applies the MLS
+event, persists its transcript, then ACKs so the helper can erase the copy.
+When a direct target route fails, the explicit MLS fan-out action tries a
+reachable routed group member for each queued event. The target outbox stays
+queued until its own ACK. This is best-effort retention within helper quota and
+expiry, not guaranteed offline availability.
+
 The familiar screen stores the display name and familiar in encrypted SQLite;
 the database key and Ed25519 device seed use the operating system credential
 store. The public device key is shown as unverified. A device-signed binding
@@ -74,11 +84,10 @@ available in the user session. The settings **Rede & P2P** screen separately
 shows local Elixir HTTP/WebSocket diagnostics; it does not carry chat traffic.
 
 Character scenes and call views remain visual previews. Camera, microphone,
-screen capture, contact discovery, verified pairing, automatic multi-peer
-group fan-out,
-relay, and offline delivery are not implemented. The older web UI under
+screen capture, contact discovery, verified pairing, relay, and offline
+delivery are not implemented. The older web UI under
 `prototypes/web/` is a design benchmark, not the product runtime.
 
-See the [v7 direct peer transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v7.md),
+See the [v8 direct peer transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v8.md),
 the [screen specification](screens.md), and the
 [technology plan](../architecture/frontend-tech-stack.md).

@@ -42,7 +42,7 @@ lookup are disabled. The receiver stores inbound text in its local SQLCipher
 history before ACK, and the sender stores it after receiving ACK. ACK does not
 mean the user read it. On disconnect, an unacknowledged
 send is reported as delivery unknown and is not replayed. See the frontend's
-[direct peer transport v7 contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v7.md)
+[direct peer transport v8 contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v8.md)
 for the screen flow and protocol.
 
 The frontend can also send MLS application events through that direct session
@@ -62,7 +62,7 @@ adoption state in the UI, deduplicates exact redelivery, and drains each
 recipient's eligible Commit chain in order. A recipient that is missing an
 epoch requests that predecessor over the pinned session; the committer replays
 it only when that device is in the saved recipient snapshot, including after a
-prior ACK. The current v7 request is bounded per session. The UI can fan out
+prior ACK. The v7 predecessor request is bounded per session. The UI can fan out
 queued Commits and application events sequentially over saved routes, persisting
 each recipient ACK. Stale or unreachable peers remain queued. Offline delivery
 remains open. The ACK confirms durable client acceptance, not reading.
@@ -82,8 +82,12 @@ The committer UI holds the inbound frame for explicit admission; it verifies
 the package's device binding against the pinned peer and ACKs only after the
 membership Commit and Welcome are stored locally. After KeyPackage admission, the committer sends the Welcome and ratchet tree over the same pinned session. The invitee validates the device binding, group ID, local KeyPackage and pinned committer, stores the joined group, then ACKs. Copy/paste remains an explicit fallback when delivery is unknown.
 
-The v7 protocol has no verified contact roster, group discovery, relay, NAT
-traversal, offline delivery, or cross-device history. Automated integration
+The v8 protocol adds signed delegated ciphertext copies, holder opt-in, and a
+bounded recipient fetch. The UI fan-out action tries an available group helper
+after a direct target failure; helper ACK remains distinct from recipient
+delivery. Retention is best-effort, with no relay or NAT traversal. There is no
+verified contact roster, group discovery, guaranteed offline delivery, or
+cross-device history. Automated integration
 tests launch two separate client processes and exchange text, MLS messages,
 Commits, predecessor requests, proposals, KeyPackages, and Welcome bundles,
 verify wrong-key rejection, and check unknown pending delivery on disconnect
