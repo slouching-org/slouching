@@ -13,7 +13,7 @@
   <img src="docs/design/readme/badges/early-build.svg" alt="Early build" />
 </p>
 
-**Conceived by Rodrigo and Vitchola**, Slouching is an early native desktop app for a small crew to chat, call, and share a screen. The Rust/Iced client owns local keys, cryptography, direct peer paths, and per-peer chat history in encrypted SQLite. Elixir remains the backend language. A member may optionally host a helper on a PC or VPS for ciphertext delivery, discovery, relay, or group media. Pinned-device text works between reachable LAN peers without a hosted helper or PostgreSQL.
+**Conceived by Rodrigo and Vitchola**, Slouching is an early native desktop app for a small crew to chat, call, and share a screen. The Rust/Iced client owns local keys, cryptography, direct peer paths, and per-peer chat history and pinned peer routes in encrypted SQLite. Elixir remains the backend language. A member may optionally host a helper on a PC or VPS for ciphertext delivery, discovery, relay, or group media. Pinned-device text works between reachable LAN peers without a hosted helper or PostgreSQL.
 
 > [!IMPORTANT]
 > This is an early build, **not a secure messenger**. Direct pinned-device LAN text and MLS application messaging work over Iroh/QUIC. The MLS screen can send a device-bound KeyPackage through a pinned session, where the committer reviews and admits it. The committer sends Welcome and ratchet tree through the pinned session after admission; the invitee validates and saves the group before ACK. Copy/paste remains a fallback when direct delivery is unknown. The receiver validates and persists ciphertext, ratchet state, and transcript in SQLCipher before ACK, and queued messages can be retried. Membership Commits are stored atomically with the committer's new group epoch. When a pinned group member connects, its eligible pending Commits start sending automatically, one at a time with a durable ACK before advancing; the manual control remains available. Exact redelivery is harmless. Clients detect authenticated committer equivocation against saved historical OpenMLS state, preserve both conflicting Commits, and quarantine the affected group without changing its accepted epoch. Simultaneous multi-member fan-out, group discovery, contact verification, relay, offline delivery, calls, and screen sharing remain unimplemented. The Elixir backend uses SQLite locally; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is an experiment, not the service backend.
@@ -33,7 +33,7 @@ opening a saved group restores its transcript and security state from SQLCipher.
 
 ![Actual Native Rust/Iced familiar screen showing local profile and keyring status after adding the device-to-MLS binding core](docs/design/readme/native-vhs-profile.png)
 
-![Actual native direct-LAN chat UI showing its local-history label; this capture has no peer data and Secret Service is unavailable, so identity-gated controls are disabled](repositories/frontend/docs/design/runtime/native-vhs/06-chat.png)
+![Actual 1884 × 1000 native direct-LAN chat UI showing the pinned-route area; Secret Service is unavailable in this capture, so identity-gated controls are disabled](repositories/frontend/docs/design/runtime/native-vhs/06-chat.png)
 
 ![Actual 1884 × 1000 native MLS group screen describing the direct KeyPackage and Welcome session flow](repositories/frontend/docs/design/runtime/native-vhs/11-mls.png)
 

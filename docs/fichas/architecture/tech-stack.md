@@ -6,7 +6,7 @@ storage and optional deployment reaffirmed by [ADR 0006](adr-0006-local-storage-
 | Layer | Direction | Current state |
 | --- | --- | --- |
 | Desktop UI and local client core | Rust/Iced and Tokio | Eleven native screens; direct-LAN text works with manual device-key pinning and local per-peer history |
-| Local persistence | Encrypted SQLite using SQLCipher; OS credential store holds the DB key | Frontend persists profile, up to 1,000 direct messages per peer, opaque event journal, OpenMLS signer/private KeyPackage bundle, and local MLS group state; outbound and inbound MLS application events update the ratchet and journal atomically |
+| Local persistence | Encrypted SQLite using SQLCipher; OS credential store holds the DB key | Frontend persists profile, up to 1,000 direct messages per peer, opaque event journal, OpenMLS signer/private KeyPackage bundle, local MLS group state, and outbound pinned peer socket routes; outbound and inbound MLS application events update the ratchet and journal atomically |
 | Client cryptography and P2P | Rust; OpenMLS for MLS, iroh and SFrame candidates | Device binding, pinned-session KeyPackage delivery with committer review, group admission, pinned-session Welcome delivery with invitee validation; authenticated MLS application encryption/decryption, durable deduplication, local chat UI, and direct-session delivery exist; durable Welcome retry remains pending |
 | Backend service components | Elixir/OTP | Supervised Bandit loopback scaffold |
 | Gateway | Versioned binary WebSocket/protobuf | Handshake v1 and Ping/Pong only; no authenticated product traffic |

@@ -85,8 +85,11 @@ traversal, offline delivery, or cross-device history. Automated integration
 tests launch two separate client processes and exchange text, MLS messages,
 Commits, predecessor requests, proposals, KeyPackages, and Welcome bundles,
 verify wrong-key rejection, and check unknown pending delivery on disconnect
-for text, MLS events, Commits, and proposals. A manual test uses two app instances on a
-reachable LAN and requires firewall access to the chosen UDP port. Linux
+for text, MLS events, Commits, and proposals. A successful outbound peer handshake stores its pinned device key and socket
+address in the encrypted local route book. Those remembered routes will support
+future multi-member Commit fan-out; current delivery still follows a connected
+peer session. A manual test uses two app instances on a reachable LAN and
+requires firewall access to the chosen UDP port. Linux
 requires an available Secret Service for local device identity.
 
 The Elixir diagnostic transport authenticates no device, carries no encrypted
