@@ -100,9 +100,10 @@ never contains private keys or relay tokens. Importing it fills the peer key
 and lets the user choose among its addresses, but does not automatically mark
 the contact verified. The user must authenticate the QR source or compare the
 complete 64-digit key through an independent channel before marking that exact
-key verified in SQLCipher. A replacement key does not inherit trust. Short
-verification codes and discovery remain open. Camera QR scanning uses an
-explicit local camera session and applies the same signature and trust checks
+key verified in SQLCipher. A replacement key does not inherit trust. The
+identity screen derives a symmetric 12-digit safety code from both device keys
+for live comparison; SPAKE2 rendezvous and contact discovery remain open.
+Camera QR scanning uses an explicit local camera session and applies the same signature and trust checks
 as PNG import. A device-signed binding connects that identity to the MLS
 signing key and is carried in
 KeyPackages; the binding alone does not verify a person. Linux needs Secret
