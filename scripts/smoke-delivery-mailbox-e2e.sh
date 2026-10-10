@@ -66,4 +66,4 @@ SLOUCHING_DELIVERY_MAILBOX_URL="${base_url}" \
     --bin slouching-frontend signed_mailbox_client_round_trips_against_live_helper \
     -- --ignored --nocapture
 
-echo "Rust client uploaded, listed, decoded, and ACKed an MLS copy through the live Elixir helper."
+echo "Rust client paginated 18 signed MLS copies through the live Elixir helper and ACKed every copy."
