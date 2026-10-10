@@ -42,7 +42,7 @@ lookup are disabled. The receiver stores inbound text in its local SQLCipher
 history before ACK, and the sender stores it after receiving ACK. ACK does not
 mean the user read it. On disconnect, an unacknowledged
 send is reported as delivery unknown and is not replayed. See the frontend's
-[direct peer transport v6 contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v6.md)
+[direct peer transport v7 contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v7.md)
 for the screen flow and protocol.
 
 The frontend can also send MLS application events through that direct session
@@ -62,10 +62,8 @@ adoption state in the UI, deduplicates exact redelivery, and drains each
 recipient's eligible Commit chain in order. A recipient that is missing an
 epoch requests that predecessor over the pinned session; the committer replays
 it only when that device is in the saved recipient snapshot, including after a
-prior ACK. The v5 request is bounded per session. Multi-member fan-out, offline
-delivery, and MLS invitation exchange remain manual/open. The ACK confirms
-durable client acceptance, not reading. MLS invitations still require a trusted
-manual channel.
+prior ACK. The current v7 request is bounded per session. Multi-member fan-out and offline
+delivery remain open. The ACK confirms durable client acceptance, not reading.
 
 Members can send signed self-update proposals through the same pinned session.
 The receiver verifies that the envelope author is the pinned transport device,
@@ -80,15 +78,14 @@ proposal types remain unimplemented.
 The invitee can also send its device-bound KeyPackage through that session.
 The committer UI holds the inbound frame for explicit admission; it verifies
 the package's device binding against the pinned peer and ACKs only after the
-membership Commit and Welcome are stored locally. Welcome and ratchet-tree
-delivery to the new member still use the trusted manual channel.
+membership Commit and Welcome are stored locally. After KeyPackage admission, the committer sends the Welcome and ratchet tree over the same pinned session. The invitee validates the device binding, group ID, local KeyPackage and pinned committer, stores the joined group, then ACKs. Copy/paste remains an explicit fallback when delivery is unknown.
 
-The v6 protocol has no verified contact roster, group discovery, relay, NAT
+The v7 protocol has no verified contact roster, group discovery, relay, NAT
 traversal, offline delivery, or cross-device history. Automated integration
 tests launch two separate client processes and exchange text, MLS messages,
-Commits, predecessor requests, proposals, and KeyPackages, verify wrong-key rejection, and
-check unknown pending delivery on disconnect for text, MLS events, Commits, and
-proposals. A manual test uses two app instances on a
+Commits, predecessor requests, proposals, KeyPackages, and Welcome bundles,
+verify wrong-key rejection, and check unknown pending delivery on disconnect
+for text, MLS events, Commits, and proposals. A manual test uses two app instances on a
 reachable LAN and requires firewall access to the chosen UDP port. Linux
 requires an available Secret Service for local device identity.
 

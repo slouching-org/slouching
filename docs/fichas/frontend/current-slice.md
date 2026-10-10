@@ -4,8 +4,10 @@
 LAN chat uses pinned Ed25519 device identities and persistent Iroh/QUIC
 sessions. MLS group setup sends a device-bound KeyPackage over the active
 pinned session. The committer reviews and admits it after matching the package
-identity to the transport peer; Welcome and ratchet-tree exchange remain
-manual over a trusted channel. For an already joined group, MLS application
+identity to the transport peer. After admission, the committer sends Welcome
+and ratchet tree over the pinned session. The invitee validates the target
+device, group, local KeyPackage and pinned committer, saves the joined group,
+then ACKs. Copy/paste fields remain available when delivery is unknown. For an already joined group, MLS application
 messages are encrypted with OpenMLS and sent over the active direct session.
 The receiver validates the sender binding and event metadata, advances the
 ratchet, stores ciphertext and the local transcript in SQLCipher, then ACKs.
@@ -64,6 +66,6 @@ group fan-out,
 relay, and offline delivery are not implemented. The older web UI under
 `prototypes/web/` is a design benchmark, not the product runtime.
 
-See the [v6 direct peer transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v6.md),
+See the [v7 direct peer transport contract](https://github.com/slouching-org/slouching-frontend/blob/main/docs/fichas/transport/lan-peer-v7.md),
 the [screen specification](screens.md), and the
 [technology plan](../architecture/frontend-tech-stack.md).
