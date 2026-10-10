@@ -31,8 +31,10 @@ membros precisam sincronizar a nova época e renegociar a chamada.
 
 O botão de microfone silencia localmente os quadros de saída sem encerrar a
 captura. O teste local de microfone em **Áudio & vídeo** continua separado da
-chamada. Câmera, compartilhamento de tela, supressão de ruído, cancelamento de
-eco, push-to-talk, TURN e descoberta automática não estão implementados. As
-cenas e miniaturas continuam sendo prévias visuais.
+chamada. **Escolher tela** enumera monitores e captura uma imagem local sob
+demanda para prévia; não transmite essa imagem ao peer. Captura contínua,
+codificação H.264, RTP/SFrame de vídeo e renderização de vídeo remoto ainda
+faltam. Captura de janela/câmera, supressão de ruído, cancelamento de eco,
+push-to-talk, TURN e descoberta automática também não estão implementados.
 
 Ver [spec detalhada](../architecture/backend.md#7-calls-files-and-temporary-room-chat).
