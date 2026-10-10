@@ -15,9 +15,9 @@ um QR PNG preenche a chave e permite escolher o endereço, mas não marca o peer
 como verificado automaticamente. Um código de segurança de 12 dígitos,
 derivado simetricamente das duas chaves, pode ser comparado em uma conversa ao
 vivo antes de marcar o peer como verificado. Isso não implementa rendezvous
-SPAKE2, descoberta ou recuperação de contato.
+SPAKE2, descoberta de contatos ou recuperação.
 
-O dispositivo criará sua própria identidade de assinatura e folha MLS. Não há
+O dispositivo cria sua própria identidade de assinatura e folha MLS. Não há
 conta ou email obrigatório. Nome e familiar são escolhas de perfil, diferentes
 da identidade criptográfica. A comparação da chave pública completa com outro
 membro por canal independente é o ato que permite marcá-la como verificada.
@@ -42,7 +42,7 @@ chave, mas não autentica quem forneceu a imagem. O usuário só deve marcar a
 chave como verificada depois de importar o QR mostrado diretamente pelo contato
 ou conferir a chave completa por canal independente.
 
-Pendências de segurança: revisão do fluxo QR, câmera ao vivo, códigos curtos,
-recuperação, múltiplos dispositivos, backup e política de troca de chave. O
-cliente exige Secret Service no Linux para acessar as credenciais. Ver [modelo
+Pendências de segurança: revisão do fluxo QR, câmera ao vivo, pareamento SPAKE2,
+recuperação, múltiplos dispositivos, backup e política de troca de chave. O cliente
+exige Secret Service no Linux para acessar as credenciais. Ver [modelo
 de confiança](../architecture/backend.md#3-trust-and-security-model).

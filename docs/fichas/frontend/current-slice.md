@@ -66,14 +66,16 @@ are disabled. The UI lists devices by key prefix because human contact names
 are not bound to MLS credentials.
 
 The direct-peer text screen manually pins the peer's Ed25519 device key. One
-side listens and shares an announced LAN/VPN address; the other connects. Both
-can send multiple messages. The receiver stores inbound text before ACK; the
+side listens and shares an announced LAN/VPN address; the other connects. The
+connection screen can browse active Slouching listeners over local mDNS and
+fill an untrusted route into chat; it never supplies or verifies the peer key.
+mDNS discovery itself does not cross a VPN. Both can send multiple messages. The receiver stores inbound text before ACK; the
 sender stores sent text after ACK. It reloads the newest 200 messages for the
 peer and supports confirmed history deletion. A member may configure an
 HTTPS/token Iroh Relay for direct-text fallback or relay-only routes; the local
 authenticated relay path has an end-to-end message test. VPN between machines,
 remote relay deployment, and MLS fan-out over a relay remain unverified. There
-is no address discovery, hole-punching, or offline delivery. The MLS ACK
+is no contact discovery, hole-punching, or offline delivery. The MLS ACK
 confirms durable local acceptance by the other client, not that a person read
 the message.
 

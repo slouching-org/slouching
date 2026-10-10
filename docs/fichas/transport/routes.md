@@ -6,12 +6,16 @@
 > Elixir backend and Rust client language boundary.
 
 **Estado:** endereço direto por IP manual implementado para sessões de texto
-persistentes nos dois sentidos na LAN. O protocolo também transporta sinalização
-limitada de chamada (oferta, resposta, ICE e encerramento) em sessão pinada; a
-interface ainda rejeita essa sinalização até o controlador WebRTC ficar pronto. O cliente também aceita relay Iroh
-1.3 operado por membro, configurado explicitamente por HTTPS e token; uma
-troca autenticada de mensagem/ACK foi testada com servidor local. Descoberta,
-pareamento de contatos, hole-punching e validação remota entre redes continuam
+persistentes nos dois sentidos na LAN. A tela de conexão agora pode procurar
+listeners ativos com mDNS e preencher uma rota no chat; o anúncio leva um ID
+efêmero, porta e endereços, nunca a chave pública. Esses dados são dicas sem
+confiança e mDNS não atravessa VPN. O protocolo também transporta sinalização
+limitada de chamada (oferta, resposta, ICE e encerramento) em sessão pinada; o
+controlador WebRTC aceita ofertas após validar o grupo MLS e aguarda decisão
+explícita do usuário antes de abrir o microfone. O cliente também aceita um
+relay Iroh 1.3 operado por membro, configurado explicitamente por HTTPS e token; uma
+troca autenticada de mensagem/ACK foi testada com servidor local. Descoberta de
+contatos, pareamento, hole-punching e validação remota entre redes continuam
 pendentes.
 
 Na mesma rede local ou VPN, dois clientes Rust podem trocar chaves públicas,
