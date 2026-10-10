@@ -13,10 +13,10 @@
   <img src="docs/design/readme/badges/early-build.svg" alt="Early build" />
 </p>
 
-**Conceived by Rodrigo and Vitchola**, Slouching is an early native desktop app for a small crew to chat, call, and share a screen. The Rust/Iced client owns local keys, cryptography, direct peer paths, and per-peer chat history and pinned peer routes in encrypted SQLite. Elixir remains the backend language. A member may optionally host a helper on a PC or VPS for ciphertext delivery, discovery, relay, or group media. Pinned-device text works between reachable LAN peers without a hosted helper or PostgreSQL.
+**Conceived by Rodrigo and Vitchola**, Slouching is an early native desktop app for a small crew to chat, call, and share a screen. The Rust/Iced client owns local keys, cryptography, direct peer paths, and per-peer chat history and pinned peer routes in encrypted SQLite. Elixir remains the backend language. A member may optionally host a helper on a PC or VPS for ciphertext delivery, discovery, relay, or group media. Pinned-device text works over manually addressed reachable UDP routes without a hosted helper or PostgreSQL.
 
 > [!IMPORTANT]
-> This is an early build, **not a secure messenger**. Direct pinned-device LAN text and MLS application messaging work over Iroh/QUIC. The MLS screen can send a device-bound KeyPackage through a pinned session, where the committer reviews and admits it. The committer saves the Welcome and ratchet tree in an encrypted retry queue and resends them when the pinned invitee reconnects. The invitee records a content-bound receipt with group admission, so duplicate delivery after a lost ACK returns the existing group. The receiver validates and persists ciphertext, ratchet state, and transcript in SQLCipher before ACK. Each application event snapshots eligible member devices; per-device ACKs keep other recipients queued, and the MLS screen can retry one pinned member or fan out over saved routes. If a recipient route is unavailable, that fan-out action tries a reachable routed group member that opted into retaining signed ciphertext copies. A reconnecting recipient fetches copies addressed to its device, verifies the author grant and persists the event before the helper erases it. Helper ACKs are reported separately from recipient delivery, and retention remains best-effort. Membership Commits are stored atomically with the committer's new group epoch. When a pinned group member connects, its eligible pending Commits start sending automatically, one at a time with a durable ACK before advancing. The committer can also distribute queued Commits sequentially to all eligible members with saved routes; unavailable peers remain queued. Exact redelivery is harmless. Clients detect authenticated committer equivocation against saved historical OpenMLS state, preserve both conflicting Commits, and quarantine the affected group without changing its accepted epoch. Group discovery, contact verification, relay, calls, and screen sharing remain unimplemented. The Elixir backend uses SQLite locally; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is an experiment, not the service backend.
+> This is an early build, **not a secure messenger**. Direct pinned-device text and MLS application messaging work over Iroh/QUIC when a manually supplied UDP route is reachable. The MLS screen can send a device-bound KeyPackage through a pinned session, where the committer reviews and admits it. The committer saves the Welcome and ratchet tree in an encrypted retry queue and resends them when the pinned invitee reconnects. The invitee records a content-bound receipt with group admission, so duplicate delivery after a lost ACK returns the existing group. The receiver validates and persists ciphertext, ratchet state, and transcript in SQLCipher before ACK. Each application event snapshots eligible member devices; per-device ACKs keep other recipients queued, and the MLS screen can retry one pinned member or fan out over saved routes. If a recipient route is unavailable, that fan-out action tries a reachable routed group member that opted into retaining signed ciphertext copies. A reconnecting recipient fetches copies addressed to its device, verifies the author grant and persists the event before the helper erases it. Helper ACKs are reported separately from recipient delivery, and retention remains best-effort. Membership Commits are stored atomically with the committer's new group epoch. When a pinned group member connects, its eligible pending Commits start sending automatically, one at a time with a durable ACK before advancing. The committer can also distribute queued Commits sequentially to all eligible members with saved routes; unavailable peers remain queued. Exact redelivery is harmless. Clients detect authenticated committer equivocation against saved historical OpenMLS state, preserve both conflicting Commits, and quarantine the affected group without changing its accepted epoch. Group discovery, contact verification, relay, calls, and screen sharing remain unimplemented. The Elixir backend uses SQLite locally; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is an experiment, not the service backend.
 
 Members can also send a signed MLS self-update proposal to the designated
 committer over the active pinned peer session, with copy/paste over a separately
@@ -33,7 +33,7 @@ opening a saved group restores its transcript and security state from SQLCipher.
 
 ![Actual Native Rust/Iced familiar screen showing local profile and keyring status after adding the device-to-MLS binding core](docs/design/readme/native-vhs-profile.png)
 
-![Actual 1884 × 1000 native direct-LAN chat UI showing the pinned-route area; Secret Service is unavailable in this capture, so identity-gated controls are disabled](repositories/frontend/docs/design/runtime/native-vhs/06-chat.png)
+![Native Iced direct chat with separate copy controls for sample LAN and VPN socket addresses; the capture addresses are illustrative and Secret Service is unavailable](repositories/frontend/docs/design/runtime/native-vhs/06-chat.png)
 
 ![Actual 1884 × 1000 native MLS screen showing direct group admission and Welcome controls](repositories/frontend/docs/design/runtime/native-vhs/11-mls.png)
 
@@ -51,12 +51,12 @@ This repository holds the project overview, design sources, and a reconciled doc
 
 | Repository | Owns | Current state |
 | --- | --- | --- |
-| [slouching-frontend](https://github.com/slouching-org/slouching-frontend) | Native Rust/Iced desktop UI and web visual prototype | Eleven design-board views plus MLS group chat; direct-LAN pinned Iroh/QUIC transport; SQLCipher transcript and retryable outbox |
+| [slouching-frontend](https://github.com/slouching-org/slouching-frontend) | Native Rust/Iced desktop UI and web visual prototype | Eleven design-board views plus MLS group chat; manually addressed pinned Iroh/QUIC transport; SQLCipher transcript and retryable outbox |
 | [slouching-backend](https://github.com/slouching-org/slouching-backend) | Elixir service backend | Local SQLite Repo, no-PostgreSQL smoke check, and transport diagnostics; PostgreSQL deployment option; no enrollment or product traffic |
 
 Start with the [fichas index](docs/fichas/README.md). The [product specification](docs/fichas/architecture/backend.md), [Elixir backend boundary](docs/fichas/architecture/elixir-backend.md), [frontend screen specification](docs/fichas/frontend/screens.md), [technology plan](docs/fichas/architecture/tech-stack.md), and [ADRs](docs/fichas/README.md#accepted-decisions) describe the target and distinguish it from working code. The [owner's 11-page architecture PDF](docs/fichas/architecture/sources/architecture-p2p-v0.1.pdf) and [page-by-page transcript](docs/fichas/architecture/sources/README.md) are preserved. [ADR 0005](docs/fichas/architecture/adr-0005-elixir-server-core.md) defines the Rust-client/Elixir-backend division. [ADR 0006](docs/fichas/architecture/adr-0006-local-storage-optional-helper.md) reaffirms the backup specification: local SQLite, optional helpers, and PostgreSQL only as a deployment option.
 
-The [client/server integration contract](docs/fichas/architecture/integration.md) describes both the local Elixir diagnostics and the separate direct-LAN text path. The diagnostics establish reachability and wire compatibility only. Direct peer text and MLS messages use the separate pinned Iroh/QUIC path.
+The [client/server integration contract](docs/fichas/architecture/integration.md) describes both the local Elixir diagnostics and the separate direct-peer text path. The diagnostics establish reachability and wire compatibility only. Direct peer text and MLS messages use the separate pinned Iroh/QUIC path.
 
 The Elixir helper uses SQLite for local development and can select PostgreSQL for a deployment with `SLOUCHING_DATABASE_URL`. Its device-key table has no enrollment or lookup route and does not establish a required directory service. The desktop product stores its own encrypted local data in SQLCipher SQLite.
 
@@ -102,7 +102,7 @@ uses `ws://127.0.0.1:3707/ws`. Neither is authenticated product traffic. Run
 checks. The submodules pin the published backend and frontend commits,
 including native runtime screenshots.
 
-To use direct-LAN messaging, open the **chat** screen in both clients. Create
+To use direct peer messaging, open the **chat** screen in both clients. Create
 an identity in **Familiar** if needed, then use **Copiar minha chave pública**
 and exchange the two keys over a trusted channel. Each person pastes the
 other's key into **Chave pública do peer**. The receiving device selects a UDP
@@ -121,7 +121,7 @@ On Linux, Secret Service must be available for device identity storage. Each
 device keeps its own encrypted transcript for that pinned peer after the app
 closes; history is not synchronized. For MLS group chat, provision the same
 group on both devices through **Grupo MLS**, connect them in **Texto direto ·
-LAN**, select the same group ID, and send from the MLS screen. After admission, later members receive the Welcome and ratchet tree through
+LAN/VPN**, select the same group ID, and send from the MLS screen. After admission, later members receive the Welcome and ratchet tree through
 the pinned session, validate it, save the group and ACK. Existing members receive Commits through
 the active session; the sender uses the predecessor-epoch member snapshot,
 while the receiver persists the new epoch before

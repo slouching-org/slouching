@@ -6,7 +6,7 @@
 > Elixir backend and Rust client language boundary.
 
 **Estado:** o cliente nativo persiste eventos MLS cifrados na outbox e inbox
-locais, entrega diretamente por LAN e mantém ACKs duráveis por dispositivo.
+locais, entrega diretamente por rota UDP manualmente informada e mantém ACKs duráveis por dispositivo.
 Fan-out direto para membros com rotas salvas, opt-in visível e persistência
 SQLCipher de cópia delegada com grant assinado, quota e expiração já existem.
 QUIC v8 aceita cópias assinadas e permite que o destinatário busque até 16
