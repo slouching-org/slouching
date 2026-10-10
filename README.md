@@ -31,6 +31,12 @@ both people compare all 64 hexadecimal characters through an independent
 channel. That decision applies only to the exact key in this encrypted profile.
 QR pairing and short verification codes remain unimplemented.
 
+The native client now contains an internal file-transfer crypto foundation:
+random per-file keys, authenticated 48 KiB chunks, a 100 MiB bound, ciphertext
+digests, and a filename-only offer format. Users cannot send or receive files
+yet; peer-protocol integration, accept/save handling, streaming disk I/O, and
+the interface remain to be implemented.
+
 The MLS screen lists local groups with their current epoch and quarantine state;
 opening a saved group restores its transcript and security state from SQLCipher.
 
