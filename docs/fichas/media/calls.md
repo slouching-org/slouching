@@ -25,6 +25,10 @@ testar captura e reprodução reais entre dois computadores, incluindo VPN, perd
 de pacotes e reconexão. A chamada exige que ambos estejam no mesmo grupo MLS
 de chamada e conectados pelo peer pinado.
 
+Quando a época do grupo de chamada avança ou o grupo entra em quarentena, o
+cliente silencia os quadros imediatamente e encerra a sessão WebRTC antiga; os
+membros precisam sincronizar a nova época e renegociar a chamada.
+
 O botão de microfone silencia localmente os quadros de saída sem encerrar a
 captura. O teste local de microfone em **Áudio & vídeo** continua separado da
 chamada. Câmera, compartilhamento de tela, supressão de ruído, cancelamento de
