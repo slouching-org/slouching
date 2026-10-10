@@ -26,6 +26,14 @@ The committer explicitly approves or rejects each current-epoch proposal;
 only approved proposal references enter the Commit. Decisions persist in the
 encrypted local profile. Other MLS proposal types remain unsupported.
 
+The MLS screen lists group members by device-key prefix. The designated
+committer can remove a selected device after explicit confirmation. Its signed
+removal Commit, new group epoch, and delivery recipients from the preceding
+epoch are persisted atomically. The removed device can apply the Commit, after
+which OpenMLS marks its local group inactive, excludes it from membership, and
+rejects further MLS messages. Its local transcript remains visible, with MLS
+sends and attachments disabled for that inactive group.
+
 The identity screen signs a 10-minute QR invite containing the device key and,
 when a listener is active, its announced addresses. Import from PNG or scan
 with the camera verifies the signature and offers each address as a route
@@ -75,6 +83,10 @@ opening a saved group restores its transcript and security state from SQLCipher.
 ![Native Iced direct chat with explicit listener and VPN address guidance, relay settings, and copy controls for sample LAN and VPN socket addresses; addresses are illustrative and Secret Service is unavailable](repositories/frontend/docs/design/runtime/native-vhs/06-chat.png)
 
 ![Actual 934 × 1000 native MLS screen showing pending, approved, and rejected self-update proposal review controls; proposal rows are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/11-mls.png)
+
+That MLS capture predates member removal. Refresh it from a graphical session
+with `--capture-mls-member-removal`; this development environment has no
+Wayland or X11 display, so it could not produce a fresh rendered image.
 
 ![Actual native Iced MLS screen with an encrypted attachment card and save action; attachment and connected state are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/12-mls-attachments.png)
 

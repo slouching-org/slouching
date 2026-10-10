@@ -56,6 +56,15 @@ authenticates and stores the proposal, then creates an atomic Commit for the
 existing per-member delivery flow. Other proposal types and network proposal
 delivery remain unimplemented.
 
+The designated committer can also remove a selected device from the group after
+an explicit UI confirmation. The removal Commit, next epoch, and delivery
+snapshot of the prior membership are committed atomically. The removed device
+can apply the Commit, after which OpenMLS marks that local group inactive,
+excludes the device from membership, and rejects further MLS application
+messages. The group transcript stays visible while MLS sends and attachments
+are disabled. The UI lists devices by key prefix because human contact names
+are not bound to MLS credentials.
+
 The direct-peer text screen manually pins the peer's Ed25519 device key. One
 side listens and shares an announced LAN/VPN address; the other connects. Both
 can send multiple messages. The receiver stores inbound text before ACK; the
