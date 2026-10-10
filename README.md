@@ -43,8 +43,11 @@ persistence in SQLCipher now has group-state validation, idempotent retries,
 MLS member-device validation, transfer-ID conflict checks, and a 200 MiB
 per-profile quota. A bounded, versioned codec for carrying the blob hash and
 offer inside an MLS application message is implemented, but the composer does
-not create file offers yet. MLS authorization for blob serving, app lifecycle
-wiring, and the accept/save interface remain.
+not create file offers yet. On receive, the client authenticates and decrypts
+the MLS event before inserting its attachment manifest into SQLCipher in the
+same transaction as ratchet and transcript updates; ACK follows that commit.
+Exact redelivery is deduplicated. Blob serving authorization from MLS
+membership, app lifecycle wiring, and the accept/save interface remain.
 The pinned iroh-blobs 0.103.1 release is marked by its maintainers as not
 production quality, so this path remains experimental.
 
