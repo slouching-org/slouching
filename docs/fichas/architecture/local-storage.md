@@ -97,17 +97,22 @@ confirmation; a storage test verifies that another peer's history remains.
 - Apply explicit quotas and expiry to delegated ciphertext copies and
   attachment chunks. A holder's absence or data loss may make them unavailable.
 
-The client now persists a group-bound file offer, content key, author device,
+The client persists a group-bound file offer, content key, author device,
 ciphertext digest, and declared size in SQLCipher. Per-profile declared
 attachment size is capped at 200 MiB; validated MLS device credentials bind
 the offer author to active group membership, and a transaction rechecks the
 group epoch before insertion. The v21-to-v22 migration backfills sizes from
 existing offers. The encrypted iroh-blobs store remains separately tagged by
-transfer ID. Offer storage and blob lifecycle are not yet wired into MLS authorization or a user
-send/accept flow, so this is persistence groundwork rather than usable file
-sharing. A bounded, versioned text codec can represent the ciphertext hash and
-key-bearing offer inside an MLS application payload; the composer does not yet
-create or render this payload.
+transfer ID. The MLS composer encrypts a selected file, commits its offer with
+the MLS ratchet and outbox event, and sends ciphertext over a separate QUIC
+stream after the recipient ACKs the offer. The recipient checks group
+membership and the exact authenticated offer before importing ciphertext; the
+history card decrypts to a user-selected path only after integrity checks. A
+failed stream can be retried while the sender app remains open. The transfer
+is currently point-to-point: group fan-out and restart-persistent stream retry
+are not implemented, and cross-machine database-authorized desktop transfer
+still needs runtime validation. The pinned iroh-blobs release remains
+experimental.
 
 The schema stores event ID, author device, group ID, epoch, optional
 checkpoint, ciphertext digest, opaque ciphertext, expiry, and an outbound
