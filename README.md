@@ -37,7 +37,10 @@ digests, bounded streaming encryption/decryption, a filename-only offer format,
 and an encrypted persistent iroh-blobs store with an explicit peer-authorization
 gate. The desktop app has a private per-user store location and a bounded
 ciphertext import that checks length and digest before adding a persistent
-reference. A local two-endpoint QUIC test covers authorized retrieval and rejects an
+reference. Stored ciphertext can be decrypted chunk by chunk and published to
+a destination only after AEAD and ciphertext-digest validation, without
+replacing an existing file; Unix staging files use mode 0600. A local
+two-endpoint QUIC test covers authorized retrieval and rejects an
 unauthorized peer. The bounded receive-store path stages ciphertext in a
 private temporary file and rejects streams whose size or digest differs from
 the MLS offer before adding a blob reference. Its plaintext receive core
