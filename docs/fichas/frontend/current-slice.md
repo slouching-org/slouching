@@ -2,9 +2,12 @@
 
 **Status:** eleven design-board views plus a native MLS group screen. Direct
 LAN chat uses pinned Ed25519 device identities and persistent Iroh/QUIC
-sessions. Successful outbound peer handshakes save the pinned device key and
-last-seen socket address in the encrypted local route book. The MLS screen uses
-these routes for sequential multi-member Commit fan-out. MLS group setup sends a device-bound KeyPackage over the active
+sessions. Direct sessions save the active IP route Iroh reports for the
+authenticated pinned device on either side of the connection, refreshing the
+encrypted local route book. Relay sessions are never recorded as direct socket
+addresses; the explicitly configured relay route stays separate. Routes can
+still become stale. The MLS screen uses these routes for sequential
+multi-member Commit fan-out. MLS group setup sends a device-bound KeyPackage over the active
 pinned session. The committer reviews and admits it after matching the package
 identity to the transport peer. Admission saves the exact Welcome and ratchet
 tree in the encrypted outbox with the membership Commit. The committer sends
@@ -80,7 +83,7 @@ peer and supports confirmed history deletion. A member may configure an
 HTTPS/token Iroh Relay for direct-text fallback or relay-only routes; the local
 authenticated relay path has an end-to-end message test. VPN between machines,
 remote relay deployment, and MLS fan-out over a relay remain unverified. There
-is no authenticated contact discovery or hole-punching. Best-effort offline
+is no authenticated remote contact discovery or hole-punching. Best-effort offline
 copies can be stored by an opted-in group peer or the optional remote Elixir
 mailbox; delivery cannot be promised when no holder can reach the recipient.
 The MLS ACK confirms durable local acceptance by the other client, not that a

@@ -15,8 +15,13 @@ controlador WebRTC aceita ofertas após validar o grupo MLS e aguarda decisão
 explícita do usuário antes de abrir o microfone. O cliente também aceita um
 relay Iroh 1.3 operado por membro, configurado explicitamente por HTTPS e token; uma
 troca autenticada de mensagem/ACK foi testada com servidor local. Descoberta de
-contatos, pareamento, hole-punching e validação remota entre redes continuam
-pendentes.
+contatos por diretório remoto e hole-punching continuam pendentes. Pareamento
+via QR e código de uso único está disponível em caráter experimental. Em uma
+sessão QUIC direta autenticada, cada dispositivo salva o endereço IP ativo que
+Iroh observou para a chave pinada do peer; uma sessão via relay não é salva como
+rota IP. Esse endereço é apenas uma rota aprendida, pode ficar obsoleta e não
+substitui a verificação de identidade. VPN entre máquinas e relay remoto ainda
+precisam de validação.
 
 Na mesma rede local ou VPN, dois clientes Rust podem trocar chaves públicas,
 usar o IP/porta manual do receptor e se autenticar diretamente pela chave

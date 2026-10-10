@@ -98,14 +98,14 @@ helper after a direct target failure; helper ACK remains distinct from
 recipient delivery. The optional Elixir HTTP mailbox adds configured HTTPS
 upload fallback and manual fetch; the recipient persists the event locally
 before its helper ACK. Neither helper path implements NAT traversal. LAN mDNS
-provides untrusted listener hints, but there is no verified contact roster,
-authenticated group discovery, guaranteed offline delivery, or cross-device
-history. Automated integration
+provides untrusted listener hints, while the Iced identity screen maintains a
+local roster of manually verified keys. There is no remote authenticated
+directory, authenticated group discovery, guaranteed offline delivery, or
+cross-device history. Automated integration
 tests launch two separate client processes and exchange text, MLS messages,
 Commits, predecessor requests, proposals, KeyPackages, Welcome bundles, and a call offer over pinned QUIC,
 verify wrong-key rejection, and check unknown pending delivery on disconnect
-for text, MLS events, Commits, and proposals. A separate direct-session test exchanges a call offer and checks its transport ACK. A successful outbound peer handshake stores its pinned device key and socket
-address in the encrypted local route book. The MLS UI uses those routes for
+for text, MLS events, Commits, and proposals. A separate direct-session test exchanges a call offer and checks its transport ACK. Direct QUIC sessions record the active IP route Iroh observes for the authenticated pinned device, whether the local device initiated or accepted the session. Relay paths remain distinct and are not saved as IP routes. The MLS UI uses those routes for
 multi-member Commit and application-event fan-out. Real multi-member operation
 still needs a manual test with two or more app instances on a reachable LAN and
 firewall access to the chosen UDP ports. Linux requires an available Secret
