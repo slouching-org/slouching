@@ -94,14 +94,18 @@ KeyPackages; the binding alone does not verify a person. Linux needs Secret
 Service in the user session. The settings **Rede & P2P** screen separately
 shows local Elixir HTTP/WebSocket diagnostics; it does not carry chat traffic.
 
-Character scenes and call views remain visual previews. Dedicated call MLS
-groups, authenticated member-index resolution, and bounded SFrame protection
-are implemented. QUIC v10 now carries bounded offer, answer, ICE candidate, and
-end signals on pinned sessions, but the UI rejects them until the WebRTC
-controller is integrated; media capture and playback are not connected. Camera and screen capture, contact discovery, and
-offline delivery are not implemented. Remote relay and cross-network behavior
-still need testing. QR invitation binary format and trust flow require security
-review before public release.
+Character scenes remain illustrations rather than live participants. Dedicated
+call MLS groups, authenticated member-index resolution, and bounded SFrame
+protection are implemented. Pinned QUIC signaling feeds a direct WebRTC
+controller with explicit incoming-call acceptance, Opus/SFrame audio, temporary
+call chat, and H.264/SFrame screen or camera video over one bounded data
+channel. Screen capture uses xcap; camera capture uses the native V4L2, Media
+Foundation, or AVFoundation API, with preview only after an explicit action.
+Local loopback covers media, chat, video decode, and stop signaling; physical
+capture, OS permissions, calls across machines/VPN, small-group mesh, and SFU
+still need validation or implementation. Window capture, contact discovery,
+and offline delivery remain unimplemented. QR invitation binary format and
+trust flow require security review before public release.
 The older web UI under
 `prototypes/web/` is a design benchmark, not the product runtime.
 

@@ -46,7 +46,15 @@ remonta, autentica e decodifica o quadro antes de exibi-lo; parar o
 compartilhamento limpa a imagem remota. Testes locais cobrem codec, proteção,
 fragmentação, entrega WebRTC, decodificação e sinal de parada. Ainda falta
 validar captura/permissões entre computadores reais e por VPN. Captura de
-janela/câmera, supressão de ruído, cancelamento de eco, push-to-talk, TURN e
-descoberta automática também não estão implementados.
+janela, supressão de ruído, cancelamento de eco, push-to-talk, TURN, SFU e
+descoberta automática ainda não estão implementados.
+
+A aba **Câmera** enumera dispositivos V4L2, Media Foundation ou AVFoundation.
+Uma prévia abre a câmera apenas após ação explícita. Durante uma chamada, a
+câmera selecionada pode enviar quadros H.264/SFrame no mesmo canal e estágio de
+vídeo que a tela; apenas uma fonte pode ser enviada por vez. A captura limita
+quadros a 1920 × 1080 e mantém no máximo dois quadros aguardando codificação.
+A enumeração foi exercitada neste ambiente, mas acesso, permissões, reprodução
+remota física e vídeo por VPN ainda precisam de teste em máquinas reais.
 
 Ver [spec detalhada](../architecture/backend.md#7-calls-files-and-temporary-room-chat).
