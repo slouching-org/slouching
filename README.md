@@ -22,9 +22,9 @@ Members can also send a signed MLS self-update proposal to the designated
 committer over the active pinned peer session, with copy/paste over a separately
 trusted channel as a fallback. The committer binds the MLS author to the pinned
 device and saves the authenticated proposal before ACK or Commit generation.
-The review list shows the member and proposal ID prefixes for the current epoch;
-the committer's explicit action includes all listed proposals in one Commit.
-Per-proposal approval/rejection and other proposal types remain unimplemented.
+The committer explicitly approves or rejects each current-epoch proposal;
+only approved proposal references enter the Commit. Decisions persist in the
+encrypted local profile. Other MLS proposal types remain unsupported.
 
 The MLS screen lists local groups with their current epoch and quarantine state;
 opening a saved group restores its transcript and security state from SQLCipher.
@@ -35,7 +35,7 @@ opening a saved group restores its transcript and security state from SQLCipher.
 
 ![Native Iced direct chat with relay settings and separate copy controls for sample LAN and VPN socket addresses; addresses are illustrative and Secret Service is unavailable](repositories/frontend/docs/design/runtime/native-vhs/06-chat.png)
 
-![Actual 1884 × 1000 native MLS screen showing direct group admission and Welcome controls](repositories/frontend/docs/design/runtime/native-vhs/11-mls.png)
+![Actual 934 × 1000 native MLS screen showing pending, approved, and rejected self-update proposal review controls; proposal rows are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/11-mls.png)
 
 ![Native Rust/Iced group-call preview with illustrative characters and chat; no media is connected](docs/design/readme/native-vhs-call.png)
 
