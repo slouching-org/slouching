@@ -133,3 +133,9 @@ snapshot, even after recording an earlier ACK.
 Group creation and committer admission require explicit user action. Automatic group fan-out,
 cross-network connections, NAT traversal, and offline delivery
 are not implemented. See the [frontend test flow](https://github.com/slouching-org/slouching-frontend#run-the-native-scaffold).
+
+An opted-in delegated MLS-copy helper can accept the author and recipient in
+separate authenticated sessions; ordinary application frames still require
+the manually pinned peer. This is store-and-forward over a reachable route, not
+NAT traversal or public relay. A VPN may provide a route between devices, but
+cross-network VPN behavior has not yet been verified.

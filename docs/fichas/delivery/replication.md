@@ -14,6 +14,10 @@ eventos por conexão; o ACK do helper segue a persistência e o ACK do destinat�
 segue a aplicação MLS. A ação de fan-out tenta um membro com rota alcançável
 quando o destinatário falha. A confirmação do helper não fecha o ACK do
 destinatário, e retenção permanece best-effort.
+O listener helper opt-in aceita autor e destinatário em sessões autenticadas
+separadas, serialmente. Quadros comuns continuam sujeitos ao pin manual. Cada
+sessão ainda exige rota alcançável até o helper; NAT traversal e relay público
+não estão implementados, e VPN entre redes ainda não foi validada.
 
 O chat de texto direto por Iroh/QUIC mantém um histórico local separado por chave
 pública fixada. O destinatário salva a mensagem no SQLCipher antes do ACK; o
