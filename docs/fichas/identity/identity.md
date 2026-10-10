@@ -7,21 +7,22 @@
 
 **Estado:** identidade Ed25519 e chave MLS vinculada à identidade do dispositivo
 são persistidas localmente; grupos MLS, histórico, inbox e outbox cifrados têm
-fluxo funcional no cliente nativo. O cliente agora permite comparar a chave
-Ed25519 completa por um canal independente e registrar localmente essa decisão
-no perfil SQLCipher. Convites QR assinados agora carregam a chave do dispositivo
-e, quando disponíveis, endereços IP/porta com validade de 10 minutos. Importar
-um QR PNG preenche a chave e permite escolher o endereço, mas não marca o peer
-como verificado automaticamente. Um fingerprint simétrico completo de 256 bits,
-derivado das duas chaves públicas, pode ser comparado ao vivo antes de marcar
-o peer como verificado.
-Ele não implementa rendezvous SPAKE2, descoberta de contatos ou recuperação.
-O cliente contém uma base criptográfica SPAKE2 experimental. O helper Elixir
-também oferece rendezvous volátil com um envio por etapa e expiração de dois
-minutos, mas o Iced ainda não o integra nem troca identidades nesse fluxo. Isso
-não marca contatos como verificados. Consulte os limites do
-[protótipo SPAKE2](spake2-prototype.md) e do
-[rendezvous](pairing-rendezvous-v1.md).
+fluxo funcional no cliente nativo. Ele permite comparar a chave Ed25519
+completa por um canal independente e registrar a decisão no perfil SQLCipher.
+Convites QR assinados carregam a chave do dispositivo e, quando disponíveis,
+endereços IP/porta com validade de 10 minutos. O cliente importa PNG ou lê com
+a câmera, valida assinatura e validade e permite escolher o endereço, sem
+marcar o contato como verificado automaticamente. Um fingerprint simétrico
+completo de 256 bits, derivado das duas chaves públicas, pode ser comparado ao
+vivo antes de marcar a chave como verificada.
+
+O Iced também integra o rendezvous SPAKE2 experimental do helper Elixir: os dois
+clientes confirmam um código, trocam provas de identidade assinadas e vinculadas
+à transcrição, e validam a prova do outro dispositivo. Isso não autentica uma
+pessoa nem marca o contato como confiável automaticamente. Descoberta de contatos,
+recuperação e sincronização entre dispositivos continuam ausentes. Consulte os
+[limites do protótipo SPAKE2](spake2-prototype.md) e o [contrato de
+rendezvous](pairing-rendezvous-v1.md).
 
 O dispositivo cria sua própria identidade de assinatura e folha MLS. Não há
 conta ou email obrigatório. Nome e familiar são escolhas de perfil, diferentes
@@ -48,7 +49,7 @@ chave, mas não autentica quem forneceu a imagem. O usuário só deve marcar a
 chave como verificada depois de importar o QR mostrado diretamente pelo contato
 ou conferir a chave completa por canal independente.
 
-Pendências de segurança: revisão do fluxo QR, câmera ao vivo, pareamento SPAKE2,
-recuperação, múltiplos dispositivos, backup e política de troca de chave. O cliente
-exige Secret Service no Linux para acessar as credenciais. Ver [modelo
-de confiança](../architecture/backend.md#3-trust-and-security-model).
+Pendências de segurança: revisão do fluxo QR e SPAKE2, validação em dispositivos
+físicos, recuperação, múltiplos dispositivos, backup e política de troca de
+chave. O cliente exige Secret Service no Linux para acessar as credenciais. Ver
+[modelo de confiança](../architecture/backend.md#3-trust-and-security-model).

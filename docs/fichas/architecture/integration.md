@@ -1,16 +1,18 @@
 # Rust client and Elixir server integration
 
-**Status:** local development status exchange and persistent binary WebSocket
-transport after a version 1 handshake, plus a separate persistent bidirectional
-direct-LAN text session in the Rust client. The Rust/Iced frontend and Elixir/OTP backend
-communicate across processes. The Elixir diagnostics are not part of peer
-traffic.
+**Status:** the Rust/Iced frontend and Elixir/OTP backend communicate across
+processes for local diagnostics, experimental SPAKE2 rendezvous, and optional
+signed-ciphertext mailbox delivery. Direct chat, MLS groups, and calls use
+peer-to-peer transports. Remote helper deployment and physical-device
+cross-repository validation remain open. The diagnostic WebSocket is not part
+of peer traffic.
 
 ## Boundary
 
-- `slouching-backend/server` owns the Elixir service and
-  `GET http://127.0.0.1:3707/api/status`, plus binary WebSocket `/ws`. It also
-  exposes `/health` for process availability. Bandit listens on loopback only.
+- `slouching-backend/server` owns the Elixir service, `GET /api/status`, binary
+  WebSocket `/ws`, and process `/health` endpoint. Its optional helper APIs
+  include SPAKE2 rendezvous and a signed-ciphertext mailbox. Bandit defaults to
+  loopback and requires TLS for a non-loopback bind.
 - `slouching-frontend` requests status and performs the WebSocket handshake
   asynchronously so the UI remains responsive. It must distinguish backend
   unavailable, unsupported contract, and the reported scaffold capabilities.
@@ -109,7 +111,7 @@ still needs a manual test with two or more app instances on a reachable LAN and
 firewall access to the chosen UDP ports. Linux requires an available Secret
 Service for local device identity.
 
-The Elixir diagnostic transport authenticates no device, carries no encrypted
+The Elixir diagnostic WebSocket authenticates no device, carries no encrypted
 event, and has no application command or subscription channel. The optional
 backend also exposes an experimental SPAKE2 rendezvous HTTP API; it stores
 bounded messages in memory, expires them after two minutes, and permits one
@@ -120,7 +122,11 @@ and fills in the peer key after verification; it does not mark a person trusted
 automatically. The two-client protocol test runs against a live helper through
 `scripts/smoke-pairing-e2e.sh`; the rendered GUI and physical-device exchange
 still need runtime validation. See the
-[rendezvous contract](../identity/pairing-rendezvous-v1.md). [ADR 0005](adr-0005-elixir-server-core.md)
+[rendezvous contract](../identity/pairing-rendezvous-v1.md). The optional HTTP
+mailbox stores opaque signed copies, supports cursor pagination, and requires
+the recipient to persist an accepted MLS event before ACK; a live local
+cross-repository test covers two pages. See the
+[mailbox contract](../delivery/mailbox-http-v1.md). [ADR 0005](adr-0005-elixir-server-core.md)
 defines the language division: Rust client plus Elixir backend.
 [ADR 0006](adr-0006-local-storage-optional-helper.md) retains local SQLite
 and optional helpers. The loopback Elixir diagnostics do not implement the

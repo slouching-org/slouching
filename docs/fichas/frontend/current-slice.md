@@ -83,8 +83,8 @@ person read the message.
 
 Network & P2P settings expose the opt-in for a bounded delegated MLS-copy
 queue. QUIC v10 transports a signed author grant and lets a connecting recipient
-fetch up to 16 copies addressed to its device. A helper ACKs only after local
-SQLCipher persistence; the recipient verifies the grant, applies the MLS
+fetch up to 16 copies addressed to its device per connection. A helper ACKs
+only after local SQLCipher persistence; the recipient verifies the grant, applies the MLS
 event, persists its transcript, then ACKs so the helper can erase the copy.
 When a direct target route fails, the explicit MLS fan-out action tries a
 reachable routed group member for each queued event. The target outbox stays
@@ -93,11 +93,12 @@ expiry, not guaranteed offline availability.
 
 The same settings page has an optional HTTPS Elixir mailbox URL. When enabled,
 MLS fan-out stores signed opaque event copies there after direct routes and
-opted-in peer copies leave recipients uncovered. Recipients manually fetch up
-to 16 copies per action. The client verifies the author grant, persists each
-event locally, and then ACKs helper deletion. Repeating fetch drains later
-pages. Remote deployment and physical-device flow remain unverified; this is
-asynchronous storage and does not provide a live route across NAT.
+opted-in peer copies leave recipients uncovered. Recipients manually fetch all
+available pages per action. The client verifies the author grant, persists each
+event locally, and then ACKs helper deletion. A cross-repository smoke test
+covers 18 signed copies over two pages. Remote deployment and physical-device
+flow remain unverified; this is asynchronous storage and does not provide a
+live route across NAT.
 
 The familiar screen stores the display name and familiar in encrypted SQLite;
 it also accepts an optional PNG avatar, bounds and resizes it before storing
