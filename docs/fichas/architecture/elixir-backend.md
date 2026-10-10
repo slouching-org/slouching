@@ -20,7 +20,7 @@ a PC or private VPS; an ordinary user does not need a PostgreSQL instance.
 | Delivery | Optional delegated ciphertext mailbox with quota, expiry, and honest receipts | HTTP v1 upload/list/ACK, author grant verification, Ed25519 recipient request authentication, replay protection, per-recipient quotas, periodic expiry; Rust Settings opt-in, fallback upload, manual fetch, and persist-before-ACK are implemented, remote runtime validation remains open |
 | Group state | Carry proposals, Commits, and checkpoints without cryptographic authority | Not implemented; the designated member device remains the MLS committer |
 | Storage | SQLite per device; SQLite may also serve a helper; Postgres optional for larger helper deployments | Client SQLCipher remains separate; optional Elixir helper uses SQLite by default and can select PostgreSQL with `SLOUCHING_DATABASE_URL` |
-| Calls | Optional member-operated SFU and relay support | `ex_webrtc` 0.17.0 is pinned and its native runtime compiles in local/release checks; room admission, signaling, RTP forwarding, and client integration are not implemented |
+| Calls | Optional member-operated SFU and relay support | Internal `ex_webrtc` room coordinator requires a matching device-signed roster; SDP negotiation and opaque RTP/DataChannel forwarding have local tests. No authenticated call route, independent MLS membership verification, network signaling, or client SFU integration |
 | Runtime | Supervision and backend process lifecycle | Mix release with a release migration task; supervised service uses loopback HTTP by default, direct HTTPS with configured PEM files, and rejects non-loopback plaintext binds |
 
 A helper may route ciphertext and media packets but holds no member's

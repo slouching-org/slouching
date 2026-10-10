@@ -34,15 +34,15 @@ de chamada e conectados pelo peer pinado. O cliente mantém uma sessão WebRTC
 remota por dispositivo; grupos MLS de chamada podem ter mais membros, mas
 chamadas mesh com três ou mais participantes ainda não existem.
 
-O backend Elixir agora tem componentes internos para responder ofertas WebRTC,
-criar uma saída de áudio por membro remoto autorizado, encaminhar RTP opaco e
-repassar mensagens binárias limitadas pelo DataChannel confiável
-`slouching-call-v1`. Os componentes validam o formato do roster recebido,
-acompanham o ciclo de vida do peer e têm testes locais. Ainda não há uma rota
-de chamada autenticada, coordenador que derive a admissão do estado MLS,
-sinalização entre cliente e SFU ou modo SFU no cliente Rust. Portanto esse
-trabalho ainda não habilita chamadas com mais de duas pessoas nem chamadas
-entre redes diferentes.
+O backend Elixir agora tem um coordenador efêmero de sala e componentes para
+responder ofertas WebRTC, criar uma saída de áudio por membro remoto autorizado,
+encaminhar RTP opaco e repassar mensagens binárias limitadas pelo DataChannel
+confiável `slouching-call-v1`. Cada dispositivo precisa assinar o mesmo ID de
+chamada, grupo MLS, época e roster; o cliente deve derivar o roster do estado
+MLS local. O coordenador não verifica MLS independentemente. Ainda não há uma
+rota de chamada autenticada, sinalização entre cliente e SFU ou modo SFU no
+cliente Rust. Portanto esse trabalho ainda não habilita chamadas com mais de
+duas pessoas nem chamadas entre redes diferentes.
 
 Quando a época do grupo de chamada avança ou o grupo entra em quarentena, o
 cliente silencia os quadros imediatamente e encerra a sessão WebRTC antiga; os
