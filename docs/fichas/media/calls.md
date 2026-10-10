@@ -32,7 +32,17 @@ testar captura e reprodução reais entre dois computadores, incluindo VPN, perd
 de pacotes e reconexão. A chamada exige que ambos estejam no mesmo grupo MLS
 de chamada e conectados pelo peer pinado. O cliente mantém uma sessão WebRTC
 remota por dispositivo; grupos MLS de chamada podem ter mais membros, mas
-chamadas mesh com três ou mais participantes e o SFU Elixir ainda não existem.
+chamadas mesh com três ou mais participantes ainda não existem.
+
+O backend Elixir agora tem componentes internos para responder ofertas WebRTC,
+criar uma saída de áudio por membro remoto autorizado, encaminhar RTP opaco e
+repassar mensagens binárias limitadas pelo DataChannel confiável
+`slouching-call-v1`. Os componentes validam o formato do roster recebido,
+acompanham o ciclo de vida do peer e têm testes locais. Ainda não há uma rota
+de chamada autenticada, coordenador que derive a admissão do estado MLS,
+sinalização entre cliente e SFU ou modo SFU no cliente Rust. Portanto esse
+trabalho ainda não habilita chamadas com mais de duas pessoas nem chamadas
+entre redes diferentes.
 
 Quando a época do grupo de chamada avança ou o grupo entra em quarentena, o
 cliente silencia os quadros imediatamente e encerra a sessão WebRTC antiga; os
@@ -53,8 +63,9 @@ H.264/SFrame pelo mesmo canal de vídeo da tela e da câmera. No Linux, X11 usa
 xcap; em Wayland puro, o portal ScreenCast seleciona a janela e fornece quadros
 PipeWire para a prévia ou chamada. O portal precisa oferecer fontes de janela;
 a validação em compositores reais ainda falta. Supressão de ruído, cancelamento
-de eco, push-to-talk, TURN, SFU e
-descoberta automática ainda não estão implementados.
+de eco, push-to-talk, TURN e descoberta automática ainda não estão
+implementados. Os componentes SFU descritos acima ainda não formam um serviço
+de chamadas utilizável.
 
 A aba **Câmera** enumera dispositivos V4L2, Media Foundation ou AVFoundation.
 Uma prévia abre a câmera apenas após ação explícita. Durante uma chamada, a
