@@ -86,6 +86,11 @@ this remains experimental.
 
 The MLS screen lists local groups with their current epoch and quarantine state;
 opening a saved group restores its transcript and security state from SQLCipher.
+When authenticated committer equivocation quarantines a group, its alert offers
+a confirmed path to create a replacement group. The old group and transcript
+remain preserved; members and history are never copied, so devices must be
+invited again. Existing local verification decisions stay bound to their exact
+device keys and do not add anyone to the new group automatically.
 
 ![Native Rust/Iced home with the supplied night scenery and icon-based feature strip, without the frog mage or gnome cutouts](docs/design/readme/native-vhs-home.png)
 
