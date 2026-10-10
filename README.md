@@ -46,8 +46,9 @@ offer inside an MLS application message is implemented, but the composer does
 not create file offers yet. On receive, the client authenticates and decrypts
 the MLS event before inserting its attachment manifest into SQLCipher in the
 same transaction as ratchet and transcript updates; ACK follows that commit.
-Exact redelivery is deduplicated. Blob serving authorization from MLS
-membership, app lifecycle wiring, and the accept/save interface remain.
+Exact redelivery is deduplicated. Outbound offers are also committed with the
+sender's ratchet and retryable outbox event. Blob serving authorization from
+MLS membership, app lifecycle wiring, and the accept/save interface remain.
 The pinned iroh-blobs 0.103.1 release is marked by its maintainers as not
 production quality, so this path remains experimental.
 
