@@ -122,8 +122,11 @@ exact key verified in SQLCipher. A replacement key does not inherit trust. The
 identity screen derives a symmetric full 256-bit BLAKE3 fingerprint from both
 public device keys for live comparison. Experimental SPAKE2 rendezvous pairing
 uses the optional Elixir helper and transcript-bound signed device proofs; it
-does not verify a human or trust a contact automatically. A verified contact
-roster remains open.
+does not verify a human or trust a contact automatically. Manually verified
+device keys now appear in a SQLCipher-backed local contact list with optional
+device-local labels and saved-route hints. Selecting one opens direct chat with
+that pinned key; the list does not establish reachability or add any group
+membership. Cross-device directory discovery remains open.
 Camera QR scanning uses an explicit local camera session and applies the same signature and trust checks
 as PNG import. A device-signed binding connects that identity to the MLS
 signing key and is carried in

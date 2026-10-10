@@ -19,8 +19,12 @@ vivo antes de marcar a chave como verificada.
 O Iced também integra o rendezvous SPAKE2 experimental do helper Elixir: os dois
 clientes confirmam um código, trocam provas de identidade assinadas e vinculadas
 à transcrição, e validam a prova do outro dispositivo. Isso não autentica uma
-pessoa nem marca o contato como confiável automaticamente. Descoberta de contatos,
-recuperação e sincronização entre dispositivos continuam ausentes. Consulte os
+pessoa nem marca o contato como confiável automaticamente. Chaves verificadas
+manualmente agora aparecem em uma lista local cifrada, com apelidos opcionais
+por dispositivo e atalhos para abrir o chat usando a chave pinada. Essa lista
+não consulta um diretório remoto nem garante que uma rota ainda funcione.
+Descoberta autenticada entre dispositivos, recuperação e sincronização continuam
+ausentes. Consulte os
 [limites do protótipo SPAKE2](spake2-prototype.md) e o [contrato de
 rendezvous](pairing-rendezvous-v1.md).
 
