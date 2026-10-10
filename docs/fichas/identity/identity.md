@@ -16,10 +16,12 @@ como verificado automaticamente. Um fingerprint simétrico completo de 256 bits,
 derivado das duas chaves públicas, pode ser comparado ao vivo antes de marcar
 o peer como verificado.
 Ele não implementa rendezvous SPAKE2, descoberta de contatos ou recuperação.
-O cliente agora contém uma base criptográfica SPAKE2 experimental, sem fluxo
-de interface, rendezvous, limite de tentativas ou troca de identidades. Ela
-não marca contatos como verificados. Consulte
-[o estado e os limites do protótipo SPAKE2](spake2-prototype.md).
+O cliente contém uma base criptográfica SPAKE2 experimental. O helper Elixir
+também oferece rendezvous volátil com um envio por etapa e expiração de dois
+minutos, mas o Iced ainda não o integra nem troca identidades nesse fluxo. Isso
+não marca contatos como verificados. Consulte os limites do
+[protótipo SPAKE2](spake2-prototype.md) e do
+[rendezvous](pairing-rendezvous-v1.md).
 
 O dispositivo cria sua própria identidade de assinatura e folha MLS. Não há
 conta ou email obrigatório. Nome e familiar são escolhas de perfil, diferentes

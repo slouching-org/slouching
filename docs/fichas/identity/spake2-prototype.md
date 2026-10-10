@@ -1,7 +1,9 @@
 # SPAKE2 pairing foundation (experimental)
 
 **Status:** the native Rust client contains an isolated, tested cryptographic
-building block. It is not yet a user-facing pairing flow.
+building block, and the optional Elixir helper has a volatile rendezvous API.
+The Iced client does not connect them yet; this is not a user-facing pairing
+flow.
 
 ## Implemented in the frontend
 
@@ -20,19 +22,18 @@ Implementation: `repositories/frontend/src/pairing_spake2.rs`.
 
 ## Still required before product use
 
-The Iced interface does not generate, transfer, or accept these codes. There is
-no rendezvous API, session expiry, server-side attempt budget, cancellation,
-retry state, or identity-key exchange bound to the resulting session. The
-module itself does not mark a contact verified. Users must continue to use the
-signed QR flow or compare the full device-key fingerprint out of band.
+The Iced interface does not generate, transfer, or accept these codes, or call
+the rendezvous API. The client has no session expiry, cancellation, retry
+state, or identity-key exchange bound to the resulting session. The module
+itself does not mark a contact verified. Users must continue to use the signed
+QR flow or compare the full device-key fingerprint out of band.
 
-The next protocol slice must add an optional Elixir rendezvous helper that
-relays only bounded opaque SPAKE2 messages, limits each pairing session to a
-small fixed number of attempts, expires state, and never treats the service as
-an identity authority. The clients must exchange and bind the signed device
-identities to the SPAKE2 transcript, require confirmation on both devices, and
-leave a clear user confirmation before saving trust. The helper's absence must
-not break QR or direct LAN use.
+The [Elixir rendezvous API](pairing-rendezvous-v1.md) relays bounded opaque
+SPAKE2 messages, permits one attempt per session, expires state, and does not
+act as an identity authority. The client must exchange and bind the signed
+device identities to the SPAKE2 transcript, require confirmation on both
+devices, and leave a clear user confirmation before saving trust. The helper's
+absence must not break QR or direct LAN use.
 
 ## Security boundary
 

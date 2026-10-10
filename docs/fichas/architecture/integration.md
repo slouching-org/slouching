@@ -104,7 +104,12 @@ firewall access to the chosen UDP ports. Linux requires an available Secret
 Service for local device identity.
 
 The Elixir diagnostic transport authenticates no device, carries no encrypted
-event, and has no application command or subscription channel. [ADR 0005](adr-0005-elixir-server-core.md)
+event, and has no application command or subscription channel. The optional
+backend also exposes an experimental SPAKE2 rendezvous HTTP API; it stores
+bounded opaque messages in memory, expires them after two minutes, and permits
+one exchange attempt per session. The Iced client does not yet integrate this
+API or bind signed device identities to its transcript. See the
+[rendezvous contract](../identity/pairing-rendezvous-v1.md). [ADR 0005](adr-0005-elixir-server-core.md)
 defines the language division: Rust client plus Elixir backend.
 [ADR 0006](adr-0006-local-storage-optional-helper.md) retains local SQLite
 and optional helpers. The loopback Elixir diagnostics do not implement the
