@@ -33,11 +33,15 @@ QR pairing and short verification codes remain unimplemented.
 
 The native client now contains an internal file-transfer crypto foundation:
 random per-file keys, authenticated 48 KiB chunks, a 100 MiB bound, ciphertext
-digests, bounded streaming encryption/decryption, and a filename-only offer
-format. Its receive core stages plaintext in a temporary file and publishes it
-only after digest validation, without replacing an existing destination. Users
-cannot send or receive files yet; peer-protocol integration, accept/save
-handling, and the interface remain to be built.
+digests, bounded streaming encryption/decryption, a filename-only offer format,
+and an encrypted persistent iroh-blobs store with an explicit peer-authorization
+gate. A local two-endpoint QUIC test covers authorized retrieval and rejects an
+unauthorized peer. Its receive core stages plaintext in a temporary file and
+publishes it only after digest validation, without replacing an existing
+destination. Users cannot send or receive files yet: MLS authorization, offer
+key persistence, app lifecycle wiring, and the accept/save interface remain.
+The pinned iroh-blobs 0.103.1 release is marked by its maintainers as not
+production quality, so this path remains experimental.
 
 The MLS screen lists local groups with their current epoch and quarantine state;
 opening a saved group restores its transcript and security state from SQLCipher.
