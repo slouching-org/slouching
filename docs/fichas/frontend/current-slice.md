@@ -42,19 +42,20 @@ and manual Commit application. Invalid conflicts do not quarantine. There is
 no recovery or rekey flow yet.
 
 The native Iced gallery reaches each source-board view. The MLS screen creates
-groups, prepares and admits device-bound KeyPackages, processes Welcome and
-ratchet-tree data, loads a bounded local transcript, sends application
-messages, and retries queued outbox events for the selected group. Both devices
-must join the same group, select its ID, and establish a direct LAN session.
-Group invitations still require a separately trusted channel.
+groups, prepares and admits device-bound KeyPackages over the active pinned
+session, processes Welcome and ratchet-tree data, loads a bounded local
+transcript, sends application messages, and retries queued outbox events for
+the selected group. Copy/paste remains available when a direct session cannot
+be established. Both devices must join the same group, select its ID, and
+establish a reachable direct session.
 Groups saved on the device are listed with their current epoch and quarantine
 state. Opening one restores its ID, transcript, pending Commits, and security
 alert from SQLCipher after an app restart.
-Members can prepare signed self-update proposals and transfer them to the
-designated committer through a separately trusted channel. The committer
-authenticates and stores the proposal, then creates an atomic Commit for the
-existing per-member delivery flow. Other proposal types and network proposal
-delivery remain unimplemented.
+Members can prepare signed self-update proposals and send them to the designated
+committer over the active pinned session, with copy/paste as a fallback. The
+committer authenticates and stores the proposal before ACK, then creates an
+atomic Commit for the existing per-member delivery flow. Other proposal types
+remain unimplemented.
 
 The designated committer can also remove a selected device from the group after
 an explicit UI confirmation. The removal Commit, next epoch, and delivery
