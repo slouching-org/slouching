@@ -105,7 +105,9 @@ group epoch before insertion. The v21-to-v22 migration backfills sizes from
 existing offers. The encrypted iroh-blobs store remains separately tagged by
 transfer ID. Offer storage and blob lifecycle are not yet wired into MLS authorization or a user
 send/accept flow, so this is persistence groundwork rather than usable file
-sharing.
+sharing. A bounded, versioned text codec can represent the ciphertext hash and
+key-bearing offer inside an MLS application payload; the composer does not yet
+create or render this payload.
 
 The schema stores event ID, author device, group ID, epoch, optional
 checkpoint, ciphertext digest, opaque ciphertext, expiry, and an outbound
