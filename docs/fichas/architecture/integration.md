@@ -143,8 +143,10 @@ Keep the frontend, backend, and project repositories side by side under one
 directory. Run `scripts/check-integration.sh` from this repository to test
 the Elixir server, smoke-test its optional SQLite Repo without PostgreSQL,
 and compile/test the Rust frontend, including the separate-process direct-LAN
-peer integration tests. The backend test suite exercises the status route and
-protobuf handshake contracts.
+peer integration tests. It also authenticates a fixed Rust/Iroh test identity
+over the live Elixir WebSocket and checks Ping/Pong. The backend test suite
+checks valid and invalid proof handling, challenge expiry, and a cross-language
+signature vector.
 The old Rust `peer/` crate is preserved in the backend repository as a
 historical scaffold and must not be started on the same port.
 

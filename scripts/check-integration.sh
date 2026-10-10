@@ -32,6 +32,7 @@ printf 'Checking Elixir backend...\n'
   ./scripts/smoke-release.sh
 )
 "${project_root}/scripts/smoke-delivery-mailbox-e2e.sh"
+"${project_root}/scripts/smoke-gateway-auth-e2e.sh"
 printf 'Checking Rust/Iced client...\n'
 cargo fmt --manifest-path "${frontend_root}/Cargo.toml" --check
 cargo check --manifest-path "${frontend_root}/Cargo.toml"
