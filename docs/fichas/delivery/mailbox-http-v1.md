@@ -63,3 +63,8 @@ The HTTP contract has backend tests against SQLite. The Rust desktop client
 also has an opt-in HTTPS helper setting, fallback uploads, and manual fetch
 with local persistence before ACK. Remote helper deployment and cross-device
 runtime validation remain open.
+
+The Elixir listener defaults to loopback HTTP. Remote deployment must either
+terminate TLS in a reverse proxy while Bandit remains on loopback, or configure
+`SLOUCHING_TLS_CERTFILE` and `SLOUCHING_TLS_KEYFILE` for direct HTTPS; a
+non-loopback plaintext bind is rejected. See the backend [deployment notes](https://github.com/slouching-org/slouching-backend#run-the-elixir-scaffold).

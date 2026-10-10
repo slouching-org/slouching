@@ -36,8 +36,11 @@ encrypted identity statements. It does not receive the pairing code, inspect
 the exchanged device identities, verify a person, or decide which key should
 be trusted. An optional helper still sees session IDs,
 network metadata, and the opaque exchange messages; use HTTPS for any remote
-deployment. The default listener binds to loopback. Set `SLOUCHING_BIND_IP` to
-an explicit interface address behind a TLS endpoint to accept remote clients.
+deployment. The default listener binds to loopback. To serve remote clients,
+set `SLOUCHING_BIND_IP` to an explicit interface and configure both
+`SLOUCHING_TLS_CERTFILE` and `SLOUCHING_TLS_KEYFILE` with a valid PEM
+certificate/key pair. Non-loopback plaintext binds are rejected. A reverse
+proxy may terminate TLS while Bandit remains bound to loopback.
 
 The one-exchange budget means a failed code requires creating a new session and
 fresh code. The helper does not implement per-IP quotas or protect availability

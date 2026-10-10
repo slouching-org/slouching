@@ -21,7 +21,7 @@ a PC or private VPS; an ordinary user does not need a PostgreSQL instance.
 | Group state | Carry proposals, Commits, and checkpoints without cryptographic authority | Not implemented; the designated member device remains the MLS committer |
 | Storage | SQLite per device; SQLite may also serve a helper; Postgres optional for larger helper deployments | Client SQLCipher remains separate; optional Elixir helper uses SQLite by default and can select PostgreSQL with `SLOUCHING_DATABASE_URL` |
 | Calls | Optional member-operated SFU and relay support | Not implemented |
-| Runtime | Supervision and backend process lifecycle | Supervised local Elixir application only |
+| Runtime | Supervision and backend process lifecycle | Supervised Elixir application with loopback HTTP by default; direct HTTPS with configured PEM files; non-loopback plaintext binds rejected |
 
 A helper may route ciphertext and media packets but holds no member's
 private keys or MLS/SFrame secrets. It cannot decide membership or create
