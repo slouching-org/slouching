@@ -97,6 +97,15 @@ confirmation; a storage test verifies that another peer's history remains.
 - Apply explicit quotas and expiry to delegated ciphertext copies and
   attachment chunks. A holder's absence or data loss may make them unavailable.
 
+The client now persists a group-bound file offer, content key, author device,
+ciphertext digest, and declared size in SQLCipher. Per-profile declared
+attachment size is capped at 200 MiB; the transaction checks quota before insertion,
+and the v21-to-v22 migration backfills sizes from existing offers. The
+encrypted iroh-blobs store remains separately tagged by transfer ID. Offer
+storage and blob lifecycle are not yet wired into MLS authorization or a user
+send/accept flow, so this is persistence groundwork rather than usable file
+sharing.
+
 The schema stores event ID, author device, group ID, epoch, optional
 checkpoint, ciphertext digest, opaque ciphertext, expiry, and an outbound
 state. MLS processing rejects reused IDs with changed ciphertext or envelope
