@@ -15,12 +15,12 @@ a PC or private VPS; an ordinary user does not need a PostgreSQL instance.
 
 | Domain | Target responsibility | Current implementation |
 | --- | --- | --- |
-| Gateway | Versioned binary WebSocket contracts for backend interactions | Loopback protobuf handshake with Ed25519 challenge proof and Ping/Pong; product routes remain unavailable |
+| Gateway | Versioned binary WebSocket contracts for backend interactions | Protobuf handshake with Ed25519 challenge proof and Ping/Pong; experimental authenticated SFU join, SDP, ICE, and leave frames |
 | Directory | Optional public-key and KeyPackage availability; no identity substitution authority | SQLite/Ecto device-key schema for local helper development; PostgreSQL remains an optional deployment backend; no enrollment, lookup, or KeyPackages |
 | Delivery | Optional delegated ciphertext mailbox with quota, expiry, and honest receipts | HTTP v1 upload/list/ACK, author grant verification, Ed25519 recipient request authentication, replay protection, per-recipient quotas, periodic expiry; Rust Settings opt-in, fallback upload, manual fetch, and persist-before-ACK are implemented, remote runtime validation remains open |
 | Group state | Carry proposals, Commits, and checkpoints without cryptographic authority | Not implemented; the designated member device remains the MLS committer |
 | Storage | SQLite per device; SQLite may also serve a helper; Postgres optional for larger helper deployments | Client SQLCipher remains separate; optional Elixir helper uses SQLite by default and can select PostgreSQL with `SLOUCHING_DATABASE_URL` |
-| Calls | Optional member-operated SFU and relay support | Internal `ex_webrtc` room coordinator requires a matching device-signed roster; SDP negotiation and opaque RTP/DataChannel forwarding have local tests. No authenticated call route, independent MLS membership verification, network signaling, or client SFU integration |
+| Calls | Optional member-operated SFU and relay support | Authenticated WebSocket SFU signaling is wired to the Rust client; helper checks matching device-signed roster but cannot verify MLS membership. Two software clients exchange protected audio through a live local helper; physical devices and cross-network use remain unverified |
 | Runtime | Supervision and backend process lifecycle | Mix release with a release migration task; supervised service uses loopback HTTP by default, direct HTTPS with configured PEM files, and rejects non-loopback plaintext binds |
 
 A helper may route ciphertext and media packets but holds no member's
@@ -45,10 +45,10 @@ because a directory entry exists.
 
 ## Current development slice
 
-`GET /api/status` reports unavailable capabilities. A protobuf handshake at
+`GET /api/status` reports the implemented development capabilities. A protobuf handshake at
 `/ws` checks version and verifies possession of the device Ed25519 key with a
 fresh challenge, then keeps the loopback transport responsive with Ping/Pong.
-It does not enroll devices or authorize messaging, groups, peer routes, or media. Separately, the optional delivery HTTP API
+It does not enroll devices or authorize messaging, groups, or peer routes. The experimental SFU route accepts a client-provided, device-signed roster but cannot verify it against MLS state. Separately, the optional delivery HTTP API
 stores signed opaque MLS copies in SQLite or the configured PostgreSQL repo.
 The desktop client can opt in to a remote HTTPS helper, upload fallback copies,
 and manually fetch, persist, then ACK them. The helper remains optional; the

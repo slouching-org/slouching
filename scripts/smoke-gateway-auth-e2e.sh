@@ -66,4 +66,8 @@ SLOUCHING_GATEWAY_WS_URL="ws://127.0.0.1:${port}/ws" \
   cargo test --manifest-path "${frontend_manifest}" \
   tests::authenticates_over_live_elixir_websocket_and_keeps_heartbeat \
   -- --ignored --exact --nocapture
-printf 'Rust Iroh device proof authenticated over the live Elixir WebSocket; Ping/Pong passed.\n'
+SLOUCHING_GATEWAY_WS_URL="ws://127.0.0.1:${port}/ws" \
+  cargo test --manifest-path "${frontend_manifest}" \
+  call_rtc::tests::two_rust_clients_exchange_protected_audio_through_the_live_elixir_sfu \
+  -- --ignored --exact --nocapture
+printf 'Rust Iroh device proof, two-client SFU negotiation, ICE/DTLS, and protected audio forwarding passed against the live Elixir helper.\n'

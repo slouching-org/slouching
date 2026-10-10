@@ -152,7 +152,10 @@ The **Conexão & rotas** screen reports live local identity, listener and QUIC
 send state, WebRTC connection state, and Elixir diagnostics. Its links open the
 existing direct-text, MLS, call, and network settings flows. It labels text
 relay separately from WebRTC TURN. LAN mDNS listener hints and configured
-direct-text relay routes exist; TURN and SFU remain unimplemented.
+direct-text relay routes exist. TURN remains unimplemented; an experimental
+two-device Elixir SFU route now has local live-helper authentication,
+negotiation, ICE/DTLS, and protected-audio forwarding coverage. Neither route
+has been validated across physical devices or different networks.
 
 Character scenes remain illustrations rather than live participants. Dedicated
 call MLS groups, authenticated member-index resolution, and bounded SFrame

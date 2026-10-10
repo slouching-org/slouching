@@ -39,10 +39,16 @@ responder ofertas WebRTC, criar uma saída de áudio por membro remoto autorizad
 encaminhar RTP opaco e repassar mensagens binárias limitadas pelo DataChannel
 confiável `slouching-call-v1`. Cada dispositivo precisa assinar o mesmo ID de
 chamada, grupo MLS, época e roster; o cliente deve derivar o roster do estado
-MLS local. O coordenador não verifica MLS independentemente. Ainda não há uma
-rota de chamada autenticada, sinalização entre cliente e SFU ou modo SFU no
-cliente Rust. Portanto esse trabalho ainda não habilita chamadas com mais de
-duas pessoas nem chamadas entre redes diferentes.
+MLS local. O coordenador não verifica MLS independentemente. A rota autenticada
+do gateway e um modo experimental do cliente Rust já fazem o join assinado e a
+negociação SDP/ICE com o SFU. Para usar esse modo, ambos os clientes precisam
+configurar `SLOUCHING_SFU_WS_URL` para o mesmo helper, abrir o mesmo grupo MLS
+de chamada de dois dispositivos e iniciar a chamada pelo painel **Chamada**.
+O SFU não precisa do transporte P2P direto para encaminhar mídia. O smoke test
+local usa dois clientes Rust e valida autenticação, admissão, SDP, ICE/DTLS e
+áudio Opus/SFrame encaminhado pelo helper. Ainda faltam teste com dispositivos
+físicos e validação em redes distintas. Chamadas com mais de duas
+pessoas e convite/aceite coordenado pelo helper ainda não estão disponíveis.
 
 Quando a época do grupo de chamada avança ou o grupo entra em quarentena, o
 cliente silencia os quadros imediatamente e encerra a sessão WebRTC antiga; os
@@ -64,8 +70,7 @@ xcap; em Wayland puro, o portal ScreenCast seleciona a janela e fornece quadros
 PipeWire para a prévia ou chamada. O portal precisa oferecer fontes de janela;
 a validação em compositores reais ainda falta. Supressão de ruído, cancelamento
 de eco, push-to-talk, TURN e descoberta automática ainda não estão
-implementados. Os componentes SFU descritos acima ainda não formam um serviço
-de chamadas utilizável.
+implementados. O modo SFU ainda está em validação ponta a ponta.
 
 A aba **Câmera** enumera dispositivos V4L2, Media Foundation ou AVFoundation.
 Uma prévia abre a câmera apenas após ação explícita. Durante uma chamada, a
