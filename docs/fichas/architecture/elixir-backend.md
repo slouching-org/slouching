@@ -2,8 +2,8 @@
 
 **Status:** Elixir backend and Rust client direction accepted. Local storage
 and optional helper deployment follow [ADR 0006](adr-0006-local-storage-optional-helper.md).
-Working code includes a development transport scaffold, experimental SPAKE2
-rendezvous, and a backend-only optional ciphertext mailbox API.
+Working code includes a challenge-authenticated development gateway, experimental
+SPAKE2 rendezvous, and an optional ciphertext mailbox API.
 
 ## Responsibilities and authority
 
@@ -15,7 +15,7 @@ a PC or private VPS; an ordinary user does not need a PostgreSQL instance.
 
 | Domain | Target responsibility | Current implementation |
 | --- | --- | --- |
-| Gateway | Versioned binary WebSocket contracts for backend interactions | Loopback protobuf handshake and Ping/Pong only |
+| Gateway | Versioned binary WebSocket contracts for backend interactions | Loopback protobuf handshake with Ed25519 challenge proof and Ping/Pong; product routes remain unavailable |
 | Directory | Optional public-key and KeyPackage availability; no identity substitution authority | SQLite/Ecto device-key schema for local helper development; PostgreSQL remains an optional deployment backend; no enrollment, lookup, or KeyPackages |
 | Delivery | Optional delegated ciphertext mailbox with quota, expiry, and honest receipts | HTTP v1 upload/list/ACK, author grant verification, Ed25519 recipient request authentication, replay protection, per-recipient quotas, periodic expiry; Rust Settings opt-in, fallback upload, manual fetch, and persist-before-ACK are implemented, remote runtime validation remains open |
 | Group state | Carry proposals, Commits, and checkpoints without cryptographic authority | Not implemented; the designated member device remains the MLS committer |
@@ -46,9 +46,9 @@ because a directory entry exists.
 ## Current development slice
 
 `GET /api/status` reports unavailable capabilities. A protobuf handshake at
-`/ws` checks version and role, then keeps a loopback transport responsive
-with Ping/Pong. These checks provide no identity authentication, messaging,
-peer route, or media capability. Separately, the optional delivery HTTP API
+`/ws` checks version and verifies possession of the device Ed25519 key with a
+fresh challenge, then keeps the loopback transport responsive with Ping/Pong.
+It does not enroll devices or authorize messaging, groups, peer routes, or media. Separately, the optional delivery HTTP API
 stores signed opaque MLS copies in SQLite or the configured PostgreSQL repo.
 The desktop client can opt in to a remote HTTPS helper, upload fallback copies,
 and manually fetch, persist, then ACK them. The helper remains optional; the

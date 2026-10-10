@@ -21,17 +21,19 @@ of peer traffic.
   connections. Controls for unavailable capabilities stay disabled.
 
 The shared [protobuf schema](../../../proto/slouching/v1/handshake.proto)
-defines the first binary frame as `ClientFrame.hello(protocol_version = 1)`.
-The server replies with `ServerFrame.hello` (`server_role = "elixir"`, all
-capabilities unavailable) or `ServerFrame.version_error` with its supported
-version. A compatible socket stays open for WebSocket control Ping/Pong only;
-a version error closes the socket. The client sends Ping every 5 seconds and
-requires a matching Pong within 10 seconds. The server closes after 15
-seconds without Ping; a missing hello closes after 5 seconds. The client
-retries unavailable transport with bounded 1/2/4/8-second backoff.
+defines `ClientFrame.hello(protocol_version = 2, device_public_key)` followed
+by `ServerFrame.hello` with a fresh 32-byte challenge. The client proves key
+possession with a domain-separated Ed25519 signature; Elixir replies with
+`ServerFrame.authenticated`. That confirmation grants no application route or
+group membership. Version mismatch returns `ServerFrame.version_error`. Once
+authenticated, the socket stays open for WebSocket control Ping/Pong only;
+product data frames remain unavailable. Ping runs every 5 seconds, requires a
+matching Pong within 10 seconds, and the server closes after 15 seconds without
+Ping. Missing hello or proof closes after 5 seconds. The client retries
+unavailable transport with bounded 1/2/4/8-second backoff.
 
-These checks prove local transport liveness and wire compatibility only. The
-HTTP status route is a separate diagnostic.
+These checks prove device-key possession for the socket and local transport
+liveness only. The HTTP status route is a separate diagnostic.
 
 ## Direct LAN messaging in the Iced client
 

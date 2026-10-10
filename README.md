@@ -202,8 +202,10 @@ cargo check
 cargo run
 ```
 
-The development status uses `127.0.0.1:3707/api/status`; the binary handshake
-uses `ws://127.0.0.1:3707/ws`. Neither is authenticated product traffic. Run
+The development status uses `127.0.0.1:3707/api/status`; the binary WebSocket
+at `ws://127.0.0.1:3707/ws` proves possession of the local device key with a
+fresh server challenge. It grants no product authorization and carries no
+messages or media. Run
 `./scripts/check-integration.sh` from the project root for cross-repository
 checks. The submodules pin the published backend and frontend commits,
 including native runtime screenshots.

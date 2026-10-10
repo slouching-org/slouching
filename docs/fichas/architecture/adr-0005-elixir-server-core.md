@@ -21,7 +21,8 @@ PostgreSQL or a permanently available hosted service.
 
 The `server/` Mix application is the current Elixir development scaffold.
 It provides loopback diagnostics and a protobuf WebSocket handshake with
-Ping/Pong. It does not yet implement identity, MLS, peer delivery, or calls.
+Ed25519 device-key proof and Ping/Pong. The proof does not enroll a device or
+authorize routes. MLS delivery and calls remain separate product services.
 
 ## Consequences
 

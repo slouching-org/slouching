@@ -12,7 +12,7 @@ slouching-backend/
 The frontend is a separate Rust/Iced repository,
 `slouching-org/slouching-frontend`. The Elixir service currently exposes
 `/health`, versioned `/api/status`, and a persistent development WebSocket
-transport after a binary protobuf handshake at `/ws` on `127.0.0.1:3707`; it has no authenticated gateway,
+transport after a challenge-authenticated protobuf handshake at `/ws` on `127.0.0.1:3707`; it has no product authorization,
 delivery, identity, media, or peer transport. An optional Ecto/PostgreSQL
 Repo and device-key migration exist as a helper-storage experiment; they
 do not implement local SQLite or establish a required directory. The old Rust `peer/`
