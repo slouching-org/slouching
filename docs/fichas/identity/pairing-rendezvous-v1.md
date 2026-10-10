@@ -12,12 +12,15 @@ pairing feature.
 - The session ID is a bearer capability sent in the `Authorization: Bearer`
   header. Share it only with the intended participant; anyone holding it can
   read, submit, or cancel that session. Proxies must redact this header.
-- Roles are `inviter` and `invitee`; stages are `spake2` and `confirm`.
+- Roles are `inviter` and `invitee`; stages are `spake2`, `confirm`, and
+  `identity`.
 - `POST /api/pairing-sessions/{role}/{stage}` accepts JSON
   `{"message":"<base64>"}`. SPAKE2 messages must decode to exactly 33 bytes;
-  confirmation tags must decode to exactly 32 bytes. A role may submit each
-  stage once. Confirmation is rejected until both SPAKE2 messages exist. These
-  requests require the session ID bearer header.
+  confirmation tags must decode to exactly 32 bytes, and encrypted identity
+  statements must decode to exactly 128 bytes. A role may submit each stage
+  once. Confirmation is rejected until both SPAKE2 messages exist; identity
+  statements are rejected until both confirmations exist. These requests
+  require the session ID bearer header.
 - `GET /api/pairing-sessions/{role}/{stage}` returns the other role's message,
   or HTTP 202 while it is pending. Errors distinguish invalid input, duplicate
   submission, missing sessions, and expiry. `DELETE /api/pairing-sessions`
@@ -26,9 +29,10 @@ pairing feature.
   120 seconds and are swept every 30 seconds. Restarting the process removes
   all outstanding sessions. There is no database migration for rendezvous.
 
-The helper stores only public SPAKE2 messages and confirmation tags. It does
-not receive the pairing code, exchange device identities, verify a person, or
-decide which key should be trusted. An optional helper still sees session IDs,
+The helper stores only public SPAKE2 messages, confirmation tags, and opaque
+encrypted identity statements. It does not receive the pairing code, inspect
+the exchanged device identities, verify a person, or decide which key should
+be trusted. An optional helper still sees session IDs,
 network metadata, and the opaque exchange messages; use HTTPS for any remote
 deployment. The default listener binds to loopback. Set `SLOUCHING_BIND_IP` to
 an explicit interface address behind a TLS endpoint to accept remote clients.

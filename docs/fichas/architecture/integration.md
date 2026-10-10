@@ -106,9 +106,13 @@ Service for local device identity.
 The Elixir diagnostic transport authenticates no device, carries no encrypted
 event, and has no application command or subscription channel. The optional
 backend also exposes an experimental SPAKE2 rendezvous HTTP API; it stores
-bounded opaque messages in memory, expires them after two minutes, and permits
-one exchange attempt per session. The Iced client does not yet integrate this
-API or bind signed device identities to its transcript. See the
+bounded messages in memory, expires them after two minutes, and permits one
+exchange attempt per session. It relays encrypted signed device identity
+statements only after both key confirmations. The experimental Iced identity
+screen exchanges a transcript-bound signed device proof through the helper
+and fills in the peer key after verification; it does not mark a person trusted
+automatically. The
+end-to-end two-device GUI flow still needs runtime validation. See the
 [rendezvous contract](../identity/pairing-rendezvous-v1.md). [ADR 0005](adr-0005-elixir-server-core.md)
 defines the language division: Rust client plus Elixir backend.
 [ADR 0006](adr-0006-local-storage-optional-helper.md) retains local SQLite
