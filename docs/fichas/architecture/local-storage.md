@@ -113,6 +113,14 @@ deduplication, expiry, or offline-delivery contract. Neither
 the web prototype's `localStorage` nor the profile table satisfies these
 conversation-storage rules.
 
+The SQLCipher profile also includes a disabled-by-default delegated MLS-copy
+store. An Ed25519 grant from the authenticated event author binds opaque
+ciphertext, event digest, group epoch, finite expiry and one recipient device.
+The holder enforces a 64 MiB / 4,096-event quota, a 32 KiB item cap and a
+30-day maximum TTL; it retains deduplication tombstones and clears ciphertext
+after recipient ACK or expiry. Network transfer, visible opt-in and recipient
+retrieval remain unimplemented.
+
 ## Helper storage and implementation sequence
 
 A helper is optional and may also use SQLite. Postgres is an operational

@@ -7,8 +7,10 @@
 
 **Estado:** o cliente nativo persiste eventos MLS cifrados na outbox e inbox
 locais, entrega diretamente por LAN e mantém ACKs duráveis por dispositivo.
-Fan-out para membros com rotas salvas e cópias em helper ou peer delegado
-continuam pendentes.
+Fan-out para membros com rotas salvas e um primitivo SQLCipher de cópia
+delegada com grant assinado, quota e expiração já existem. Transporte de
+mailbox, consentimento visível, busca pelo destinatário e entrega offline ainda
+estão pendentes.
 
 O chat de texto direto por Iroh/QUIC mantém um histórico local separado por chave
 pública fixada. O destinatário salva a mensagem no SQLCipher antes do ACK; o
