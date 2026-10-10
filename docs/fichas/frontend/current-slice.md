@@ -94,6 +94,12 @@ KeyPackages; the binding alone does not verify a person. Linux needs Secret
 Service in the user session. The settings **Rede & P2P** screen separately
 shows local Elixir HTTP/WebSocket diagnostics; it does not carry chat traffic.
 
+The **Conexão & rotas** screen reports live local identity, listener and QUIC
+send state, WebRTC connection state, and Elixir diagnostics. Its links open the
+existing direct-text, MLS, call, and network settings flows. It labels text
+relay separately from WebRTC TURN; automatic discovery, TURN, and SFU remain
+unimplemented.
+
 Character scenes remain illustrations rather than live participants. Dedicated
 call MLS groups, authenticated member-index resolution, and bounded SFrame
 protection are implemented. Pinned QUIC signaling feeds a direct WebRTC
