@@ -33,8 +33,10 @@ O botão de microfone silencia localmente os quadros de saída sem encerrar a
 captura. O teste local de microfone em **Áudio & vídeo** continua separado da
 chamada. **Escolher tela** enumera monitores e captura uma imagem local sob
 demanda para prévia; não transmite essa imagem ao peer. Captura contínua,
-codificação H.264, RTP/SFrame de vídeo e renderização de vídeo remoto ainda
-faltam. Captura de janela/câmera, supressão de ruído, cancelamento de eco,
-push-to-talk, TURN e descoberta automática também não estão implementados.
+transporte WebRTC e renderização de vídeo remoto ainda faltam. Um codec local
+H.264/SFrame já cifra e autentica quadros e rejeita replay em teste, mas ainda
+não está ligado à captura nem à chamada. Captura de janela/câmera, supressão de
+ruído, cancelamento de eco, push-to-talk, TURN e descoberta automática também
+não estão implementados.
 
 Ver [spec detalhada](../architecture/backend.md#7-calls-files-and-temporary-room-chat).
