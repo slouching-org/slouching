@@ -45,7 +45,9 @@ negociação SDP/ICE com o SFU. Para usar esse modo, ambos os clientes precisam
 configurar a mesma URL WSS em **Configurações → Rede & P2P → Chamadas por
 SFU**, abrir o mesmo grupo MLS de chamada de dois dispositivos e entrar pelo
 painel **Chamada**. `SLOUCHING_SFU_WS_URL` continua disponível como override
-de desenvolvimento.
+de desenvolvimento. Em **Rede & P2P**, **Testar conexão com o helper** valida
+WSS, o desafio assinado do dispositivo e o suporte SFU anunciado; isso não
+confirma que a mídia UDP atravessa a rede.
 O SFU não precisa do transporte P2P direto para encaminhar mídia. O smoke test
 local usa dois clientes Rust e valida autenticação, admissão, SDP, ICE/DTLS e
 áudio Opus/SFrame encaminhado pelo helper. Ainda faltam teste com dispositivos
