@@ -72,8 +72,10 @@ The receiver verifies that the envelope author is the pinned transport device,
 then authenticates and persists the proposal with OpenMLS before ACK. Exact
 redelivery is deduplicated; if the ACK is lost, the member can resend the same
 proposal. The designated committer still creates the Commit and uses the
-recipient-snapshotted delivery path. Other proposal types and approval controls
-remain unimplemented.
+recipient-snapshotted delivery path. Its UI lists the current-epoch proposals
+by member and proposal ID prefixes; the explicit Commit action includes all
+listed proposals together. Individual approval/rejection controls and other
+proposal types remain unimplemented.
 
 The v5 protocol has no verified contact roster, group discovery, relay, NAT
 traversal, offline delivery, or cross-device history. Automated integration
