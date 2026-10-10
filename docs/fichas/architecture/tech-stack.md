@@ -14,7 +14,7 @@ storage and optional deployment reaffirmed by [ADR 0006](adr-0006-local-storage-
 | Delivery | Direct peer delivery and optional delegated ciphertext copies | Manually addressed direct UDP pairwise ACK and local per-peer transcript work; MLS events snapshot epoch members and support per-device ACKs, sequential saved-route fan-out, and enforced 30-day expiry; ordered Commits support per-device ACK and authenticated predecessor recovery; delegated replication and offline delivery remain unimplemented |
 | MLS ordering | Designated member device per group; other members validate | Member admission enforces the indexed designated committer and atomically snapshots predecessor members with Commit bytes; delivery ACKs persist per recipient, missing epochs can be requested over the pinned session, and replay requires a matching snapshot; authenticated signed equivocation is checked against historical OpenMLS state and quarantined locally; sequential multi-member fan-out uses saved pinned routes; concurrent proposal processing remains unimplemented |
 | Group media | Direct WebRTC/mesh and optional Elixir `ex_webrtc` SFU | Not implemented |
-| Relay | Optional member-operated TURN/iroh relay | Not implemented |
+| Relay | Optional member-operated TURN/iroh relay | Explicit HTTPS URL/token settings and local Iroh Relay 1.3 message/ACK test; remote deployment and cross-network behavior unverified |
 
 The PDF preserves the original language and feature proposals. The backup
 specification and accepted ADRs determine local storage, optional helpers,

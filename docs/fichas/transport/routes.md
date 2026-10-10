@@ -6,16 +6,21 @@
 > Elixir backend and Rust client language boundary.
 
 **Estado:** endereço direto por IP manual implementado para sessões de texto
-persistentes nos dois sentidos na LAN; descoberta, pareamento de contatos,
-relay e travessia de NAT continuam não implementados.
+persistentes nos dois sentidos na LAN. O cliente também aceita relay Iroh
+1.3 operado por membro, configurado explicitamente por HTTPS e token; uma
+troca autenticada de mensagem/ACK foi testada com servidor local. Descoberta,
+pareamento de contatos, hole-punching e validação remota entre redes continuam
+pendentes.
 
-Na mesma rede local, dois clientes Rust podem trocar chaves públicas, usar o
-IP/porta manual do receptor e se autenticar diretamente pela chave fixada.
-Na internet, rota direta depende de endereçamento,
-NAT e firewall. Um membro pode manter um endpoint público ou um relay/SFU em
-PC ou VPS. Nenhum serviço de terceiro deve ser habilitado silenciosamente.
+Na mesma rede local ou VPN, dois clientes Rust podem trocar chaves públicas,
+usar o IP/porta manual do receptor e se autenticar diretamente pela chave
+fixada. A VPN precisa transportar UDP; a conexão entre máquinas em VPN ainda
+não foi validada. Na internet, rota direta depende de endereçamento, NAT e
+firewall. Um membro pode manter um endpoint público ou um relay/SFU em PC ou
+VPS. O relay do cliente pode servir como fallback quando o usuário configura
+URL HTTPS e token; nenhum serviço de terceiro é habilitado silenciosamente.
 
-TURN/relay transporta bytes; SFU encaminha mídia de grupo. A interface
+TURN/Iroh relay transporta dados cifrados; SFU encaminha mídia de grupo. A interface
 distingue rota direta, relay, SFU e indisponível, com medições reais. Sem rota
 permitida, mostra erro em vez de conexão fictícia.
 
