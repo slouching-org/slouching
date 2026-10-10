@@ -13,19 +13,23 @@ invitee validates the target device, group, local KeyPackage and pinned
 committer, saves the joined group and content-bound Welcome receipt atomically,
 then ACKs. Reconnecting retries queued Welcomes; duplicate delivery after a
 lost ACK returns the existing group. Copy/paste remains available when direct
-delivery is unavailable. For an already joined group, MLS application
-messages are encrypted with OpenMLS and sent over the active direct session.
-The receiver validates the sender binding and event metadata, advances the
-ratchet, stores ciphertext and the local transcript in SQLCipher, then ACKs.
-The sender marks the outbox event held by the peer after receiving that ACK.
-Queued events can be retried from the MLS screen after reconnecting. When a
-pinned peer connects, the client automatically checks and sends the eligible
-Commit chain for that device, waiting for each durable ACK before advancing;
-the manual send control remains available. A separate fan-out control walks
-queued recipients with saved routes, sends bounded ordered batches, and records
-each durable ACK before continuing. An unavailable peer does not block other
-recipients; missing or stale routes leave that device queued for retry. Every
-member still uses a separate peer session.
+delivery is unavailable. For an existing group, a pinned member connection
+starts its eligible Commit chain automatically, one at a time with a durable
+ACK before advancing; manual distribution remains available. The separate
+fan-out control walks queued recipients with saved routes, sends bounded
+ordered batches, and leaves missing or stale routes queued. Each member still
+uses a separate peer session.
+
+MLS application messages are encrypted with OpenMLS and sent over the active
+direct session. Each message atomically snapshots current peer devices with
+the ciphertext and ratchet update. The receiver validates the sender binding
+and event metadata, advances the ratchet, stores ciphertext and the local
+transcript in SQLCipher, then ACKs. Per-device ACKs keep other recipients
+queued, and the global outbox entry closes only after all snapshot members
+confirm. Direct send checks the pinned peer against that snapshot; queued
+messages can be retried to that peer or fanned out over saved routes. A peer
+with pending Commits is skipped until its epoch is current. An unavailable
+peer does not block other recipients.
 
 Before applying each next-epoch Commit, the client saves the prior OpenMLS
 state in SQLCipher. A different, valid Commit for an already accepted

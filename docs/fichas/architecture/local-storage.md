@@ -23,10 +23,14 @@ creator as designated committer. Member admission validates the device-bound
 KeyPackage, enforces the designated committer, merges the Commit locally, and
 returns Commit, Welcome, and ratchet-tree bytes. The exact Commit bytes and digest plus a snapshot of predecessor-epoch member devices are stored in the same SQLCipher transaction as the group epoch update. The pending Commit reloads after restart and can be sent to one snapshotted device over the active session; a new invitee is excluded, and a removed device can receive its removal Commit. On each pinned peer connection, the UI automatically drains that device's eligible chain in epoch order, waiting for each durable ACK; a manual send action remains available. The committer can fan out queued Commit batches sequentially to every eligible member with a saved route; each durable ACK advances that peer's queue, and an unavailable peer does not stop the others. A regression test covers ordered per-peer eligibility and retry after database reopen. Each device applies a Commit durably before ACK, which the sender stores per recipient and shows in the MLS screen. Exact redelivery is deduplicated. Offline delivery and concurrent proposal races remain open. Members can send signed self-update proposals to the committer over the pinned session or transfer them manually. The receiver binds the MLS author to the transport peer, verifies the device-bound member credential, journals exact delivery IDs, and ACKs only after durable storage. The committer can atomically commit the pending proposal queue into the normal recipient-snapshotted outbox. Other proposal types and approval controls remain open. Forced outbox and recipient-ledger failures verify group state rolls back atomically. The Welcome and ratchet tree are now stored in an encrypted outbox in the same admission transaction. Reconnecting to the pinned invitee retries the exact bundle until ACK; the invitee writes a content-bound receipt in the same transaction as joining, so a retry after a lost ACK returns the existing group. SQLCipher tests cover outbox persistence after reopen and duplicate Welcome handling. On successful outbound peer handshakes, the encrypted profile records the pinned device key and socket address; LAN routes can become stale.
 Group creation and admission are exposed in the local setup UI. Outbound MLS
-application messages are saved as queued ciphertext with the ratchet update in
-one SQLCipher transaction. Inbound processing authenticates sender and event
-metadata, persists ciphertext before releasing plaintext, and deduplicates
-exact redelivery alongside the ratchet update. The UI lists locally stored
+application messages are saved as queued ciphertext with the ratchet update and
+a snapshot of the current peer devices in one SQLCipher transaction. Each
+recipient ACK is stored separately; the global outbox state closes after every
+snapshot member accepts the event. The sender can retry to one pinned member or
+fan out over saved routes in bounded order after confirming that member has no
+pending Commits. Inbound processing authenticates sender and event metadata,
+persists ciphertext before releasing plaintext, and deduplicates exact
+redelivery alongside the ratchet update. The UI lists locally stored
 groups with their current epoch and quarantine state; opening one reloads its
 transcript, pending Commits, and security alert from SQLCipher. Opening the
 database composes OpenMLS RustCrypto with its
@@ -119,6 +123,6 @@ Self-update proposals now travel over the active pinned session and are
 persisted before ACK. The committer screen lists current-epoch proposals by
 member and proposal ID before one explicit Commit includes the full list.
 Individual proposal approval/rejection and safe handling for proposal types
-beyond self-updates remain open. Next, fan out MLS application messages over saved pinned routes and verify them between real app instances on a LAN without Postgres or a hosted helper. Then verify optional ciphertext delegation and helper loss separately.
+beyond self-updates remain open. Commit and application-message fan-out now use saved pinned routes with per-recipient durable ACKs. Next, verify multi-member messaging between real app instances on a LAN without Postgres or a hosted helper, then verify optional ciphertext delegation and helper loss separately.
 These are acceptance requirements, not claims that the current scaffold
 already supports them.
