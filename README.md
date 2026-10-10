@@ -35,11 +35,15 @@ The native client now contains an internal file-transfer crypto foundation:
 random per-file keys, authenticated 48 KiB chunks, a 100 MiB bound, ciphertext
 digests, bounded streaming encryption/decryption, a filename-only offer format,
 and an encrypted persistent iroh-blobs store with an explicit peer-authorization
-gate. A local two-endpoint QUIC test covers authorized retrieval and rejects an
-unauthorized peer. Its receive core stages plaintext in a temporary file and
-publishes it only after digest validation, without replacing an existing
-destination. Users cannot send or receive files yet: offer and content-key
-persistence in SQLCipher now has group-state validation, idempotent retries,
+gate. The desktop app has a private per-user store location and a bounded
+ciphertext import that checks length and digest before adding a persistent
+reference. A local two-endpoint QUIC test covers authorized retrieval and rejects an
+unauthorized peer. The bounded receive-store path stages ciphertext in a
+private temporary file and rejects streams whose size or digest differs from
+the MLS offer before adding a blob reference. Its plaintext receive core
+stages data and publishes it only after digest validation, without replacing
+an existing destination. Users cannot send or receive files yet: offer and
+content-key persistence in SQLCipher now has group-state validation, idempotent retries,
 MLS member-device validation, transfer-ID conflict checks, and a 200 MiB
 per-profile quota. A bounded, versioned codec for carrying the blob hash and
 offer inside an MLS application message is implemented, but the composer does
