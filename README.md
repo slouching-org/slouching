@@ -24,9 +24,10 @@ experimental Rust client route configured in **Configurações → Rede & P2P**
 **Testar conexão com o helper** checks the authenticated WSS endpoint and SFU
 capability; media UDP still requires a real call. The live-helper smoke test
 verifies signed roster admission, SDP negotiation, ICE/DTLS, and protected
-audio forwarded between two software clients. Physical devices and calls across
-different networks remain unverified; the normal direct call path continues to
-use the pinned peer connection.
+audio forwarded between three software clients. The client accepts call MLS
+rosters of two to 16 devices in this SFU mode. Physical devices and calls
+across different networks remain unverified; the normal direct call path
+continues to use the pinned peer connection.
 
 Members can also send a signed MLS self-update proposal to the designated
 committer over the active pinned peer session, with copy/paste over a separately

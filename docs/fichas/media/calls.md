@@ -41,18 +41,21 @@ confiável `slouching-call-v1`. Cada dispositivo precisa assinar o mesmo ID de
 chamada, grupo MLS, época e roster; o cliente deve derivar o roster do estado
 MLS local. O coordenador não verifica MLS independentemente. A rota autenticada
 do gateway e um modo experimental do cliente Rust já fazem o join assinado e a
-negociação SDP/ICE com o SFU. Para usar esse modo, ambos os clientes precisam
-configurar a mesma URL WSS em **Configurações → Rede & P2P → Chamadas por
-SFU**, abrir o mesmo grupo MLS de chamada de dois dispositivos e entrar pelo
-painel **Chamada**. `SLOUCHING_SFU_WS_URL` continua disponível como override
+negociação SDP/ICE com o SFU. Esse modo aceita grupos MLS de chamada com 2 a
+16 dispositivos. Para usá-lo, cada participante precisa configurar a mesma URL
+WSS em **Configurações → Rede & P2P → Chamadas por SFU**, abrir o mesmo grupo
+MLS de chamada e entrar pelo painel **Chamada**. `SLOUCHING_SFU_WS_URL` continua disponível como override
 de desenvolvimento. Em **Rede & P2P**, **Testar conexão com o helper** valida
 WSS, o desafio assinado do dispositivo e o suporte SFU anunciado; isso não
 confirma que a mídia UDP atravessa a rede.
 O SFU não precisa do transporte P2P direto para encaminhar mídia. O smoke test
-local usa dois clientes Rust e valida autenticação, admissão, SDP, ICE/DTLS e
-áudio Opus/SFrame encaminhado pelo helper. Ainda faltam teste com dispositivos
-físicos e validação em redes distintas. Chamadas com mais de duas
-pessoas e convite/aceite coordenado pelo helper ainda não estão disponíveis.
+local usa três clientes Rust e valida autenticação, admissão, SDP, ICE/DTLS e
+áudio Opus/SFrame encaminhado pelo helper. O cliente prepara recepção de chat
+e vídeo por membro, mas o smoke integrado ainda cobre apenas áudio. Convites
+coordenados pelo helper ainda não estão disponíveis; cada participante entra
+no mesmo grupo e inicia a chamada. Testes com dispositivos físicos e em redes
+distintas continuam pendentes. Chamadas mesh diretas com mais de dois
+participantes não estão implementadas.
 Para hospedar o SFU atrás de NAT 1:1, o helper aceita
 `SLOUCHING_SFU_PUBLIC_IP` e `SLOUCHING_SFU_UDP_PORT_RANGE`; abra e encaminhe
 essa faixa UDP ao servidor. O cliente exige WebSocket `wss://` remoto e ainda

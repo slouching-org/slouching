@@ -4,7 +4,7 @@
 processes for diagnostics, experimental SPAKE2 rendezvous, optional
 signed-ciphertext mailbox delivery, and experimental SFU calls. Direct chat,
 MLS groups, and the normal call path use peer-to-peer transports. Local
-two-client pairing, SFU audio forwarding, and core peer flows have integration
+two-client pairing, three-client SFU audio forwarding, and core peer flows have integration
 coverage; remote helper deployment and physical-device validation remain open.
 
 ## Boundary
@@ -132,8 +132,8 @@ mailbox stores opaque signed copies, supports cursor pagination, and requires
 the recipient to persist an accepted MLS event before ACK; a live local
 cross-repository test covers two pages. See the
 [mailbox contract](../delivery/mailbox-http-v1.md). The authenticated SFU route
-supports two-device audio forwarding in the current Rust client and passes a
-local two-client smoke test; the settings connectivity check validates WSS and
+accepts call MLS rosters of 2–16 devices and passes a local three-client audio
+smoke test; multiparty chat/video are not yet covered by live integration. The settings connectivity check validates WSS and
 device authentication, not the media UDP path. See the
 [calls ficha](../media/calls.md). [ADR 0005](adr-0005-elixir-server-core.md)
 defines the language division: Rust client plus Elixir backend.
@@ -141,8 +141,8 @@ defines the language division: Rust client plus Elixir backend.
 and optional helpers. The loopback Elixir diagnostics do not implement the
 LAN path or make PostgreSQL a startup dependency. Product messaging still
 needs concurrent proposal handling and cross-device validation of remote
-mailbox delivery. Physical-device calls, multi-member SFU calls, and remote
-helper deployment remain unverified. Offline delivery is opportunistic and
+mailbox delivery. Physical-device calls and remote helper deployment remain
+unverified. Offline delivery is opportunistic and
 depends on a reachable authorized holder.
 
 ## Local checkout and validation
@@ -152,7 +152,7 @@ directory. Run `scripts/check-integration.sh` from this repository to test
 the Elixir server, smoke-test its optional SQLite Repo without PostgreSQL,
 and compile/test the Rust frontend, including separate-process peer tests. It
 also runs live-helper SPAKE2 pairing, authenticates a fixed Rust/Iroh test
-identity, and checks two-client SFU negotiation, ICE/DTLS, and protected audio.
+identity, and checks three-client SFU negotiation, ICE/DTLS, and protected audio.
 The backend suite checks valid and invalid device proofs, challenge expiry,
 call-roster signatures, SDP negotiation, and a cross-language signature vector.
 The old Rust `peer/` crate is preserved in the backend repository as a
