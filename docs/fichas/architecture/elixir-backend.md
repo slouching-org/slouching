@@ -17,7 +17,7 @@ a PC or private VPS; an ordinary user does not need a PostgreSQL instance.
 | --- | --- | --- |
 | Gateway | Versioned binary WebSocket contracts for backend interactions | Loopback protobuf handshake and Ping/Pong only |
 | Directory | Optional public-key and KeyPackage availability; no identity substitution authority | SQLite/Ecto device-key schema for local helper development; PostgreSQL remains an optional deployment backend; no enrollment, lookup, or KeyPackages |
-| Delivery | Optional delegated ciphertext mailbox with quota, expiry, and honest receipts | HTTP v1 upload/list/ACK, author grant verification, Ed25519 recipient request authentication, replay protection, per-recipient quotas, and finite expiry; Rust client integration and user settings remain open |
+| Delivery | Optional delegated ciphertext mailbox with quota, expiry, and honest receipts | HTTP v1 upload/list/ACK, author grant verification, Ed25519 recipient request authentication, replay protection, per-recipient quotas, periodic expiry; Rust Settings opt-in, fallback upload, manual fetch, and persist-before-ACK are implemented, remote runtime validation remains open |
 | Group state | Carry proposals, Commits, and checkpoints without cryptographic authority | Not implemented; the designated member device remains the MLS committer |
 | Storage | SQLite per device; SQLite may also serve a helper; Postgres optional for larger helper deployments | Client SQLCipher remains separate; optional Elixir helper uses SQLite by default and can select PostgreSQL with `SLOUCHING_DATABASE_URL` |
 | Calls | Optional member-operated SFU and relay support | Not implemented |
@@ -49,7 +49,8 @@ because a directory entry exists.
 `/ws` checks version and role, then keeps a loopback transport responsive
 with Ping/Pong. These checks provide no identity authentication, messaging,
 peer route, or media capability. Separately, the optional delivery HTTP API
-stores signed opaque MLS copies in SQLite or the configured PostgreSQL repo;
-it is not wired into the desktop client and does not establish a required
-service. Its [HTTP v1 contract](../delivery/mailbox-http-v1.md) and the
+stores signed opaque MLS copies in SQLite or the configured PostgreSQL repo.
+The desktop client can opt in to a remote HTTPS helper, upload fallback copies,
+and manually fetch, persist, then ACK them. The helper remains optional; the
+remote multi-device flow has not yet been runtime-validated. Its [HTTP v1 contract](../delivery/mailbox-http-v1.md) and the
 [integration contract](integration.md) describe the current behavior.

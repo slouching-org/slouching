@@ -129,8 +129,10 @@ WebSocket transport with Ping/Pong, experimental SPAKE2 rendezvous, and an
 optional signed ciphertext mailbox HTTP API. The mailbox supports upload,
 bounded recipient pagination, Ed25519-authenticated list/ACK, finite expiry,
 and per-recipient quotas. It has SQLite tests and an optional PostgreSQL Repo;
-the Rust client is not yet integrated with this remote helper API. Neither
-database is the product's required persistence path. The older Rust `peer/` crate is an
+the Rust client now has opt-in remote URL settings, fallback upload, and manual
+fetch with local persistence before helper ACK. Cross-device use against a
+remote deployment remains unverified. Neither database is the product's
+required persistence path. The older Rust `peer/` crate is an
 experimental policy gate. The current Iced client has a persistent bidirectional
 Iroh/QUIC text session with manually pinned device keys. It supports manually
 addressed LAN/VPN routes and an explicitly configured participant relay, with a

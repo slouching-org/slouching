@@ -21,7 +21,8 @@ idempotent; reusing that event ID with different bytes returns `409`.
 
 Successful responses are `201` with `{"status":"stored"}` or
 `{"status":"already_stored"}`. Each recipient is limited to 64 MiB and
-4,096 live copies. Expired copies are removed during mailbox operations.
+4,096 live copies. Expired copies are removed during mailbox operations and by
+a supervised cleanup pass that runs every 60 seconds.
 
 ## List
 
@@ -58,5 +59,7 @@ path includes the query string in transmitted order. The helper accepts each
 `(device, nonce)` once and retains nonces for 120 seconds. Invalid, stale, or
 replayed requests return `401`.
 
-This contract currently has backend tests against SQLite. The desktop HTTP
-client and user-facing helper configuration remain in development.
+The HTTP contract has backend tests against SQLite. The Rust desktop client
+also has an opt-in HTTPS helper setting, fallback uploads, and manual fetch
+with local persistence before ACK. Remote helper deployment and cross-device
+runtime validation remain open.

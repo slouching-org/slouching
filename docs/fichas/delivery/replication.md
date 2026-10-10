@@ -19,13 +19,16 @@ separadas, serialmente. Quadros comuns continuam sujeitos ao pin manual. Cada
 sessão ainda exige rota alcançável até o helper; NAT traversal e relay público
 não estão implementados, e VPN entre redes ainda não foi validada.
 
-O backend Elixir agora também implementa uma API HTTP opcional de mailbox para
-grant MLS assinado: upload idempotente, quota por destinatário, expiração,
-listagem paginada autenticada por Ed25519 e ACK do helper. Esse ACK só confirma
-a remoção da cópia guardada pelo helper. A API passou em testes HTTP com SQLite,
-mas o cliente Rust ainda não a chama nem oferece configuração de helper remoto;
-para usá-la como produto faltam transporte no cliente, persistência local antes
-do ACK e estados visíveis na interface. Consulte o [contrato HTTP v1](mailbox-http-v1.md).
+O backend Elixir também implementa uma API HTTP opcional de mailbox para grant
+MLS assinado: upload idempotente, quota por destinatário, expiração periódica,
+listagem paginada autenticada por Ed25519 e ACK do helper. O cliente Rust já
+permite configurar e ativar um helper HTTPS, tenta guardar cópias assinadas
+quando a entrega direta falha e oferece busca manual. O destinatário valida o
+grant e persiste o evento localmente antes do ACK HTTP. Esse ACK só confirma a
+remoção da cópia guardada pelo helper; o ACK do dispositivo segue a aplicação
+MLS. Ainda falta validar o fluxo completo contra um helper remoto e entre
+dispositivos físicos. A mailbox não faz NAT traversal nem mantém uma chamada ou
+sessão P2P ao vivo. Consulte o [contrato HTTP v1](mailbox-http-v1.md).
 
 O chat de texto direto por Iroh/QUIC mantém um histórico local separado por chave
 pública fixada. O destinatário salva a mensagem no SQLCipher antes do ACK; o
