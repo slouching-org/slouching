@@ -43,8 +43,11 @@ or marks the key trusted; users must authenticate the QR source or compare the
 complete key independently. The identity screen also derives a symmetric
 full 256-bit BLAKE3 pair fingerprint for live comparison. The connection
 screen can search the LAN for active listeners with mDNS and fill a route into
-direct chat; the discovery hint never authenticates a device. SPAKE2 rendezvous
-and contact discovery remain open.
+direct chat; the discovery hint never authenticates a device. An experimental
+SPAKE2 crypto building block now has tests for key confirmation and mismatched
+codes, but no UI, rendezvous, retry limits, or identity exchange. Product
+pairing and contact discovery remain open; see the
+[SPAKE2 prototype boundary](docs/fichas/identity/spake2-prototype.md).
 See the [invite format and trust boundary](docs/fichas/identity/pairing-invite-v1.md).
 
 The native client now contains an internal file-transfer crypto foundation:
