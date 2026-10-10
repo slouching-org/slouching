@@ -8,7 +8,9 @@
 **Estado:** chamadas diretas agora integram sinalização WebRTC pelo canal QUIC
 pinado, tracks RTP de Opus e proteção SFrame baseada no grupo MLS exclusivo da
 chamada. Oferta e resposta validam grupo, época e identidade do membro. ICE usa
-candidatos host reunidos no SDP; a mídia só começa depois de ICE/DTLS conectar.
+candidatos host reunidos no SDP. Ofertas recebidas aguardam aceite ou recusa
+explícita antes de montar a conexão; o microfone só começa depois do aceite e
+de ICE/DTLS conectar.
 
 O cliente captura o microfone escolhido via CPAL, converte para mono 48 kHz em
 quadros de 20 ms, codifica Opus, protege os quadros com SFrame e os envia por
