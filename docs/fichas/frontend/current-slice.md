@@ -80,15 +80,18 @@ expiry, not guaranteed offline availability.
 
 The familiar screen stores the display name and familiar in encrypted SQLite;
 the database key and Ed25519 device seed use the operating system credential
-store. The public device key is shown as unverified. A device-signed binding
-connects that identity to the MLS signing key and is carried in KeyPackages.
-This does not establish contact trust or pairing. Linux needs Secret Service
-available in the user session. The settings **Rede & P2P** screen separately
-shows local Elixir HTTP/WebSocket diagnostics; it does not carry chat traffic.
+store. The direct-text trust screen lets members compare the complete 64-digit
+device key over an independent channel and mark that exact key as verified in
+SQLCipher on this device. A replacement key does not inherit trust. QR pairing,
+short verification codes, and discovery remain open. A device-signed binding
+connects that identity to the MLS signing key and is carried in KeyPackages;
+the binding alone does not verify a person. Linux needs Secret Service in the
+user session. The settings **Rede & P2P** screen separately shows local Elixir
+HTTP/WebSocket diagnostics; it does not carry chat traffic.
 
 Character scenes and call views remain visual previews. Camera, microphone,
-screen capture, contact discovery, verified pairing, and offline delivery are
-not implemented. Remote relay and cross-network behavior still need testing.
+screen capture, QR pairing, contact discovery, and offline delivery are not
+implemented. Remote relay and cross-network behavior still need testing.
 The older web UI under
 `prototypes/web/` is a design benchmark, not the product runtime.
 

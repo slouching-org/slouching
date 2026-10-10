@@ -124,9 +124,10 @@ experimental policy gate. The current Iced client has a persistent bidirectional
 Iroh/QUIC text session with manually pinned device keys. It supports manually
 addressed LAN/VPN routes and an explicitly configured participant relay, with a
 local relay message/ACK test; VPN between machines and remote relay deployment
-remain unverified. This is pairwise transport authentication, not MLS. Durable
-chat history and MLS state are local; contact verification, synchronization,
-and media are not implemented.
+remain unverified. This is pairwise transport authentication, not MLS. The
+client can record a user's full-key comparison locally, but contact discovery,
+QR pairing, synchronization, and media are not implemented. Durable chat history
+and MLS state remain local.
 
 The installed application's local process lifecycle and packaging remain
 open implementation work. The finished app must start and communicate on
