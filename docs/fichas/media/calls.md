@@ -30,7 +30,9 @@ quadro Opus/SFrame pela track RTP e verifica amostras decodificadas no sink
 remoto. Isso valida o pipeline local de mídia sem hardware físico. Ainda falta
 testar captura e reprodução reais entre dois computadores, incluindo VPN, perda
 de pacotes e reconexão. A chamada exige que ambos estejam no mesmo grupo MLS
-de chamada e conectados pelo peer pinado.
+de chamada e conectados pelo peer pinado. O cliente mantém uma sessão WebRTC
+remota por dispositivo; grupos MLS de chamada podem ter mais membros, mas
+chamadas mesh com três ou mais participantes e o SFU Elixir ainda não existem.
 
 Quando a época do grupo de chamada avança ou o grupo entra em quarentena, o
 cliente silencia os quadros imediatamente e encerra a sessão WebRTC antiga; os
