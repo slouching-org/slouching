@@ -144,9 +144,11 @@ contact discovery, synchronization, and several group-media paths are not
 implemented. Durable
 chat history and MLS state remain local.
 
-The installed application's local process lifecycle and packaging remain
-open implementation work. The finished app must start and communicate on
-a LAN without PostgreSQL, a hosted helper, or an internet route. Media
+The optional Elixir helper now has a Mix release, an explicit release
+migration task, and a smoke test that starts the packaged process. Packaging
+and lifecycle for the installed Rust desktop app remain open. That app must
+start and communicate on a LAN without PostgreSQL, a hosted helper, or an
+internet route. Media
 capture and encoding must stay off UI and database threads. A helper on a
 member's PC or private VPS must obey the same protocol, quota, key-custody,
 and delivery rules. The PDF's dependency list is not a lockfile.

@@ -21,7 +21,7 @@ a PC or private VPS; an ordinary user does not need a PostgreSQL instance.
 | Group state | Carry proposals, Commits, and checkpoints without cryptographic authority | Not implemented; the designated member device remains the MLS committer |
 | Storage | SQLite per device; SQLite may also serve a helper; Postgres optional for larger helper deployments | Client SQLCipher remains separate; optional Elixir helper uses SQLite by default and can select PostgreSQL with `SLOUCHING_DATABASE_URL` |
 | Calls | Optional member-operated SFU and relay support | Not implemented |
-| Runtime | Supervision and backend process lifecycle | Supervised Elixir application with loopback HTTP by default; direct HTTPS with configured PEM files; non-loopback plaintext binds rejected |
+| Runtime | Supervision and backend process lifecycle | Mix release with a release migration task; supervised service uses loopback HTTP by default, direct HTTPS with configured PEM files, and rejects non-loopback plaintext binds |
 
 A helper may route ciphertext and media packets but holds no member's
 private keys or MLS/SFrame secrets. It cannot decide membership or create
@@ -31,10 +31,10 @@ historical proposals, not required product boundaries.
 
 ## Deployment and availability
 
-The installed app must start and communicate among reachable LAN peers
-without PostgreSQL, a hosted helper, or an internet route. Local process
-packaging and lifecycle are still to be implemented; the current two-process
-loopback demo does not satisfy that product gate.
+The installed Rust app must start and communicate among reachable LAN peers
+without PostgreSQL, a hosted helper, or an internet route. The optional Elixir
+helper now has a packaged Mix release and a smoke-tested start/migrate flow;
+this does not package the desktop app or satisfy its local-only product gate.
 
 When no authorized holder can reach an offline recipient, delivery waits.
 Helper storage confirms a retained copy, not recipient delivery. Direct
