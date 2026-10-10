@@ -194,6 +194,10 @@ local preview if desired, then click **Compartilhar câmera na chamada**. The
 camera and monitor share one video slot; use **Parar compartilhamento** to stop.
 Physical camera permissions and camera video between separate computers still
 need testing.
+The **Janelas** tab lists visible windows, offers an explicit local preview, and
+shares H.264/SFrame frames through the same video slot. Linux window enumeration
+uses X11/Xorg; pure Wayland enumeration is not supported by the current capture
+library.
 On Linux, Secret Service must be available for device identity storage. Each
 device keeps its own encrypted transcript for that pinned peer after the app
 closes; history is not synchronized. For MLS group chat, provision the same

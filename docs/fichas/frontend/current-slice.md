@@ -99,12 +99,14 @@ call MLS groups, authenticated member-index resolution, and bounded SFrame
 protection are implemented. Pinned QUIC signaling feeds a direct WebRTC
 controller with explicit incoming-call acceptance, Opus/SFrame audio, temporary
 call chat, and H.264/SFrame screen or camera video over one bounded data
-channel. Screen capture uses xcap; camera capture uses the native V4L2, Media
-Foundation, or AVFoundation API, with preview only after an explicit action.
+channel. Screen and window capture use xcap; window enumeration on Linux uses
+X11/Xorg and is unavailable in a pure Wayland session. Camera capture uses the
+native V4L2, Media Foundation, or AVFoundation API, with preview only after an
+explicit action.
 Local loopback covers media, chat, video decode, and stop signaling; physical
 capture, OS permissions, calls across machines/VPN, small-group mesh, and SFU
-still need validation or implementation. Window capture, contact discovery,
-and offline delivery remain unimplemented. QR invitation binary format and
+still need validation or implementation. Contact discovery and offline
+delivery remain unimplemented. QR invitation binary format and
 trust flow require security review before public release.
 The older web UI under
 `prototypes/web/` is a design benchmark, not the product runtime.
