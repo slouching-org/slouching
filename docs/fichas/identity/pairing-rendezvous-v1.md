@@ -1,8 +1,10 @@
 # SPAKE2 rendezvous helper v1 (experimental)
 
-**Status:** the optional Elixir helper exposes a volatile HTTP rendezvous API.
-The Rust/Iced client does not call it yet, and this is not a complete contact
-pairing feature.
+**Status:** experimental end-to-end code pairing is implemented in the Rust/Iced
+identity screen and the optional Elixir helper. The root integration gate runs
+two concurrent Rust client roles against a live local Elixir server, checking
+signed identity exchange and mismatched-code rejection. The screen does not
+mark the resulting person trusted automatically.
 
 ## Session contract
 
@@ -43,16 +45,22 @@ from a holder of the session ID; the global cap bounds memory but can be used
 to deny new sessions. The client must generate a fresh 100-bit code per
 session, enforce the 120-second deadline, and expose cancellation.
 
-## Client work still required
+## Client behavior and remaining validation
 
-The Iced client must create a helper session, exchange both SPAKE2 messages and
-key confirmations, and then exchange the signed device identities bound to the
-confirmed transcript. Both devices must show the resulting identity and ask
-the user before saving a contact as trusted. The flow must expire/cancel cleanly
-and keep QR/manual pairing available when no helper is configured. It must
-also test an incorrect code, helper loss, replay, and a real two-device
-exchange. Until then, use the signed QR route or compare the full device-key
-fingerprint out of band.
+The Iced client creates a temporary session and fresh 100-bit code, exchanges
+SPAKE2 messages and key confirmations, then exchanges encrypted device proofs
+signed over the confirmed transcript. The peer key appears in the identity
+screen after signature verification. The user still needs to authenticate the
+person and explicitly mark the key as verified. Cancel deletes the helper
+session; a failed code requires a new session. QR and manual fingerprint
+verification remain available without a helper.
+
+Run `scripts/smoke-pairing-e2e.sh` from the root repository to launch a local
+Elixir helper and exercise both Rust roles. This automated test uses test
+identities and one local process; it does not validate the rendered GUI,
+physical devices, remote TLS deployment, relay/NAT traversal, or connectivity
+between separate networks. A manual two-device GUI test and helper-loss behavior
+remain to be checked.
 
 ## HTTP examples
 

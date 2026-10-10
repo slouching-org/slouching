@@ -111,8 +111,9 @@ exchange attempt per session. It relays encrypted signed device identity
 statements only after both key confirmations. The experimental Iced identity
 screen exchanges a transcript-bound signed device proof through the helper
 and fills in the peer key after verification; it does not mark a person trusted
-automatically. The
-end-to-end two-device GUI flow still needs runtime validation. See the
+automatically. The two-client protocol test runs against a live helper through
+`scripts/smoke-pairing-e2e.sh`; the rendered GUI and physical-device exchange
+still need runtime validation. See the
 [rendezvous contract](../identity/pairing-rendezvous-v1.md). [ADR 0005](adr-0005-elixir-server-core.md)
 defines the language division: Rust client plus Elixir backend.
 [ADR 0006](adr-0006-local-storage-optional-helper.md) retains local SQLite

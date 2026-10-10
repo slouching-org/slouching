@@ -31,5 +31,9 @@ printf 'Checking Elixir backend...\n'
   ./scripts/smoke-local-sqlite.sh
 )
 printf 'Checking Rust/Iced client...\n'
+cargo fmt --manifest-path "${frontend_root}/Cargo.toml" --check
 cargo check --manifest-path "${frontend_root}/Cargo.toml"
 cargo test --manifest-path "${frontend_root}/Cargo.toml"
+cargo clippy --manifest-path "${frontend_root}/Cargo.toml" --all-targets -- -D warnings
+printf 'Checking two-client code pairing against the live Elixir helper...\n'
+"${project_root}/scripts/smoke-pairing-e2e.sh"
