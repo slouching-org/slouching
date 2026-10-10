@@ -49,6 +49,10 @@ local usa dois clientes Rust e valida autenticação, admissão, SDP, ICE/DTLS e
 áudio Opus/SFrame encaminhado pelo helper. Ainda faltam teste com dispositivos
 físicos e validação em redes distintas. Chamadas com mais de duas
 pessoas e convite/aceite coordenado pelo helper ainda não estão disponíveis.
+Para hospedar o SFU atrás de NAT 1:1, o helper aceita
+`SLOUCHING_SFU_PUBLIC_IP` e `SLOUCHING_SFU_UDP_PORT_RANGE`; abra e encaminhe
+essa faixa UDP ao servidor. O cliente exige WebSocket `wss://` remoto e ainda
+não tem fallback TURN/TCP. Os detalhes estão no [README do backend](https://github.com/slouching-org/slouching-backend#run-the-elixir-scaffold).
 
 Quando a época do grupo de chamada avança ou o grupo entra em quarentena, o
 cliente silencia os quadros imediatamente e encerra a sessão WebRTC antiga; os
