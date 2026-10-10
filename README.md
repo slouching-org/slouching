@@ -41,23 +41,25 @@ reference. Stored ciphertext can be decrypted chunk by chunk and published to
 a destination only after AEAD and ciphertext-digest validation, without
 replacing an existing file; Unix staging files use mode 0600. A local
 two-endpoint QUIC test covers authorized retrieval and rejects an
-unauthorized peer. The bounded receive-store path stages ciphertext in a
+unauthorized peer. The peer layer also has a separate unidirectional QUIC
+stream for sending ciphertext against a group-bound offer, with a two-endpoint
+transfer-and-save test. The bounded receive-store path stages ciphertext in a
 private temporary file and rejects streams whose size or digest differs from
 the MLS offer before adding a blob reference. Its plaintext receive core
 stages data and publishes it only after digest validation, without replacing
-an existing destination. Users cannot send or receive files yet: offer and
-content-key persistence in SQLCipher now has group-state validation, idempotent retries,
-MLS member-device validation, transfer-ID conflict checks, and a 200 MiB
-per-profile quota. A bounded, versioned codec for carrying the blob hash and
-offer inside an MLS application message is implemented, but the composer does
-not create file offers yet. On receive, the client authenticates and decrypts
-the MLS event before inserting its attachment manifest into SQLCipher in the
-same transaction as ratchet and transcript updates; ACK follows that commit.
-Exact redelivery is deduplicated. Outbound offers are also committed with the
-sender's ratchet and retryable outbox event. Blob serving authorization from
-MLS membership, app lifecycle wiring, and the accept/save interface remain.
-The pinned iroh-blobs 0.103.1 release is marked by its maintainers as not
-production quality, so this path remains experimental.
+an existing destination. The MLS composer imports and encrypts a chosen file,
+sends its offer as an MLS event, and starts a separate QUIC ciphertext stream
+after the receiver ACKs that event. The receiver checks active membership in
+that MLS group and the exact stored offer before importing the bounded stream.
+The attachment card can save by decrypting to a chosen path and publishing
+only after integrity checks. Failed outbound streams can be retried while the
+app remains open. The separate two-endpoint stream test covers transfer and
+save; the full database-authorized desktop flow and cross-machine file
+transfer still need runtime validation. Offer persistence in SQLCipher has
+group-state checks, idempotent retries, member-device validation, transfer-ID
+conflict checks, and a 200 MiB per-profile quota. The pinned iroh-blobs
+0.103.1 release is marked by its maintainers as not production quality, so
+this remains experimental.
 
 The MLS screen lists local groups with their current epoch and quarantine state;
 opening a saved group restores its transcript and security state from SQLCipher.
@@ -69,6 +71,8 @@ opening a saved group restores its transcript and security state from SQLCipher.
 ![Native Iced direct chat with relay settings and separate copy controls for sample LAN and VPN socket addresses; addresses are illustrative and Secret Service is unavailable](repositories/frontend/docs/design/runtime/native-vhs/06-chat.png)
 
 ![Actual 934 × 1000 native MLS screen showing pending, approved, and rejected self-update proposal review controls; proposal rows are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/11-mls.png)
+
+![Actual native Iced MLS screen with an encrypted attachment card and save action; attachment and connected state are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/12-mls-attachments.png)
 
 ![Actual native identity verification screen showing a local full-key comparison and verified-key action; both keys are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/08-verify.png)
 
