@@ -16,7 +16,8 @@
 **Conceived by Rodrigo and Vitchola**, Slouching is an early native desktop app for a small crew to chat, call, and share a screen. The Rust/Iced client owns local keys, cryptography, direct peer paths, and per-peer chat history and pinned peer routes in encrypted SQLite. Elixir remains the backend language. A member may optionally host a helper on a PC or VPS for ciphertext delivery, discovery, relay, or group media. Pinned-device text works over manually addressed reachable UDP routes without a hosted helper or PostgreSQL.
 
 > [!IMPORTANT]
-> This is an early build, **not a secure messenger**. Direct pinned-device text and MLS application messaging work over Iroh/QUIC when a manually supplied UDP route is reachable. The MLS screen can send a device-bound KeyPackage through a pinned session, where the committer reviews and admits it. The committer saves the Welcome and ratchet tree in an encrypted retry queue and resends them when the pinned invitee reconnects. The invitee records a content-bound receipt with group admission, so duplicate delivery after a lost ACK returns the existing group. The receiver validates and persists ciphertext, ratchet state, and transcript in SQLCipher before ACK. Each application event snapshots eligible member devices; per-device ACKs keep other recipients queued, and the MLS screen can retry one pinned member or fan out over saved routes. If direct delivery fails, the client can try a reachable opted-in group peer or an explicitly configured Elixir HTTPS mailbox. A mailbox recipient manually fetches copies addressed to its device, verifies the author grant, persists the event, then ACKs deletion to the helper. That ACK confirms helper removal only; delivery remains pending until the recipient device confirms MLS processing. Mailbox retention is best-effort and does not provide NAT traversal or live P2P connectivity. Membership Commits are stored atomically with the committer's new group epoch. When a pinned group member connects, its eligible pending Commits start sending automatically, one at a time with a durable ACK before advancing. The committer can also distribute queued Commits sequentially to all eligible members with saved routes; unavailable peers remain queued. Exact redelivery is harmless. Clients detect authenticated committer equivocation against saved historical OpenMLS state, preserve both conflicting Commits, and quarantine the affected group without changing its accepted epoch. The client now supports an explicitly configured, token-protected Iroh Relay 1.3 route, covered by a local end-to-end message/ACK test; remote TLS deployment and cross-network VPN use have not been verified. Signed QR invitations now exchange device keys and announced addresses, but imported images do not automatically establish human trust. SFrame frame protection now has a dedicated MLS call-group purpose and a guarded, zeroizing MLS exporter. Sender and receiver member indexes resolve from authenticated call-group device bindings, with two-profile frame-encryption coverage. The call screen can create a call-only MLS group, invite members, and negotiate a WebRTC offer/answer over the pinned QUIC session after checking the sender against the current MLS epoch and membership; incoming offers wait for explicit acceptance or refusal. A local host-candidate ICE/DTLS test passes. Opus/SFrame voice now connects CPAL capture and device playback to WebRTC RTP. A local two-peer test sends a protected frame and verifies decoded samples at the receiver; real-device calls and a two-machine VPN call remain unverified. The screen chooser enumerates monitors and captures an on-demand local still preview. During an active call, the UI can now capture the selected monitor continuously, encode bounded H.264 frames, protect them with the call group SFrame key, fragment them below WebRTC’s message limit, and render authenticated frames received from the peer. Local tests cover codec protection/replay rejection and fragmented WebRTC DataChannel delivery/stop signaling; a real two-device call, screen capture permissions, and VPN delivery are not yet validated. The connection screen can search the LAN for active Slouching listeners with mDNS and fill a discovered route into direct chat. These untrusted hints expose no device key; users still enter and authenticate the peer key. The identity screen now supports experimental SPAKE2 code pairing through the optional Elixir helper, including transcript-bound signed device identities; the live-helper two-client test passes, while the rendered GUI and physical-device flow remain to be validated. Authenticated remote contact discovery remains open. The identity screen also derives a full 256-bit BLAKE3 fingerprint from both device keys for out-of-band comparison. The Elixir backend uses SQLite locally; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is an experiment, not the service backend.
+> This is an early build, **not a secure messenger**. Direct pinned-device text and MLS application messaging work over Iroh/QUIC when a manually supplied UDP route is reachable. The MLS screen can send a device-bound KeyPackage through a pinned session, where the committer reviews and admits it. The committer saves the Welcome and ratchet tree in an encrypted retry queue and resends them when the pinned invitee reconnects. The invitee records a content-bound receipt with group admission, so duplicate delivery after a lost ACK returns the existing group. The receiver validates and persists ciphertext, ratchet state, and transcript in SQLCipher before ACK. Each application event snapshots eligible member devices; per-device ACKs keep other recipients queued, and the MLS screen can retry one pinned member or fan out over saved routes. If direct delivery fails, the client can try a reachable opted-in group peer or an explicitly configured Elixir HTTPS mailbox. A mailbox recipient manually fetches copies addressed to its device, verifies the author grant, persists the event, then ACKs deletion to the helper. That ACK confirms helper removal only; delivery remains pending until the recipient device confirms MLS processing. Mailbox retention is best-effort and does not provide NAT traversal or live P2P connectivity. Membership Commits are stored atomically with the committer's new group epoch. When a pinned group member connects, its eligible pending Commits start sending automatically, one at a time with a durable ACK before advancing. The committer can also distribute queued Commits sequentially to all eligible members with saved routes; unavailable peers remain queued. Exact redelivery is harmless. Clients detect authenticated committer equivocation against saved historical OpenMLS state, preserve both conflicting Commits, and quarantine the affected group without changing its accepted epoch. The client now supports an explicitly configured, token-protected Iroh Relay 1.3 route, covered by a local end-to-end message/ACK test; remote TLS deployment and cross-network VPN use have not been verified. Signed QR invitations now exchange device keys and announced addresses, but imported images do not automatically establish human trust. SFrame frame protection now has a dedicated MLS call-group purpose and a guarded, zeroizing MLS exporter. Sender and receiver member indexes resolve from authenticated call-group device bindings, with two-profile frame-encryption coverage. The call screen can create a call-only MLS group, invite members, and negotiate a WebRTC offer/answer over the pinned QUIC session after checking the sender against the current MLS epoch and membership; incoming offers wait for explicit acceptance or refusal. A local host-candidate ICE/DTLS test passes. Opus/SFrame voice now connects CPAL capture and device playback to WebRTC RTP. A local two-peer test sends a protected frame and verifies decoded samples at the receiver; real-device calls and a two-machine VPN call remain unverified. The screen chooser enumerates monitors and captures an on-demand local still preview. During an active call, the UI can now capture the selected monitor continuously, encode bounded H.264 frames, protect them with the call group SFrame key, fragment them below WebRTC’s message limit, and render authenticated frames received from the peer. Local tests cover codec protection/replay rejection and fragmented WebRTC DataChannel delivery/stop signaling; a real two-device call, screen capture permissions, and VPN delivery are not yet validated. The connection screen can search the LAN for active Slouching listeners with mDNS and fill a discovered route into direct chat. These untrusted hints expose no device key; users still enter and authenticate the peer key. The identity screen now supports experimental SPAKE2 code pairing through the optional Elixir helper, including transcript-bound signed device identities; the live-helper two-client test passes, and the pairing controls have been captured in the rendered GUI; physical-device
+pairing still needs validation. Authenticated remote contact discovery remains open. The identity screen also derives a full 256-bit BLAKE3 fingerprint from both device keys for out-of-band comparison. The Elixir backend uses SQLite locally; PostgreSQL is an optional deployment choice. The older Rust `slouching-peer` crate is an experiment, not the service backend.
 
 The optional Elixir SFU now has authenticated WebSocket signaling and an
 experimental Rust client route configured in **Configurações → Rede & P2P**
@@ -24,7 +25,9 @@ experimental Rust client route configured in **Configurações → Rede & P2P**
 **Testar conexão com o helper** checks the authenticated WSS endpoint and SFU
 capability; media UDP still requires a real call. The live-helper smoke test
 verifies signed roster admission, SDP negotiation, ICE/DTLS, and protected
-audio forwarded between three software clients. The client accepts call MLS
+audio and protected call-chat frames forwarded between three software clients.
+The chat smoke uses fixture SFrame contexts; cross-device MLS exporter
+interoperability and SFU video remain unverified. The client accepts call MLS
 rosters of two to 16 devices in this SFU mode. Physical devices and calls
 across different networks remain unverified; the normal direct call path
 continues to use the pinned peer connection.
@@ -123,8 +126,7 @@ device keys and do not add anyone to the new group automatically.
 ![Actual 934 × 1000 native MLS screen showing pending, approved, and rejected self-update proposal review controls; proposal rows are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/11-mls.png)
 
 That MLS capture predates member removal. Refresh it from a graphical session
-with `--capture-mls-member-removal`; this development environment has no
-Wayland or X11 display, so it could not produce a fresh rendered image.
+with `--capture-mls-member-removal`.
 
 ![Actual native Iced MLS screen with an encrypted attachment card and save action; attachment and connected state are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/12-mls-attachments.png)
 
@@ -137,27 +139,27 @@ samples. Calls use Opus/SFrame over WebRTC RTP after MLS membership and peer
 signaling; video and physical two-device validation remain outstanding.
 The call audio decoder now keeps an independent Opus state and SFrame replay
 window for each remote member in the call MLS group, selecting by the SFrame
-sender index. The current call UI still establishes one remote WebRTC peer; this
-change prepares multi-source audio reception but does not implement mesh or SFU
-calls.
+sender index. Direct calls still use one remote WebRTC peer per device. The
+separately selected experimental SFU route admits two to 16 call-group members
+and has a three-client audio and protected chat smoke test. Cross-device MLS
+exporter interoperability and SFU video remain unverified.
 
-![Actual native identity screen showing a signed peer invitation QR; the device keys and VPN address are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/08-verify.png)
+![Atual tela nativa de identidade com controles de pareamento SPAKE2; ID e código são fixtures fictícias](repositories/frontend/docs/design/runtime/native-vhs/08-verify.png)
 
 ![Actual native identity screen after importing a QR, with separate LAN and VPN address choices; all values are capture fixtures](repositories/frontend/docs/design/runtime/native-vhs/08-verify-invite-imported.png)
 
-These identity screenshots predate the full pair fingerprint and verified
-contacts list, and the connection screenshot predates LAN discovery. The
-identity capture was attempted after the contacts update, but Iced could not
-start because this session has no Wayland or X11 display. Refresh them in a graphical
-Wayland or X11 session with:
+A captura atual da tela de identidade mostra os controles de pareamento por
+código. O ID e o código exibidos são fixtures fictícias e não conectam a um
+helper. A captura da tela de conexão ainda precisa ser atualizada para LAN
+discovery. Gere-a em uma sessão gráfica com:
 
 ```sh
 cd repositories/frontend
-SLOUCHING_WINDOW_SIZE=1280x800 cargo run -- --capture-dir /tmp/slouching-captures --capture-screen 08-verify --capture-peer-verification
 SLOUCHING_WINDOW_SIZE=1280x800 cargo run -- --capture-dir /tmp/slouching-captures --capture-screen 04-connecting --capture-lan-discovery
 ```
 
-This checkout has no display server, so it could not produce fresh screenshots.
+A captura da identidade foi gerada nesta sessão; o fluxo físico entre dispositivos
+ainda requer validação.
 
 ![Native Rust/Iced call screen capture from before Opus RTP integration; the current screen shows the call controls](docs/design/readme/native-vhs-call.png)
 
