@@ -8,11 +8,17 @@ temp_dir="$(mktemp -d)"
 server_pid=""
 
 cleanup() {
+  local exit_status=$?
   if [[ -n "${server_pid}" ]] && kill -0 "${server_pid}" 2>/dev/null; then
     kill "${server_pid}" 2>/dev/null || true
     wait "${server_pid}" 2>/dev/null || true
   fi
+  if [[ "${exit_status}" != 0 && -f "${temp_dir}/server.log" ]]; then
+    printf 'Elixir helper log (exit %s):\n' "${exit_status}" >&2
+    cat "${temp_dir}/server.log" >&2 || true
+  fi
   rm -rf -- "${temp_dir}"
+  exit "${exit_status}"
 }
 trap cleanup EXIT
 trap 'exit 130' INT
@@ -56,14 +62,17 @@ for _attempt in $(seq 1 40); do
 done
 
 if [[ "${ready}" != 1 ]] || [[ "$(cat "${temp_dir}/health.txt")" != "ok" ]]; then
-  cat "${temp_dir}/server.log" >&2
   echo "Elixir mailbox helper did not become healthy on port ${port}." >&2
   exit 1
 fi
 
 SLOUCHING_DELIVERY_MAILBOX_URL="${base_url}" \
-  cargo test --manifest-path "${frontend_root}/Cargo.toml" \
-    --bin slouching-frontend signed_mailbox_client_round_trips_against_live_helper \
-    -- --ignored --nocapture
+  cargo test --locked --manifest-path "${frontend_root}/Cargo.toml" \
+    --bin slouching-frontend delivery_client::tests::signed_mailbox_client_round_trips_against_live_helper \
+    -- --ignored --exact --nocapture --color never 2>&1 | tee "${temp_dir}/test-0.log"
+if ! grep -Eq '^test result: ok\. 1 passed; 0 failed; 0 ignored; 0 measured; [0-9]+ filtered out;' "${temp_dir}/test-0.log"; then
+  printf 'Expected exactly one passing mailbox test; check that the filter still matches.\n' >&2
+  exit 1
+fi
 
 echo "Rust client paginated 18 signed MLS copies through the live Elixir helper and ACKed every copy."

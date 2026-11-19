@@ -4,6 +4,8 @@
 handshake. This repository keeps the canonical source; byte-identical copies
 live in the frontend and backend repositories so each can build on its own.
 `scripts/check-integration.sh` checks that all three copies match.
+`scripts/check-proto-sync.sh` makes the same comparison against the pinned
+submodule commits without initializing them; CI runs it.
 
 The first WebSocket binary frame is `ClientFrame` with `hello` and
 `protocol_version = 2` and a 32-byte device public key. The server replies with a binary `ServerFrame`:

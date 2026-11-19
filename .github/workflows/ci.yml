@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: proto sync and shellcheck
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      # The submodules stay uninitialized: the proto check fetches only the
+      # pinned commits' schema, and the full gates run in each code repository.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Protobuf schema matches the pinned submodule commits
+        run: ./scripts/check-proto-sync.sh
+      - name: shellcheck
+        run: shellcheck scripts/*.sh
+
+  helper-e2e:
+    name: live Elixir helper end-to-end tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      # Remove this override once the frontend pin includes rust-toolchain.toml.
+      RUSTUP_TOOLCHAIN: "1.99.1"
+      OTP_VERSION: "29.0.5"
+      ELIXIR_VERSION: "1.20.3"
+      CARGO_TERM_COLOR: always
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: line-tables-only
+      RUST_TEST_THREADS: "4"
+      ERL_FLAGS: "+S 4:4"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # v1.24.1
+        with:
+          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          version-type: strict
+      - name: Install Rust and native build dependencies
+        run: |
+          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
+          sudo -n apt-get update
+          sudo -n apt-get install -y --no-install-recommends \
+            build-essential pkg-config protobuf-compiler cmake nasm clang libclang-dev \
+            libasound2-dev libpipewire-0.3-dev libegl-dev libgbm-dev libxcb1-dev \
+            libssl-dev python3 curl
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          workspaces: repositories/frontend -> target
+      - name: Build the pinned helper
+        working-directory: repositories/backend/server
+        run: |
+          # Use --check-locked once the backend pin removes the stale ex_webrtc lock entry.
+          mix deps.get
+          mix compile
+      - name: Build the frontend test binary
+        run: cargo test --locked --manifest-path repositories/frontend/Cargo.toml --bin slouching-frontend --no-run
+      # Each script starts a loopback helper with a fresh SQLite database,
+      # waits for /health, and stops it in its EXIT trap. Run them sequentially.
+      - name: Device authentication, heartbeat and three-client SFU audio
+        run: ./scripts/smoke-gateway-auth-e2e.sh
+      - name: Two-client SPAKE2 pairing
+        run: ./scripts/smoke-pairing-e2e.sh
+      - name: Signed mailbox pagination and acknowledgement
+        run: ./scripts/smoke-delivery-mailbox-e2e.sh

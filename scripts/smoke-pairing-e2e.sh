@@ -8,11 +8,17 @@ temp_dir="$(mktemp -d)"
 server_pid=""
 
 cleanup() {
+  local exit_status=$?
   if [[ -n "${server_pid}" ]] && kill -0 "${server_pid}" 2>/dev/null; then
     kill "${server_pid}" 2>/dev/null || true
     wait "${server_pid}" 2>/dev/null || true
   fi
+  if [[ "${exit_status}" != 0 && -f "${temp_dir}/server.log" ]]; then
+    printf 'Elixir helper log (exit %s):\n' "${exit_status}" >&2
+    cat "${temp_dir}/server.log" >&2 || true
+  fi
   rm -rf -- "${temp_dir}"
+  exit "${exit_status}"
 }
 trap cleanup EXIT
 trap 'exit 130' INT
@@ -57,12 +63,16 @@ for _attempt in $(seq 1 40); do
 done
 
 if [[ "${ready}" != 1 ]]; then
-  cat "${server.log}" >&2
   printf 'Elixir pairing helper did not become healthy on port %s.\n' "${port}" >&2
   exit 1
 fi
 
 SLOUCHING_PAIRING_TEST_URL="${base_url}" \
-  cargo test --manifest-path "${frontend_manifest}" \
+  cargo test --locked --manifest-path "${frontend_manifest}" --bin slouching-frontend \
   pairing_client::tests::two_clients_pair_through_the_live_elixir_helper \
-  -- --ignored --exact --nocapture
+  -- --ignored --exact --nocapture --color never 2>&1 | tee "${temp_dir}/test-0.log"
+if ! grep -Eq '^test result: ok\. 1 passed; 0 failed; 0 ignored; 0 measured; [0-9]+ filtered out;' "${temp_dir}/test-0.log"; then
+  printf 'Expected exactly one passing pairing test; check that the filter still matches.\n' >&2
+  exit 1
+fi
+printf 'Two Rust clients paired through the live Elixir helper.\n'

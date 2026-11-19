@@ -8,11 +8,17 @@ temp_dir="$(mktemp -d)"
 server_pid=""
 
 cleanup() {
+  local exit_status=$?
   if [[ -n "${server_pid}" ]] && kill -0 "${server_pid}" 2>/dev/null; then
     kill "${server_pid}" 2>/dev/null || true
     wait "${server_pid}" 2>/dev/null || true
   fi
+  if [[ "${exit_status}" != 0 && -f "${temp_dir}/server.log" ]]; then
+    printf 'Elixir helper log (exit %s):\n' "${exit_status}" >&2
+    cat "${temp_dir}/server.log" >&2 || true
+  fi
   rm -rf -- "${temp_dir}"
+  exit "${exit_status}"
 }
 trap cleanup EXIT
 trap 'exit 130' INT
@@ -57,17 +63,24 @@ for _attempt in $(seq 1 40); do
 done
 
 if [[ "${ready}" != 1 ]]; then
-  cat "${temp_dir}/server.log" >&2
   printf 'Elixir gateway did not become healthy on port %s.\n' "${port}" >&2
   exit 1
 fi
 
 SLOUCHING_GATEWAY_WS_URL="ws://127.0.0.1:${port}/ws" \
-  cargo test --manifest-path "${frontend_manifest}" \
+  cargo test --locked --manifest-path "${frontend_manifest}" --bin slouching-frontend \
   tests::authenticates_over_live_elixir_websocket_and_keeps_heartbeat \
-  -- --ignored --exact --nocapture
+  -- --ignored --exact --nocapture --color never 2>&1 | tee "${temp_dir}/test-0.log"
+if ! grep -Eq '^test result: ok\. 1 passed; 0 failed; 0 ignored; 0 measured; [0-9]+ filtered out;' "${temp_dir}/test-0.log"; then
+  printf 'Expected exactly one passing gateway authentication test; check that the filter still matches.\n' >&2
+  exit 1
+fi
 SLOUCHING_GATEWAY_WS_URL="ws://127.0.0.1:${port}/ws" \
-  cargo test --manifest-path "${frontend_manifest}" \
+  cargo test --locked --manifest-path "${frontend_manifest}" --bin slouching-frontend \
   call_rtc::tests::three_rust_clients_exchange_protected_audio_through_the_live_elixir_sfu \
-  -- --ignored --exact --nocapture
+  -- --ignored --exact --nocapture --color never 2>&1 | tee "${temp_dir}/test-1.log"
+if ! grep -Eq '^test result: ok\. 1 passed; 0 failed; 0 ignored; 0 measured; [0-9]+ filtered out;' "${temp_dir}/test-1.log"; then
+  printf 'Expected exactly one passing SFU audio test; check that the filter still matches.\n' >&2
+  exit 1
+fi
 printf 'Rust Iroh device proof, three-client SFU negotiation, ICE/DTLS, and protected audio forwarding passed against the live Elixir helper.\n'
