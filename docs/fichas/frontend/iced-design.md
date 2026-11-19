@@ -1,6 +1,6 @@
 # Recreating the supplied design in Iced
 
-**Status:** first native implementation covers eleven views in the pinned
+**Status:** native implementation covers twelve views (eleven design-board views plus MLS) in the pinned
 Iced 0.14.0 client; exact visual parity remains open. The supplied eleven screens,
 artwork, and [visual style](../brand/visual-style.md) remain the reference.
 
@@ -46,7 +46,7 @@ prove exact output or performance before implementation.
 The first implementation now uses `src/ui.rs` for native screens and shared
 styles. Original transparent character cutouts and outline SVG paths were
 extracted without raster modification. Official font TTFs and their SIL
-licenses are bundled. The app provides all eleven views, a screen gallery,
+licenses are bundled. The app provides all eleven design-board views plus the MLS screen,
 local preview inputs and selection, and a static texture toggle. Capture
 via Iced's window API covers 1280 × 800 and a compact 960 × 640 window.
 Exact alignment, effects, accessibility, and live media remain open work.

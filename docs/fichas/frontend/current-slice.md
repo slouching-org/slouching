@@ -48,7 +48,7 @@ history; users must invite devices again. Local verification remains bound to
 each exact device key and does not add group members automatically. There is no
 same-group rekey or automatic membership recovery.
 
-The native Iced gallery reaches each source-board view. The MLS screen creates
+The native Iced app implements the source-board views. The MLS screen creates
 groups, prepares and admits device-bound KeyPackages over the active pinned
 session, processes Welcome and ratchet-tree data, loads a bounded local
 transcript, sends application messages, and retries queued outbox events for

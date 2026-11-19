@@ -6,7 +6,7 @@ Its Elixir server/backend core and Rust/Iced client direction are retained.
 
 | Layer | Choice | Current state |
 | --- | --- | --- |
-| Desktop UI | Rust 2024 + pinned Iced 0.14.0 | Twelve native design-board views, MLS group flows, and settings for optional helpers |
+| Desktop UI | Rust 2024 + pinned Iced 0.14.0 | Twelve native screens: eleven design-board views plus the MLS group screen; settings for optional helpers |
 | Rendering | Iced/wgpu | Native views with images, SVG icons, canvas textures, decoded remote video frames, and explicit capture previews |
 | Local audio devices | CPAL 0.18.2 | Real device enumeration and selection; Opus/SFrame audio is connected to local capture and playback for direct and experimental SFU calls |
 | Local client core | Rust identity, cryptography, encrypted SQLite storage, transport, media | Device-bound OpenMLS credentials and group admission; application events are encrypted/decrypted with authenticated envelope metadata and ratchet changes committed with journal writes |

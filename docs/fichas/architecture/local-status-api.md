@@ -1,6 +1,6 @@
 # Local status API
 
-**Status:** implemented by the Elixir server scaffold as a development-only loopback endpoint.
+**Status:** implemented by the optional Elixir helper; loopback is the default listener.
 
 `GET http://127.0.0.1:3707/api/status` returns JSON contract version 1:
 
@@ -15,7 +15,8 @@
 }
 ```
 
-`GET /health` returns `ok`. Bandit binds only to `127.0.0.1:3707`.
+`GET /health` returns `ok`. Bandit defaults to `127.0.0.1:3707`; a configured
+non-loopback bind requires TLS.
 These routes prove only that the local process answers. They do not
 authenticate a peer or provide messaging, MLS, media, delivery, or a
 production client/server protocol. The Rust/Iced client may use the versioned
